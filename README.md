@@ -41,3 +41,5 @@ IATK has an editor script that enables you to design and filter data visualisati
 
 # Official members and developpers
 The toolkit is developped by Maxime Cordeil (project leader, Monash University), Kingsley Stephens (Monash University) and Andrew Cunningham (University of South Australia).
+
+Contributors: Tim Dwyer (Monash University), Yalong Yang (Monash University)
