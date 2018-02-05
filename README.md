@@ -25,23 +25,23 @@ IATK has an editor script that enables you to design and filter data visualisati
 3. Scripting
 
 4. Template Library
-  1. Histograms
-  2. 2D/3D scatterplots
-  3. 2D/3D Scatterplot matrices (SPLOM)
+ - Histograms 
+ - 2D/3D scatterplots
+ - 2D/3D Scatterplot matrices (SPLOM)
    
 5. Interactive visualisation components support
-  1. Brushing and linking
-  2. Scale
-  3. Grab & Move
+ - Brushing and linking
+ - Scale
+ - Grab & Move
   
-6. Virtual/Augmented Reality Support
+## Virtual/Augmented Reality Support
 The toolkit has been tested and is fully supported by the following Virtual/Augmented reality devices:
  - Oculus 
  - Vive
  - Hololens
  - Meta
 
-# Official members and developpers
+## Official members and developpers
 The toolkit is developped by Maxime Cordeil (project leader, Monash University), Kingsley Stephens (Monash University) and Andrew Cunningham (University of South Australia).
 
 Contributors: Tim Dwyer (Monash University), Yalong Yang (Monash University)
