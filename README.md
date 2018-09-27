@@ -16,7 +16,19 @@ First, create a **Data Source** object (right click in the hierarchy, IATK/DataS
 
 2. Visualisation: an editor menu helper
 Create a **Visualisation** object (right click in the hierarchy, IATK/DataSouce). Drag and drop a **Data Source** object 
-For now in IATK you can
+For now in IATK you can create:
+
+- a Simple 2D/3D visualisation
+-- 2D and 3D scatterplots
+
+-- 2D and 3D trajectories, trailsets 
+
+- Parallel Coordinates
+- a Scatterplot Matrix
+
+3. Custom Interactive Brushing and Linking 
+
+4. View linker
 
 ## IATK core data and graphics scripting
 1. Data Source
