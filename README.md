@@ -19,7 +19,9 @@ Create a **Visualisation** object (right click in the hierarchy, IATK/DataSouce)
 For now in IATK you can create:
 
 - a Simple 2D/3D visualisation
+
 -- 2D and 3D scatterplots
+
 
 -- 2D and 3D trajectories, trailsets 
 
