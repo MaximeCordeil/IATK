@@ -49,12 +49,13 @@ The toolkit contains facilities to create high quality graphics dsigned for data
 3. Scripting
 
   
-## Virtual/Augmented Reality Support
-The toolkit has been tested and is fully supported by the following Virtual/Augmented reality devices:
- - Oculus
- - Vive
- - Hololens
- - Meta
+## IEEE VIS 2018 tutorial 
+We will give an Immersive Visualisation tutorial with IATK at IEEE VIS 2018.
+For attendees, please download:
+
+- this repository
+- <a href="https://unity3d.com/get-unity/download?thank-you=update&download_nid=49126&os=Win" Unity 2017 </a>
+- Virtual reality toolkit VRTK : 
 
 ## Roadmap
 - Support 2D/3D graph visualisation (node-link diagrams) directly in the *Visualisation* editor
