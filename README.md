@@ -44,8 +44,6 @@ The toolkit contains facilities to create high quality graphics dsigned for data
 - several shaders to render a lot of data rapidly and efficiently, and custom graphics for data visualisations (thick lines, dots/spheres, cubes/bars)
 - a selection tool (brushing) that enables the selection of data accross several data visualizations.
 
-<img width="500" alt="iatk_menu" src="https://user-images.githubusercontent.com/11532065/35493494-ee5358c4-0507-11e8-874f-c96f0c9c36de.PNG">
-
 3. Scripting
 
   
@@ -54,8 +52,8 @@ We will give an Immersive Visualisation tutorial with IATK at IEEE VIS 2018.
 For attendees, please download:
 
 - this repository
-- [Unity 2017] https://unity3d.com/get-unity/download?thank-you=update&download_nid=49126&os=Win"
-- [Virtual reality toolkit VRTK] https://github.com/thestonefox/VRTK 
+- [Unity 2017] (https://unity3d.com/get-unity/download?thank-you=update&download_nid=49126&os=Win)
+- [Virtual reality toolkit VRTK] (https://github.com/thestonefox/VRTK)
 
 Our repository contains sample datasets. Come with your CSV data to the tutorial if you want to give it a go!
 
