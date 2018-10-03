@@ -54,8 +54,10 @@ We will give an Immersive Visualisation tutorial with IATK at IEEE VIS 2018.
 For attendees, please download:
 
 - this repository
-- <a href="https://unity3d.com/get-unity/download?thank-you=update&download_nid=49126&os=Win" Unity 2017 </a>
-- Virtual reality toolkit VRTK : 
+- [Unity 2017] https://unity3d.com/get-unity/download?thank-you=update&download_nid=49126&os=Win"
+- [Virtual reality toolkit VRTK] https://github.com/thestonefox/VRTK 
+
+Our repository contains sample datasets. Come with your CSV data to the tutorial if you want to give it a go!
 
 ## Roadmap
 - Support 2D/3D graph visualisation (node-link diagrams) directly in the *Visualisation* editor
