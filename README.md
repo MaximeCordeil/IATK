@@ -32,7 +32,7 @@ Create a **Visualisation** object (right click in the hierarchy, IATK/DataSouce)
   * 2D/3D trails/trajectories (use linkning field to bind a *linking attribute*)
   * 2D/3D Connnected dots (use linkning field to bind a *linking attribute*)
   
-   <img width="280" height="280" alt="3dsparklines" src=https://user-images.githubusercontent.com/11532065/46408616-0a605380-c756-11e8-93d9-e0ec49b3b2a7.png>
+  <img width="280" height="280" alt="3dsparklines" src=  https://user-images.githubusercontent.com/11532065/46441718-b9c71580-c7aa-11e8-8c80-3b0d1122f078.JPG > <img width="280" height="280" alt="3dsparklines" src=https://user-images.githubusercontent.com/11532065/46408616-0a605380-c756-11e8-93d9-e0ec49b3b2a7.png>
   
  
 - Parallel Coordinates Plots (PCPs):
