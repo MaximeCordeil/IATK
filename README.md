@@ -1,5 +1,4 @@
 # IATK 1.0 (Mala): Immersive Analytics Toolkit 
-<img width="280" alt="iatk_menu" src="https://user-images.githubusercontent.com/11532065/35493346-921c8e32-0506-11e8-8471-f010b9e37f5a.JPG"> <img width="280" alt="iatk_menu" src="https://user-images.githubusercontent.com/11532065/35493577-8f67a4b8-0508-11e8-9e08-240a9631bcfd.JPG"> <img width="280" alt="scatterplot" src="https://user-images.githubusercontent.com/11532065/35493918-ed5610d0-050a-11e8-909f-d0ba9c7ac534.PNG">
 
 
 The Immersive Analytics Toolkit (IATK) is a Unity plugin to help you build high quality, interactive and robust data visualisation in Immersive Environements (Virtual / Augmented Reality). Use the *Visualisation* script to create data vizs interactively in the editor, press play and view your data in VR. Write simple code to use the *IATK* core graphics components to make your own interactive visualisations programitcally.
@@ -17,6 +16,7 @@ First, create a **Data Source** object (right click in the hierarchy, IATK/DataS
 2. ***Visualisation: an editor menu helper***
 IATK has a number of predefined, controlable data visualisation template that are accessible directly in the editor. The **Visualisation** object allows you to access those templates.
 <img width="280" alt="2dscatterplot" src=https://user-images.githubusercontent.com/11532065/46408763-8eb2d680-c756-11e8-813f-e3114a63215d.png> <img width="280" alt="3dscatterplot" src=https://user-images.githubusercontent.com/11532065/46408760-89ee2280-c756-11e8-9fa2-add36ce6bdda.png> <img width="280" alt="2dbarchart" src=https://user-images.githubusercontent.com/11532065/46408758-89ee2280-c756-11e8-8d18-b1a6a5997276.png> <img width="280" alt="3dbarchart" src=https://user-images.githubusercontent.com/11532065/46408759-89ee2280-c756-11e8-99e6-8ea0339d1b7d.png> <img width="280" alt="snip1" src=https://user-images.githubusercontent.com/11532065/46408616-0a605380-c756-11e8-93d9-e0ec49b3b2a7.png> <img width="280" alt="3dsplom" src=https://user-images.githubusercontent.com/11532065/46408791-a9854b00-c756-11e8-8c05-21ce94e2f463.png> <img width="280" alt="3dsplomcloseup" src=https://user-images.githubusercontent.com/11532065/46408792-aa1de180-c756-11e8-9fb8-5f92e5b0fa9e.png>
+<img width="280" alt="3dsplomcloseup" src=https://user-images.githubusercontent.com/11532065/46409268-43012c80-c758-11e8-9484-3fc9a7ecd783.JPG>
 
 Create a **Visualisation** object (right click in the hierarchy, IATK/DataSouce). Drag and drop a **Data Source** object in 
 
