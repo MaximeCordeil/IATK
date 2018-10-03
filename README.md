@@ -17,7 +17,7 @@ First, create a **Data Source** object (right click in the hierarchy, IATK/DataS
 2. ***Visualisation: an editor menu helper***
 IATK has a number of predefined, controlable data visualisation template that are accessible directly in the editor. The **Visualisation** object allows you to access those templates.
 
-
+<img width="280" alt="snip1" src=https://user-images.githubusercontent.com/11532065/46408616-0a605380-c756-11e8-93d9-e0ec49b3b2a7.png>
 
 Create a **Visualisation** object (right click in the hierarchy, IATK/DataSouce). Drag and drop a **Data Source** object in 
 
