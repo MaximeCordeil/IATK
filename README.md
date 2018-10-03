@@ -30,6 +30,7 @@ Create a **Visualisation** object (right click in the hierarchy, IATK/DataSouce)
  <img width="280" height="280" alt="2dbarchart" src=https://user-images.githubusercontent.com/11532065/46408758-89ee2280-c756-11e8-8d18-b1a6a5997276.png> <img width="280" height="280" alt="3dbarchart" src=https://user-images.githubusercontent.com/11532065/46408759-89ee2280-c756-11e8-99e6-8ea0339d1b7d.png>
  
   * 2D/3D trails/trajectories (use linkning field to bind a *linking attribute*)
+  
   <img width="280" height="280" alt="3dsparklines" src=  https://user-images.githubusercontent.com/11532065/46444864-4677d080-c7b7-11e8-9b54-9f7191841c51.JPG > <img width="280" height="280" alt="3dsparklines" src=https://user-images.githubusercontent.com/11532065/46444863-45df3a00-c7b7-11e8-88ef-b88cad461efa.JPG> <img width="280" height="280" alt="3dsparklines" src=https://user-images.githubusercontent.com/11532065/46444862-45df3a00-c7b7-11e8-8168-4c3d81047730.JPG> 
   
   * 2D/3D Connnected dots (use linkning field to bind a *linking attribute*)
@@ -51,16 +52,34 @@ Create a **Visualisation** object (right click in the hierarchy, IATK/DataSouce)
   <img width="280" height="280" height="280" alt="3dsplom" src=https://user-images.githubusercontent.com/11532065/46408791-a9854b00-c756-11e8-8c05-21ce94e2f463.png> <img width="280" height="280" alt="3dsplomcloseup" src=https://user-images.githubusercontent.com/11532065/46442262-5b029b80-c7ac-11e8-8abc-beeda5040efa.JPG> <img width="280" height="280" alt="3dsplomcloseup" src=https://user-images.githubusercontent.com/11532065/46408792-aa1de180-c756-11e8-9fb8-5f92e5b0fa9e.png>
 
 
-Visualisation design
+Visualisation designer in the Unity Editor
 
+<p align="center"> 
+<img width="280" alt="3dsparklines" src=  https://user-images.githubusercontent.com/11532065/46445150-acb12300-c7b8-11e8-98b1-22cd2f1eba65.png> 
+</p>
+
+The visualisation component allows the deisng of the visualisation inside the Unity Editor. Visual variables can be bound by dimension attributes.
+
+* Geometry
+  * Points
+  * Quads
+  * Lines
+  * Connected lines
+  * Bars
+  * Cubes 
+* Color
+  * Continuous
+  * Palette
+* Size
 
 3. ***View linker***
-Create visual links between two visualisations.
 
-<img width="280" height="280" alt="3dsparklines" src=  https://user-images.githubusercontent.com/11532065/46444861-4546a380-c7b7-11e8-99a6-3e90300cac71.JPG>
+<img width="280" alt="3dsparklines" src=  https://user-images.githubusercontent.com/11532065/46444861-4546a380-c7b7-11e8-99a6-3e90300cac71.JPG> <img width="280" alt="3dsparklines" src= https://user-images.githubusercontent.com/11532065/46445099-7e334800-c7b8-11e8-962d-747c236c1fe4.JPG> 
 
+Create visual links between two visualisations. Drag and drop two visualisations objects (source,target) into the Linked Visualisation component. Set the (boolean) ShowLinks to show the links between the 2 visualisations.
 
 4. ***Brushing and Linking***
+
 Define a Brushing visualisation and a list of Brushed visualisation. Define the input shape and the color of the brush.
 
 
