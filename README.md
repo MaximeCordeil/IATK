@@ -11,58 +11,46 @@ IATK is an open project! We setup a roadmap with features that we would like to 
 Feel free to contribute :)
 
 ## IATK editor components
-1. Data Source: import data into the scene
-First, create a **Data Source** object (right click in the hierarchy, IATK/DataSouce). Drag and drop a CSV/TSV in the Data field. Your data is in the scene
+1. ***Data Source: import data into the scene***
+First, create a **Data Source** object (right click in the hierarchy, IATK/DataSouce). Drag and drop a CSV/TSV in the Data field. Your data is now imported in the Unity scene!
 
-2. Visualisation: an editor menu helper
-Create a **Visualisation** object (right click in the hierarchy, IATK/DataSouce). Drag and drop a **Data Source** object 
-For now in IATK you can create:
-
-- a Simple 2D/3D visualisation
-
--- 2D and 3D scatterplots
+2. ***Visualisation: an editor menu helper***
+IATK has a number of predefined, controlable data visualisation template that are accessible directly in the editor. The **Visualisation** object allows you to access those templates.
 
 
--- 2D and 3D trajectories, trailsets 
 
-- Parallel Coordinates
-- a Scatterplot Matrix
+Create a **Visualisation** object (right click in the hierarchy, IATK/DataSouce). Drag and drop a **Data Source** object in 
 
-3. Custom Interactive Brushing and Linking 
 
-4. View linker
+3. ***Custom Interactive Brushing and Linking***
+
+4. ***View linker***
+
+## IATK VR interaction ##
+Use VRTK to interact with the data visualisations.
 
 ## IATK core data and graphics scripting
-1. Data Source
+1. DataSource
 
-2. Visualisation
+2. ViewBuilder
 
-3. Graphics toolkit
+3. View
+
+4. Graphics toolkit
 The toolkit contains facilities to create high quality graphics dsigned for data visualisation in Virtual and Augmented Reality. The IATK core graphics tools include:
 
 - a **BigMesh** script that allows the creation of visualisations 
 - several shaders to render a lot of data rapidly and efficiently, and custom graphics for data visualisations (thick lines, dots/spheres, cubes/bars)
 - a selection tool (brushing) that enables the selection of data accross several data visualizations.
 
-
-
 <img width="500" alt="iatk_menu" src="https://user-images.githubusercontent.com/11532065/35493494-ee5358c4-0507-11e8-874f-c96f0c9c36de.PNG">
 
 3. Scripting
 
-4. Template Library
- - Histograms 
- - 2D/3D scatterplots
- - 2D/3D Scatterplot matrices (SPLOM)
-   
-5. Interactive visualisation components support
- - Brushing and linking
- - Scale
- - Grab & Move
   
 ## Virtual/Augmented Reality Support
 The toolkit has been tested and is fully supported by the following Virtual/Augmented reality devices:
- - Oculus 
+ - Oculus
  - Vive
  - Hololens
  - Meta
