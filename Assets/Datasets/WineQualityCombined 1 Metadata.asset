@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0431a2755b87da546a1d7447c2d85131, type: 3}
+  m_Name: WineQualityCombined 1 Metadata
+  m_EditorClassIdentifier: 
+  BinSizePreset:
+  - index: 0
+    binCount: 60
+  - index: 1
+    binCount: 60
+  - index: 2
+    binCount: 60
+  - index: 3
+    binCount: 60
+  - index: 4
+    binCount: 60
+  - index: 5
+    binCount: 60
+  - index: 6
+    binCount: 60
+  - index: 7
+    binCount: 60
+  - index: 8
+    binCount: 60
+  - index: 9
+    binCount: 60
+  - index: 10
+    binCount: 60
+  - index: 11
+    binCount: 60
+  - index: 12
+    binCount: 60
+  dimensionColor: 0

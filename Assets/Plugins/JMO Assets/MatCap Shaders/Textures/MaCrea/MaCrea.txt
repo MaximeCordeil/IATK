@@ -1,0 +1,4 @@
+All MatCap textures in this folder were created with the excellent MaCrea tool, created by Taron
+
+Download the software here:
+http://www.zbrushcentral.com/showthread.php?92157-MaCrea-Material-Creation-Tool

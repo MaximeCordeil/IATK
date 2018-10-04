@@ -1,0 +1,181 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: ARIAL SDF - Soft Mask
+  m_Shader: {fileID: 4800000, guid: afc255f7c2be52e41973a3d10a2e632d, type: 3}
+  m_ShaderKeywords: MASK_HARD OUTLINE_ON UNDERLAY_ON
+  m_LightmapFlags: 5
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  m_SavedProperties:
+    serializedVersion: 2
+    m_TexEnvs:
+      data:
+        first:
+          name: _MainTex
+        second:
+          m_Texture: {fileID: 2806040, guid: 316f956b856b45c448987b5018ec3ef4, type: 2}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: _MaskTex
+        second:
+          m_Texture: {fileID: 2800000, guid: 6f5e9497d22a7a84193ec825e2eb41ac, type: 3}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+    m_Floats:
+      data:
+        first:
+          name: _Stencil
+        second: 0
+      data:
+        first:
+          name: _StencilComp
+        second: 8
+      data:
+        first:
+          name: _StencilOp
+        second: 0
+      data:
+        first:
+          name: _StencilReadMask
+        second: 255
+      data:
+        first:
+          name: _StencilWriteMask
+        second: 255
+      data:
+        first:
+          name: _ColorMask
+        second: 15
+      data:
+        first:
+          name: _FaceDilate
+        second: .100000001
+      data:
+        first:
+          name: _OutlineWidth
+        second: .150000006
+      data:
+        first:
+          name: _OutlineSoftness
+        second: 0
+      data:
+        first:
+          name: _WeightNormal
+        second: 0
+      data:
+        first:
+          name: _WeightBold
+        second: .5
+      data:
+        first:
+          name: _ShaderFlags
+        second: 0
+      data:
+        first:
+          name: _ScaleRatioA
+        second: .899999976
+      data:
+        first:
+          name: _ScaleRatioB
+        second: 1
+      data:
+        first:
+          name: _ScaleRatioC
+        second: .810000062
+      data:
+        first:
+          name: _TextureWidth
+        second: 1024
+      data:
+        first:
+          name: _TextureHeight
+        second: 1024
+      data:
+        first:
+          name: _GradientScale
+        second: 10
+      data:
+        first:
+          name: _ScaleX
+        second: 1
+      data:
+        first:
+          name: _ScaleY
+        second: 1
+      data:
+        first:
+          name: _PerspectiveFilter
+        second: .875
+      data:
+        first:
+          name: _VertexOffsetX
+        second: 0
+      data:
+        first:
+          name: _VertexOffsetY
+        second: 0
+      data:
+        first:
+          name: _UnderlayOffsetX
+        second: .5
+      data:
+        first:
+          name: _UnderlayOffsetY
+        second: -.5
+      data:
+        first:
+          name: _UnderlayDilate
+        second: 0
+      data:
+        first:
+          name: _UnderlaySoftness
+        second: .100000001
+      data:
+        first:
+          name: _MaskSoftnessX
+        second: 5
+      data:
+        first:
+          name: _MaskSoftnessY
+        second: 5
+      data:
+        first:
+          name: _MaskInverse
+        second: 1
+      data:
+        first:
+          name: _MaskEdgeSoftness
+        second: .064000003
+      data:
+        first:
+          name: _MaskWipeControl
+        second: .300000012
+    m_Colors:
+      data:
+        first:
+          name: _ClipRect
+        second: {r: -10000, g: -10000, b: 10000, a: 10000}
+      data:
+        first:
+          name: _FaceColor
+        second: {r: 1, g: 1, b: 1, a: 1}
+      data:
+        first:
+          name: _OutlineColor
+        second: {r: 0, g: 0, b: 0, a: 1}
+      data:
+        first:
+          name: _UnderlayColor
+        second: {r: 0, g: 0, b: 0, a: .752941191}
+      data:
+        first:
+          name: _MaskEdgeColor
+        second: {r: 0, g: .172413826, b: 1, a: 1}
