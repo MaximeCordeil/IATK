@@ -382,7 +382,7 @@ namespace IATK
                 //                switch ((AbstractViualisation.VisualisationTypes)visualisationTypeProperty.intValue)
                 switch (targetVisualisation.visualisationType)
                 {
-                    case AbstractVisualisation.VisualisationTypes.SIMPLE_VISUALISATION:
+                    case AbstractVisualisation.VisualisationTypes.SCATTERPLOT:
                         ShowSimpleVisualisationMenu(ref dirtyFlags);
                         break;
                     case AbstractVisualisation.VisualisationTypes.SCATTERPLOT_MATRIX:

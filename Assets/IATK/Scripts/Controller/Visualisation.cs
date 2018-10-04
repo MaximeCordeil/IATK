@@ -150,7 +150,7 @@ namespace IATK
 
             switch (visualisationType)
             {
-                case AbstractVisualisation.VisualisationTypes.SIMPLE_VISUALISATION:
+                case AbstractVisualisation.VisualisationTypes.SCATTERPLOT:
                     theVisualizationObject = gameObject.AddComponent<ScatterplotVisualisation>();// new Simple2D3DVisualisation();                    
                     theVisualizationObject.visualisationReference = this;
 
@@ -357,7 +357,7 @@ namespace IATK
 
                     switch (visualisationType)
                     {
-                        case AbstractVisualisation.VisualisationTypes.SIMPLE_VISUALISATION:
+                        case AbstractVisualisation.VisualisationTypes.SCATTERPLOT:
                             if (theVisualizationObject.creationConfiguration.Axies.ContainsKey(CreationConfiguration.Axis.X)) xDimension.Attribute = theVisualizationObject.creationConfiguration.Axies[CreationConfiguration.Axis.X];
                             if (theVisualizationObject.creationConfiguration.Axies.ContainsKey(CreationConfiguration.Axis.Y)) yDimension.Attribute = theVisualizationObject.creationConfiguration.Axies[CreationConfiguration.Axis.Y];
                             if (theVisualizationObject.creationConfiguration.Axies.ContainsKey(CreationConfiguration.Axis.Z)) zDimension.Attribute = theVisualizationObject.creationConfiguration.Axies[CreationConfiguration.Axis.Z];

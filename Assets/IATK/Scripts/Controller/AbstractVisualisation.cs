@@ -54,7 +54,7 @@ namespace IATK
         }
 
         public enum VisualisationTypes {
-            SIMPLE_VISUALISATION, 
+            SCATTERPLOT, 
             SCATTERPLOT_MATRIX, 
             PARALLEL_COORDINATES, 
             GRAPH_LAYOUT};
