@@ -117,9 +117,12 @@ Setup a VR scene with the HTC Vive in Unity: https://www.youtube.com/watch?v=tyF
 Our repository contains sample datasets. Come with your CSV data to the tutorial if you want to give it a go!
 
 ## Roadmap
-- Support 2D/3D graph visualisation (node-link diagrams) directly in the *Visualisation* editor
-- Support more data sources (including real time data)
+In a near feature we will support:
 
+- details on demand
+- 2D/3D graph visualisation (node-link diagrams) directly in the *Visualisation* editor
+- more type of data sources (including real time data)
+- more geometry (e.g. surfaces / volumes)
 
 ## Official members and developpers
 The toolkit is developped by Maxime Cordeil (project leader, Monash University), Kingsley Stephens (Monash University) and Andrew Cunningham (University of South Australia).
