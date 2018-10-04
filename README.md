@@ -111,6 +111,9 @@ For attendees, please download:
 - [Unity 2017] (https://unity3d.com/get-unity/download?thank-you=update&download_nid=49126&os=Win)
 - [Virtual reality toolkit VRTK] (https://github.com/thestonefox/VRTK)
 
+Setup a VR scene with the Oculus Rift in Unity: https://www.youtube.com/watch?v=psPVNddjgGw&t
+Setup a VR scene with the HTC Vive in Unity: https://www.youtube.com/watch?v=tyFV9oBReqg&list=RDtyFV9oBReqg&start_radio=1
+
 Our repository contains sample datasets. Come with your CSV data to the tutorial if you want to give it a go!
 
 ## Roadmap
