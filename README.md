@@ -54,7 +54,7 @@ Visualisation designer in the Unity Editor
 <!--<p align="center"> 
 </p> -->
 
-<img width="280" alt="3dsparklines" src=  https://user-images.githubusercontent.com/11532065/46445150-acb12300-c7b8-11e8-98b1-22cd2f1eba65.png>  The visualisation component allows the design of the visualisation inside the Unity Editor. Visual variables can be bound by dimension attributes.
+<img align="left" width="280" alt="3dsparklines" src=  https://user-images.githubusercontent.com/11532065/46445150-acb12300-c7b8-11e8-98b1-22cd2f1eba65.png>  The visualisation component allows the design of the visualisation inside the Unity Editor. Visual variables can be bound by dimension attributes.
 
 - Geometry: defines the geometry of the visualisation. **Points, Quads, Bars** and **Cubes** are a single point topology. **Lines and Connected Lines and Dots** are a line topology and they require you to specify a *Linking dimension* (see down)
 - Colour dimension: use the dropdown to bind a data attribute to a continuous colour gradient. Click the Colour gradient to edit it.
