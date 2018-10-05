@@ -119,6 +119,7 @@ Our repository contains sample datasets. Come with your CSV data to the tutorial
 ## Roadmap
 In a near feature we will support:
 
+- fix number of labels for discrete values (delegate method)
 - details on demand
 - 2D/3D graph visualisation (node-link diagrams) directly in the *Visualisation* editor
 - more type of data sources (including real time data)
