@@ -77,10 +77,16 @@ Use VRTK to interact with the data visualisations. -->
 
 ## IATK core data and graphics scripting
 1. DataSource
-The DataSource object
+The DataSource object is the starting point of your immersive data visualisation project. It allows you to import your text data into Unity and has a set of methods to access the data by attribute, id etc.
 
 Usage:
-
+```go
+\\ Use Unity Test assets to import text data (e.g. csv, tsv etc.)
+TextAsset myDataSource;
+CSVDataSource myCSVDataSource;
+myCSVDataSource = createCSVDataSource(myDataSource.text);
+```
+Further details (methods, properties) are available in the documention [to come].
 
 2. ViewBuilder
 IATK uses a fluent design pattern that lets you chain commands to design a visualisation in a single instruction.
