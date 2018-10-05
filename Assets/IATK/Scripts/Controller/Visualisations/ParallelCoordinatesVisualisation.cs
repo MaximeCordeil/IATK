@@ -249,7 +249,6 @@ namespace IATK
                         }
                         for (int i = 0; i < GameObject_Axes_Holders.Count; ++i)
                         {
-                            print(i);
                             Axis axis = GameObject_Axes_Holders[i].GetComponent<Axis>();
                             BindMinMaxAxisValues(axis, visualisationReference.parallelCoordinatesDimensions[i]);
                         }

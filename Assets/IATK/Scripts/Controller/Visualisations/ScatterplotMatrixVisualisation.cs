@@ -81,14 +81,13 @@ namespace IATK {
                             {
                                 if (visualisationReference.xScatterplotMatrixDimensions[i] != null
                                && visualisationReference.yScatterplotMatrixDimensions[j] != null
-                               && visualisationReference.zScatterplotMatrixDimensions[k] != null
-                            )
+                               && visualisationReference.zScatterplotMatrixDimensions[k] != null)
                                 {
                                     Create3DVisualisation(i, j, k);
 
-                                    Vector3 posX = new Vector3(i * xPadding + 0.05f, j * yPadding, k * zPadding);
-                                    Vector3 posY = new Vector3(i * xPadding + 0.05f, j * yPadding, k * zPadding);
-                                    Vector3 posZ = new Vector3(i * xPadding + 0.05f, j * yPadding, k * zPadding);
+                                    Vector3 posX = new Vector3(i * xPadding, j * yPadding - 0.05f, k * zPadding);
+                                    Vector3 posY = new Vector3(i * xPadding - 0.05f, j * yPadding, k * zPadding);
+                                    Vector3 posZ = new Vector3(i * xPadding - 0.05f, j * yPadding - 0.05f, k * zPadding);
 
                                     List<GameObject> localList = new List<GameObject>
                                     {
@@ -131,8 +130,8 @@ namespace IATK {
                             {
                                 Create2DVisualisation(i, j);
                                 
-                                Vector3 posX = new Vector3(i * xPadding + 0.05f, j * yPadding, 0);
-                                Vector3 posY = new Vector3(i * xPadding + 0.05f, j * yPadding, 0);
+                                Vector3 posX = new Vector3(i * xPadding, j * yPadding - 0.05f, 0);
+                                Vector3 posY = new Vector3(i * xPadding - 0.05f, j * yPadding, 0);
 
                                 List<GameObject> localList = new List<GameObject>
                                 {
@@ -342,25 +341,20 @@ namespace IATK {
                         break;
 
                     case AbstractVisualisation.PropertyType.DimensionFiltering:
-                        for (int i = 0; i < viewList.Count; i++)
-                        {
-                            viewList[i].SetMinX(visualisationReference.xDimension.minFilter);
-                            viewList[i].SetMaxX(visualisationReference.xDimension.maxFilter);
-                            viewList[i].SetMinY(visualisationReference.yDimension.minFilter);
-                            viewList[i].SetMaxY(visualisationReference.yDimension.maxFilter);
-                            viewList[i].SetMinZ(visualisationReference.zDimension.minFilter);
-                            viewList[i].SetMaxZ(visualisationReference.zDimension.maxFilter);
-                        }
-                        break;
-                    case AbstractVisualisation.PropertyType.AttributeFiltering:
-                        foreach (var viewElement in viewList)
-                        {
+                        {  //for (int i = 0; i < viewList.Count; i++)
+                           //{
+                           //    viewList[i].SetMinX(visualisationReference.xDimension.minFilter);
+                           //    viewList[i].SetMaxX(visualisationReference.xDimension.maxFilter);
+                           //    viewList[i].SetMinY(visualisationReference.yDimension.minFilter);
+                           //    viewList[i].SetMaxY(visualisationReference.yDimension.maxFilter);
+                           //    viewList[i].SetMinZ(visualisationReference.zDimension.minFilter);
+                           //    viewList[i].SetMaxZ(visualisationReference.zDimension.maxFilter);
+                           //}
                             float[] isFiltered = new float[visualisationReference.dataSource.DataCount];
                             for (int i = 0; i < visualisationReference.dataSource.DimensionCount; i++)
                             {
-                                foreach (AttributeFilter attrFilter in visualisationReference.attributeFilters)
+                                foreach (DimensionFilter attrFilter in visualisationReference.xScatterplotMatrixDimensions)
                                 {
-                                    //print(attrFilter.Attribute + "   " + dataSource[i].Identifier);
                                     if (attrFilter.Attribute == visualisationReference.dataSource[i].Identifier)
                                     {
                                         float minFilteringValue = UtilMath.normaliseValue(attrFilter.minFilter, 0f, 1f, attrFilter.minScale, attrFilter.maxScale);
@@ -377,6 +371,42 @@ namespace IATK {
                             foreach (View v in viewList)
                             {
                                 v.SetFilterChannel(isFiltered);
+                            }
+                            // update axis details
+                            for (int i = 0; i < GameObject_Axes_Holders.Count; ++i)
+                            {
+                                Axis axis = GameObject_Axes_Holders[i].GetComponent<Axis>();
+                                BindMinMaxAxisValues(axis, visualisationReference.parallelCoordinatesDimensions[i]);
+                            }
+                        }
+                        break;
+                    case AbstractVisualisation.PropertyType.AttributeFiltering:
+                        {
+                            foreach (var viewElement in viewList)
+                            {
+                                float[] isFiltered = new float[visualisationReference.dataSource.DataCount];
+                                for (int i = 0; i < visualisationReference.dataSource.DimensionCount; i++)
+                                {
+                                    foreach (AttributeFilter attrFilter in visualisationReference.attributeFilters)
+                                    {
+                                        //print(attrFilter.Attribute + "   " + dataSource[i].Identifier);
+                                        if (attrFilter.Attribute == visualisationReference.dataSource[i].Identifier)
+                                        {
+                                            float minFilteringValue = UtilMath.normaliseValue(attrFilter.minFilter, 0f, 1f, attrFilter.minScale, attrFilter.maxScale);
+                                            float maxFilteringValue = UtilMath.normaliseValue(attrFilter.maxFilter, 0f, 1f, attrFilter.minScale, attrFilter.maxScale);
+
+                                            for (int j = 0; j < isFiltered.Length; j++)
+                                            {
+                                                isFiltered[j] = (visualisationReference.dataSource[i].Data[j] < minFilteringValue || visualisationReference.dataSource[i].Data[j] > maxFilteringValue) ? 1.0f : isFiltered[j];
+                                            }
+                                        }
+                                    }
+                                }
+                                // map the filtered attribute into the normal channel of the bigmesh
+                                foreach (View v in viewList)
+                                {
+                                    v.SetFilterChannel(isFiltered);
+                                }
                             }
                         }
                         break;
