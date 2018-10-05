@@ -200,7 +200,7 @@ public class BrushingAndLinking : MonoBehaviour
             updateBrushTexture();
 
             //EXPERIMENTAL - GET details of original data
-            getDetailsOnDemand();
+            //getDetailsOnDemand();
 
         }
     }
@@ -342,8 +342,19 @@ brushingVisualisation.dataSource.getOriginalValue(zbrushedValue, brushingVisuali
 
         if (cpInt != null)
             cpInt.Release();
+
+        Visualisation.OnUpdateViewAction -= Visualisation_OnUpdateViewAction;
     }
 
+    private void OnApplicationQuit()
+    {
+        if (buffer != null)
+            buffer.Release();
 
+        if (cpInt != null)
+            cpInt.Release();
+
+        Visualisation.OnUpdateViewAction -= Visualisation_OnUpdateViewAction;
+    }
 
 }
