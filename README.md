@@ -57,17 +57,13 @@ Visualisation designer in the Unity Editor
 
 The visualisation component allows the deisng of the visualisation inside the Unity Editor. Visual variables can be bound by dimension attributes.
 
-* Geometry
-  * Points
-  * Quads
-  * Lines
-  * Connected lines
-  * Bars
-  * Cubes 
-* Color
-  * Continuous
-  * Palette
-* Size
+- Geometry: defines the geometry of the visualisation. **Points, Quads, Bars** and **Cubes** are a single point topology. **Lines and Connected Lines and Dots** are a line topology and they require you to specify a *Linking dimension* (see down)
+- Colour dimension: use the dropdown to bind a data attribute to a continuous colour gradient. Click the Colour gradient to edit it.
+- Bind Colour palette: use the dropdown to bind a discrete data attribute to a discrete colour palette. Click the corresponding colour values to edit the palette.
+- Blending Mode Source, Destination: lets you specify the blending mode. By default it's set to SrcAlpha,OneMinusSrcAlpha that allows for traditional blending with transparency. Use One,One to do visual accumation effects.
+- Colour: if *Colour dimension* and *Bind Coolour palette* are *Undefined*, sets the same colour to all the glyphs.
+- Size dimension: use the dropdown to bind an attribute to the size of the glyphs. The Size slider sets the global size, the Min/Max Size slider sets the scale.
+- Attribute Filters: type in an attribute name and use filters to filter ranges of values. This is an additional visual query facility.
 
 3. ***View linker***
 
