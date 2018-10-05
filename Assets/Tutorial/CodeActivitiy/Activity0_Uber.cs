@@ -16,6 +16,8 @@ public class Activity0_Uber : MonoBehaviour {
     public Transform t0;
     public Transform t1;
 
+    View[] accordion;
+
     // Use this for initialization
     void Start () {
         csvdata = createCSVDataSource(uberData.text);
@@ -29,11 +31,13 @@ public class Activity0_Uber : MonoBehaviour {
         // "B02512"
 
         float[] uniqueValues = csvdata[attribute].MetaData.categories;
+        accordion = new View [uniqueValues.Length];
         for (int i = 0; i < uniqueValues.Length; i++)
         {
             View view = Facet(csvdata,
             csvdata.getOriginalValue(uniqueValues[i], attribute).ToString(), "Base", Random.ColorHSV());
             view.transform.position = new Vector3(i,0,0);
+            accordion[i] = view;
         }
 
         //View v1 = Faceting(csvdata, "B02598");
@@ -123,18 +127,39 @@ public class Activity0_Uber : MonoBehaviour {
             setSize(baseFilter(csvds["Date"].Data,csvds, filteringValue,filteringAttribute)).
             setColors(xData.Select(x => color).ToArray());
 
-        Material mt = new Material(Shader.Find("IATK/OutlineDots"));
-        mt.mainTexture = Resources.Load("circle-outline-basic") as Texture2D;
-        mt.renderQueue = 3000;
+        Material mt = IATKUtil.GetMaterialFromTopolgy(AbstractVisualisation.GeometryType.Points);
         mt.SetFloat("_MinSize", 0.01f);
         mt.SetFloat("_MaxSize", 0.05f);
 
         return vb.updateView().apply(gameObject, mt);
     }
 
+    void accordionPosition (ref Transform toAccordion, Transform left, Transform right, float pos, float nbOfViews)
+    {
+        toAccordion.position = Vector3.Lerp(left.position, right.position, pos/ nbOfViews);
+        toAccordion.rotation = Quaternion.Lerp(left.rotation, right.rotation, pos / nbOfViews);
+    }
+
     // Update is called once per frame
     void Update () {
-        if(t0 != null && t1!=null)
-        v.SetSize(Vector3.Distance(t1.transform.position, t0.transform.position));
+        
+        //size of points by distance betwen the two transforms
+        //if (t0 != null && t1 != null)
+        //{
+        //    v.SetSize(Vector3.Distance(t1.transform.position, t0.transform.position));
+        //}
+
+        //accordion
+        if (t0 != null && t1 != null)
+        {
+            for (int i = 0; i < accordion.Length; i++)
+            {
+                //View acc = accordion[i];
+                //accordionPosition(ref acc.transform, t0, t1, (float)i, (float)accordion.Length);
+                accordion[i].transform.position = Vector3.Lerp(t0.position, t1.position, (float)i / (float)accordion.Length);
+                accordion[i].transform.rotation = Quaternion.Lerp(t0.rotation, t1.rotation, (float)i / (float)accordion.Length);
+            }
+        }
+
     }
 }
