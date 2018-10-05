@@ -1,7 +1,5 @@
 # IATK 1.0 (Mala): Immersive Analytics Toolkit 
-<p align="center">
-
-<img align="left" width="410" alt="2dscatterplot" src=https://user-images.githubusercontent.com/11532065/46409367-9bd0c500-c758-11e8-9485-c92d532d97b8.jpg>  The **Immersive Analytics Toolkit (IATK)** is a Unity plugin to help you build high quality, interactive and robust data visualisation in Immersive Environements (Virtual / Augmented Reality). Use the *Visualisation* script to create data vizs interactively in the editor, press play and view your data in VR. Write simple code to use the *IATK* core graphics components to make your own interactive visualisations programitcally.
+<p> <img align="left" width="410" alt="2dscatterplot" src=https://user-images.githubusercontent.com/11532065/46409367-9bd0c500-c758-11e8-9485-c92d532d97b8.jpg>  The **Immersive Analytics Toolkit (IATK)** is a Unity plugin to help you build high quality, interactive and robust data visualisation in Immersive Environements (Virtual / Augmented Reality). Use the *Visualisation* script to create data vizs interactively in the editor, press play and view your data in VR. Write simple code to use the *IATK* core graphics components to make your own interactive visualisations programitcally.
 <!-- With IATK, load CSV/TSV files and write simple code using the library to create immersive data visualisations.
 %IATK provides a *Visualisation* script to help you create and design visualizations within the Unity editor -->
 IATK is an open project! We setup a roadmap with features that we would like to see in IATK.  
@@ -55,12 +53,13 @@ Visualisation designer in the Unity Editor
 
 <img align="left" width="280" alt="3dsparklines" src=  https://user-images.githubusercontent.com/11532065/46445150-acb12300-c7b8-11e8-98b1-22cd2f1eba65.png>  The visualisation component allows the design of the visualisation inside the Unity Editor. Visual variables can be bound by dimension attributes.
 
-- Geometry: defines the geometry of the visualisation. **Points, Quads, Bars** and **Cubes** are a single point topology. **Lines and Connected Lines and Dots** are a line topology and they require you to specify a *Linking dimension* (see down)
+- Geometry: defines the geometry of the visualisation. **Points, Quads, Bars** and **Cubes** are a single point topology. **Lines and Connected Lines and Dots** are a line topology and they require you to specify a *Linking dimension* (see below)
 - Colour dimension: use the dropdown to bind a data attribute to a continuous colour gradient. Click the Colour gradient to edit it.
 - Bind Colour palette: use the dropdown to bind a discrete data attribute to a discrete colour palette. Click the corresponding colour values to edit the palette.
 - Blending Mode Source, Destination: lets you specify the blending mode. By default it's set to SrcAlpha,OneMinusSrcAlpha that allows for traditional blending with transparency. Use One,One to do visual accumation effects.
 - Colour: if *Colour dimension* and *Bind Coolour palette* are *Undefined*, sets the same colour to all the glyphs.
 - Size dimension: use the dropdown to bind an attribute to the size of the glyphs. The Size slider sets the global size, the Min/Max Size slider sets the scale.
+- Linking dimension: use the dropdown to link datapoints by id. **/!\ It requires that your data is ordered in sequence in the CSV source**
 - Attribute Filters: type in an attribute name and use filters to filter ranges of values. This is an additional visual query facility.
 
 3. ***View linker***
@@ -78,10 +77,17 @@ Use VRTK to interact with the data visualisations. -->
 
 ## IATK core data and graphics scripting
 1. DataSource
+The DataSource object
+
+Usage:
+
 
 2. ViewBuilder
+IATK uses a fluent design pattern that lets you chain commands to design a visualisation in a single instruction.
+Example:
 
 3. View
+Once you have built a View object with the Viewbuilder, you can change the view attributes (colours, positions, sizes, filters ...) . See documentation [to come].
 
 4. Graphics toolkit
 The toolkit contains facilities to create high quality graphics dsigned for data visualisation in Virtual and Augmented Reality. The IATK core graphics tools include:
@@ -91,15 +97,27 @@ The toolkit contains facilities to create high quality graphics dsigned for data
 - a selection tool (brushing) that enables the selection of data accross several data visualizations.
 
 3. Scripting
+```
+// create a view builder with the point topology
+ViewBuilder vb = new ViewBuilder (MeshTopology.Points, "Uber pick up point visualisation").
+        initialiseDataView(csvds.DataCount).
+        setDataDimension(csvds["Lat"].Data, ViewBuilder.VIEW_DIMENSION.X).
+        setDataDimension(csvds["Base"].Data, ViewBuilder.VIEW_DIMENSION.Y).
+        setDataDimension(csvds["Lon"].Data, ViewBuilder.VIEW_DIMENSION.Z).
+        setSize(csvds["Base"].Data).
+     setColors(csvds["Time"].Data.Select(x => g.Evaluate(x)).ToArray());
 
+// create a view builder with the point topology
+View view = vb.updateView().apply(gameObject, mt);
+```
   
 ## IEEE VIS 2018 tutorial 
 We will give an Immersive Visualisation tutorial with IATK at IEEE VIS 2018.
 For attendees, please download:
 
 - this repository
-- [Unity 2017] (https://unity3d.com/get-unity/download?thank-you=update&download_nid=49126&os=Win)
-- [Virtual reality toolkit VRTK] (https://github.com/thestonefox/VRTK)
+- [Unity 2017](https://unity3d.com/get-unity/download?thank-you=update&download_nid=49126&os=Win)
+- [Virtual reality toolkit VRTK](https://github.com/thestonefox/VRT)
 
 Setup a VR scene with the Oculus Rift in Unity: https://www.youtube.com/watch?v=psPVNddjgGw&t
 Setup a VR scene with the HTC Vive in Unity: https://www.youtube.com/watch?v=tyFV9oBReqg&list=RDtyFV9oBReqg&start_radio=1
