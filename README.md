@@ -4,12 +4,9 @@
 </p>
 
 The Immersive Analytics Toolkit (IATK) is a Unity plugin to help you build high quality, interactive and robust data visualisation in Immersive Environements (Virtual / Augmented Reality). Use the *Visualisation* script to create data vizs interactively in the editor, press play and view your data in VR. Write simple code to use the *IATK* core graphics components to make your own interactive visualisations programitcally.
-
 <!-- With IATK, load CSV/TSV files and write simple code using the library to create immersive data visualisations.
-%IATK provides a *Visualisation* script to help you create and design visualizations within the Unity editor -->.
-
+%IATK provides a *Visualisation* script to help you create and design visualizations within the Unity editor -->
 IATK is an open project! We setup a roadmap with features that we would like to see in IATK. 
-Feel free to contribute :)
 
 ## IATK editor components
 1. ***Data Source: import data into the scene***
@@ -79,12 +76,11 @@ The visualisation component allows the deisng of the visualisation inside the Un
 Create visual links between two visualisations. Drag and drop two visualisations objects (source,target) into the Linked Visualisation component. Set the (boolean) ShowLinks to show the links between the 2 visualisations.
 
 4. ***Brushing and Linking***
+It's easy to setup brushing and linking visualisation with IATK. First create a BrushingAndLinking object (right click in hierarchy, IATK>Brushing And Linking). You now have to drag and drop a *Visualisation* object that will act as the controller. 
+<!--Define a Brushing visualisation and a list of Brushed visualisation. Define the input shape and the color of the brush. -->
 
-Define a Brushing visualisation and a list of Brushed visualisation. Define the input shape and the color of the brush.
-
-
-## IATK VR interaction ##
-Use VRTK to interact with the data visualisations.
+<!--## IATK VR interaction ##
+Use VRTK to interact with the data visualisations. -->
 
 ## IATK core data and graphics scripting
 1. DataSource
