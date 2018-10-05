@@ -281,13 +281,16 @@ public class BrushingAndLinking : MonoBehaviour
         brushingVisualisation.theVisualizationObject.viewList[0].BigMesh.SharedMaterial.SetFloat("showBrush", Convert.ToSingle(showBrush));
         brushingVisualisation.theVisualizationObject.viewList[0].BigMesh.SharedMaterial.SetColor("brushColor", brushColor);
 
-        foreach (var item in brushedVisualisations)// visualisationsMaterials)
+        foreach (var bv in brushedVisualisations)// visualisationsMaterials)
         {
-            item.theVisualizationObject.viewList[0].BigMesh.SharedMaterial.SetTexture("_BrushedTexture", brushedIndicesTexture);
-            item.theVisualizationObject.viewList[0].BigMesh.SharedMaterial.SetFloat("_DataWidth", texSize);
-            item.theVisualizationObject.viewList[0].BigMesh.SharedMaterial.SetFloat("_DataHeight", texSize);
-            item.theVisualizationObject.viewList[0].BigMesh.SharedMaterial.SetFloat("showBrush", Convert.ToSingle(showBrush));
-            item.theVisualizationObject.viewList[0].BigMesh.SharedMaterial.SetColor("brushColor", brushColor);
+            foreach (var v in bv.theVisualizationObject.viewList)
+            {
+                v.BigMesh.SharedMaterial.SetTexture("_BrushedTexture", brushedIndicesTexture);
+                v.BigMesh.SharedMaterial.SetFloat("_DataWidth", texSize);
+                v.BigMesh.SharedMaterial.SetFloat("_DataHeight", texSize);
+                v.BigMesh.SharedMaterial.SetFloat("showBrush", Convert.ToSingle(showBrush));
+                v.BigMesh.SharedMaterial.SetColor("brushColor", brushColor);
+            }            
         }
 
         foreach (var item in brushedLinkingVisualisations)
