@@ -1,9 +1,7 @@
 # IATK 1.0 (Mala): Immersive Analytics Toolkit 
-<p align="center">
-<img width="400" alt="2dscatterplot" src=https://user-images.githubusercontent.com/11532065/46409367-9bd0c500-c758-11e8-9485-c92d532d97b8.jpg> 
-</p>
-
-The Immersive Analytics Toolkit (IATK) is a Unity plugin to help you build high quality, interactive and robust data visualisation in Immersive Environements (Virtual / Augmented Reality). Use the *Visualisation* script to create data vizs interactively in the editor, press play and view your data in VR. Write simple code to use the *IATK* core graphics components to make your own interactive visualisations programitcally.
+<!--<p align="center">
+</p> -->
+<img align="left" width="400" alt="2dscatterplot" src=https://user-images.githubusercontent.com/11532065/46409367-9bd0c500-c758-11e8-9485-c92d532d97b8.jpg>  The **Immersive Analytics Toolkit (IATK)** is a Unity plugin to help you build high quality, interactive and robust data visualisation in Immersive Environements (Virtual / Augmented Reality). Use the *Visualisation* script to create data vizs interactively in the editor, press play and view your data in VR. Write simple code to use the *IATK* core graphics components to make your own interactive visualisations programitcally.
 <!-- With IATK, load CSV/TSV files and write simple code using the library to create immersive data visualisations.
 %IATK provides a *Visualisation* script to help you create and design visualizations within the Unity editor -->
 IATK is an open project! We setup a roadmap with features that we would like to see in IATK. 
