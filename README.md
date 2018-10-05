@@ -80,8 +80,8 @@ Use VRTK to interact with the data visualisations. -->
 The DataSource object is the starting point of your immersive data visualisation project. It allows you to import your text data into Unity and has a set of methods to access the data by attribute, id etc.
 
 Usage:
-```go
-\\ Use Unity Test assets to import text data (e.g. csv, tsv etc.)
+```csharp
+//Use Unity Test assets to import text data (e.g. csv, tsv etc.)
 TextAsset myDataSource;
 CSVDataSource myCSVDataSource;
 myCSVDataSource = createCSVDataSource(myDataSource.text);
@@ -103,7 +103,7 @@ The toolkit contains facilities to create high quality graphics dsigned for data
 - a selection tool (brushing) that enables the selection of data accross several data visualizations.
 
 3. Scripting
-```go
+```csharp
 // create a view builder with the point topology
 ViewBuilder vb = new ViewBuilder (MeshTopology.Points, "Uber pick up point visualisation").
         initialiseDataView(csvds.DataCount).
