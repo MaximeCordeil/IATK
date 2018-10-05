@@ -97,7 +97,7 @@ The toolkit contains facilities to create high quality graphics dsigned for data
 - a selection tool (brushing) that enables the selection of data accross several data visualizations.
 
 3. Scripting
-```
+```go
 // create a view builder with the point topology
 ViewBuilder vb = new ViewBuilder (MeshTopology.Points, "Uber pick up point visualisation").
         initialiseDataView(csvds.DataCount).
