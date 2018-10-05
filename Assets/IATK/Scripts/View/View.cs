@@ -18,9 +18,14 @@ namespace IATK
 
         //bigmesh object
         BigMesh bigMesh;
-
+        
         public BigMesh BigMesh
         {
+            get
+            {
+                return bigMesh;
+            }
+
             set
             {
                 bigMesh = value;

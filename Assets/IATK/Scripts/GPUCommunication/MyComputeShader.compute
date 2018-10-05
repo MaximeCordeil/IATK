@@ -57,37 +57,37 @@ RWStructuredBuffer<int> brushedIndices;
 //brush circle
 bool brush2DInCircle(float3 center, float radius, float4 testPoint)
 {
-	float4 projectedCenter = mul(W_Matrix, float4(center,1.0));
+	float4 projectedCenter = mul(W_Matrix, float4(center, 1.0));
 
-	return sqrt(pow(testPoint.x-projectedCenter.x,2) + pow(testPoint.y-projectedCenter.y,2)) < radius;
+	return sqrt(pow(testPoint.x - projectedCenter.x, 2) + pow(testPoint.y - projectedCenter.y, 2)) < radius;
 }
 
 //brush sphere
 bool brushSphere(float3 center, float radius, float3 testPoint)
 {
 	float3 displacementToCenter = testPoint - center;
-    float radiusSqr = radius * radius;
+	float radiusSqr = radius * radius;
 	bool intersects = length(displacementToCenter) < radiusSqr;
 
-    return intersects;
+	return intersects;
 
 }
 
 bool brushCube(float3 TFL, float3 BBR, float3 testPoint)
 {
-	return (testPoint.x >= TFL.x && testPoint.x <= BBR.x 
-		&&  testPoint.y <= TFL.y && testPoint.y >= BBR.y 
+	return (testPoint.x >= TFL.x && testPoint.x <= BBR.x
+		&&  testPoint.y <= TFL.y && testPoint.y >= BBR.y
 		&&  testPoint.z >= TFL.z && testPoint.z <= BBR.z);
 }
 
 bool brushSquare(float3 tl, float3 tr, float3 bl, float3 br, float4 testPoint)
 {
-	float4 tlp = mul(W_Matrix, float4(tl,1.0));
-	float4 trp = mul(W_Matrix, float4(tr,1.0));
-	float4 blp = mul(W_Matrix, float4(bl,1.0));
-	float4 brp = mul(W_Matrix, float4(br,1.0));
+	float4 tlp = mul(W_Matrix, float4(tl, 1.0));
+	float4 trp = mul(W_Matrix, float4(tr, 1.0));
+	float4 blp = mul(W_Matrix, float4(bl, 1.0));
+	float4 brp = mul(W_Matrix, float4(br, 1.0));
 
-	return (testPoint.x >= tlp.x && testPoint.x <= trp.x 
+	return (testPoint.x >= tlp.x && testPoint.x <= trp.x
 		&&  testPoint.y <= tlp.y && testPoint.x >= blp.y);
 }
 
@@ -100,27 +100,27 @@ Adapts the brush
 */
 bool Brush(int brushType, float3 filteredPosition)
 {
-switch(brushType)
-{
-//brush sphere
-case 0: 
-return brushSphere(float3(pointer1x,pointer1y,pointer1z), RadiusSphere, filteredPosition);
-//brush cube
-case 1: 
-float3 TL = float3(pointer1x,pointer1y,pointer1z);
-float3 BR = float3(pointer2x,pointer2y,pointer2z);
+	switch (brushType)
+	{
+		//brush sphere
+	case 0:
+		return brushSphere(float3(pointer1x, pointer1y, pointer1z), RadiusSphere, filteredPosition);
+		//brush cube
+	case 1:
+		float3 TL = float3(pointer1x, pointer1y, pointer1z);
+		float3 BR = float3(pointer2x, pointer2y, pointer2z);
 
-if(TL.x > BR.x || TL.y < BR.y || TL.z > BR.z)
-{
-TL = BR;
-BR = float3(pointer1x,pointer1y,pointer1z);
-}
+		if (TL.x > BR.x || TL.y < BR.y || TL.z > BR.z)
+		{
+			TL = BR;
+			BR = float3(pointer1x, pointer1y, pointer1z);
+		}
 
-return brushCube(TL, BR, filteredPosition);
-// brush square
-//case 2: retun brushSquare(pointer1x, pointer1y,pointer2x,pointer2y,filteredPosition);
-default : return false;
-}
+		return brushCube(TL, BR, filteredPosition);
+		// brush square
+		//case 2: retun brushSquare(pointer1x, pointer1y,pointer2x,pointer2y,filteredPosition);
+	default: return false;
+	}
 }
 
 // TODO
@@ -139,83 +139,84 @@ default : return false;
 
 float normaliseValue(float value, float i0, float i1, float j0, float j1)
 {
-float L = (j0 - j1) / (i0 - i1);
-return (j0 - (L * i0) + (L * value));
+	float L = (j0 - j1) / (i0 - i1);
+	return (j0 - (L * i0) + (L * value));
 }
 
-[numthreads(8,1,1)]
-void ComputeBrushedIndicesArray (uint3 id : SV_DispatchThreadID)
+[numthreads(8, 1, 1)]
+void ComputeBrushedIndicesArray(uint3 id : SV_DispatchThreadID)
 {
-// 1 calculate the brushing for the current pixel
+	// 1 calculate the brushing for the current pixel
 
 	int idx = id.x;
 	//vertex shader stage
-	
+
 	float3 filteredPosition = float3(
-					normaliseValue(dataBuffer[idx].x,_MinNormX, _MaxNormX, 0,1),
-					normaliseValue(dataBuffer[idx].y,_MinNormY, _MaxNormY, 0,1),
-					normaliseValue(dataBuffer[idx].z,_MinNormZ, _MaxNormZ, 0,1));
-	
+		normaliseValue(dataBuffer[idx].x, _MinNormX, _MaxNormX, 0, 1),
+		normaliseValue(dataBuffer[idx].y, _MinNormY, _MaxNormY, 0, 1),
+		normaliseValue(dataBuffer[idx].z, _MinNormZ, _MaxNormZ, 0, 1));
+
 	//filters out dots 
-	if(
-	(filteredPosition.x >= _MinX &&
-	filteredPosition.x <= _MaxX && 
-	filteredPosition.y >= _MinY && 
-	filteredPosition.y <= _MaxY && 
-	filteredPosition.z >= _MinZ && 
-	filteredPosition.z <= _MaxZ 	
-	))
+	if (
+		(filteredPosition.x >= _MinX &&
+			filteredPosition.x <= _MaxX &&
+			filteredPosition.y >= _MinY &&
+			filteredPosition.y <= _MaxY &&
+			filteredPosition.z >= _MinZ &&
+			filteredPosition.z <= _MaxZ
+			))
 	{
-	if(Brush(BrushMode, filteredPosition))	
-	{
-		brushedIndices[idx] = 1;
+		if (Brush(BrushMode, filteredPosition))
+		{
+			brushedIndices[idx] = 1;
+		}
+		else
+		{
+			brushedIndices[idx] = -1;
+		}
 	}
 	else
 	{
 		brushedIndices[idx] = -1;
 	}
-	}
-	else 
-	{
-		brushedIndices[idx] = -1;
-	}
 
 }
 
 
-[numthreads(32,32,1)]
-void CSMain (uint3 id : SV_DispatchThreadID)
+[numthreads(32, 32, 1)]
+void CSMain(uint3 id : SV_DispatchThreadID)
 {
 	// 1 calculate the brushing for the current pixel
 
 	int idx = id.x + id.y * _size;
 	//vertex shader stage
-	
+
 	float3 filteredPosition = float3(
-					normaliseValue(dataBuffer[idx].x,_MinNormX, _MaxNormX, 0,1),
-					normaliseValue(dataBuffer[idx].y,_MinNormY, _MaxNormY, 0,1),
-					normaliseValue(dataBuffer[idx].z,_MinNormZ, _MaxNormZ, 0,1));
-	
+		normaliseValue(dataBuffer[idx].x, _MinNormX, _MaxNormX, 0, 1),
+		normaliseValue(dataBuffer[idx].y, _MinNormY, _MaxNormY, 0, 1),
+		normaliseValue(dataBuffer[idx].z, _MinNormZ, _MaxNormZ, 0, 1));
+
 	//filters out dots 
-	if(
-	(filteredPosition.x >= _MinX &&
-	filteredPosition.x <= _MaxX && 
-	filteredPosition.y >= _MinY && 
-	filteredPosition.y <= _MaxY && 
-	filteredPosition.z >= _MinZ && 
-	filteredPosition.z <= _MaxZ 	
-	))
+	if (
+		(filteredPosition.x >= _MinX &&
+			filteredPosition.x <= _MaxX &&
+			filteredPosition.y >= _MinY &&
+			filteredPosition.y <= _MaxY &&
+			filteredPosition.z >= _MinZ &&
+			filteredPosition.z <= _MaxZ
+			))
 	{
-	if(Brush(BrushMode, filteredPosition))	
-	{
-		Result[id.xy] = float4(1.0 , 0.0, 0.0, 1.0); // brushed}
+		if (Brush(BrushMode, filteredPosition))
+		{
+			Result[id.xy] = float4(1.0, 0.0, 0.0, 1.0); // brushed}
+		}
+		else
+		{
+			Result[id.xy] = float4(0.0, 1.0, 0.0, 1.0); // not brushed
+		}
 	}
 	else
 	{
-	Result[id.xy] = float4(0.0 , 1.0, 0.0, 1.0); // not brushed
-	}
-	}
-	else 
-	{Result[id.xy] = float4(0.0 , 1.0, 0.0, 1.0); // not brushed
+		Result[id.xy] = float4(0.0, 1.0, 0.0, 1.0); // not brushed
 	}
 }

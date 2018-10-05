@@ -145,7 +145,7 @@ public class BrushingAndLinking : MonoBehaviour
 
         if (brushingVisualisation != null)
             //bind brushing vertices
-            initializeComputeAndRenderBuffers(brushingVisualisation.theVisualizationObject.viewList[0].GetPositions());
+            initializeComputeAndRenderBuffers(brushingVisualisation.theVisualizationObject.viewList[0].BigMesh.getBigMeshVertices());
 
         Visualisation.OnUpdateViewAction += Visualisation_OnUpdateViewAction;
 
@@ -156,6 +156,8 @@ public class BrushingAndLinking : MonoBehaviour
         if (propertyType == AbstractVisualisation.PropertyType.X || propertyType == AbstractVisualisation.PropertyType.Y || propertyType == AbstractVisualisation.PropertyType.Z)
             UpdateComputeBuffers();
     }
+
+
 
     public void initializeComputeAndRenderBuffers(Vector3[] data)
     {
@@ -176,7 +178,7 @@ public class BrushingAndLinking : MonoBehaviour
 
     public void UpdateComputeBuffers()
     {
-        buffer.SetData(brushingVisualisation.theVisualizationObject.viewList[0].GetPositions());
+        buffer.SetData(brushingVisualisation.theVisualizationObject.viewList[0].BigMesh.getBigMeshVertices());
         computeShader.SetBuffer(kernelHandleBrushTexture, "dataBuffer", buffer);
     }
 
@@ -200,7 +202,7 @@ public class BrushingAndLinking : MonoBehaviour
             updateBrushTexture();
 
             //EXPERIMENTAL - GET details of original data
-            //getDetailsOnDemand();
+            // getDetailsOnDemand();
 
         }
     }
@@ -210,7 +212,7 @@ public class BrushingAndLinking : MonoBehaviour
     /// </summary>
     public void readBrushTexture()
     {
-        Texture2D tex = (brushingVisualisation.theVisualizationObject.viewList[0].GetBrushTexture());//  bigMesh.SharedMaterial.GetTexture("_BrushedTexture") as Texture2D);
+        Texture2D tex = (brushingVisualisation.theVisualizationObject.viewList[0].BigMesh.SharedMaterial.GetTexture("_BrushedTexture") as Texture2D);
     }
 
     /// <summary>
@@ -273,31 +275,31 @@ public class BrushingAndLinking : MonoBehaviour
         //run the compute shader with all the filtering parameters
         computeShader.Dispatch(kernelHandleBrushTexture, 32, 32, 1);
 
-        brushingVisualisation.theVisualizationObject.viewList[0].SetBrushTexture(brushedIndicesTexture);
-        brushingVisualisation.theVisualizationObject.viewList[0].SetDataWidthBrushingTexture(texSize);
-        brushingVisualisation.theVisualizationObject.viewList[0].SetDataHeightBrushingTexture(texSize);
-        brushingVisualisation.theVisualizationObject.viewList[0].SetShowBrush(showBrush);
-        brushingVisualisation.theVisualizationObject.viewList[0].SetBrushColor(brushColor);
+        brushingVisualisation.theVisualizationObject.viewList[0].BigMesh.SharedMaterial.SetTexture("_BrushedTexture", brushedIndicesTexture);
+        brushingVisualisation.theVisualizationObject.viewList[0].BigMesh.SharedMaterial.SetFloat("_DataWidth", texSize);
+        brushingVisualisation.theVisualizationObject.viewList[0].BigMesh.SharedMaterial.SetFloat("_DataHeight", texSize);
+        brushingVisualisation.theVisualizationObject.viewList[0].BigMesh.SharedMaterial.SetFloat("showBrush", Convert.ToSingle(showBrush));
+        brushingVisualisation.theVisualizationObject.viewList[0].BigMesh.SharedMaterial.SetColor("brushColor", brushColor);
 
         foreach (var item in brushedVisualisations)// visualisationsMaterials)
         {
-            item.theVisualizationObject.viewList[0].SetBrushTexture(brushedIndicesTexture);
-            item.theVisualizationObject.viewList[0].SetDataWidthBrushingTexture(texSize);
-            item.theVisualizationObject.viewList[0].SetDataHeightBrushingTexture(texSize);
-            item.theVisualizationObject.viewList[0].SetShowBrush(showBrush);
-            item.theVisualizationObject.viewList[0].SetBrushColor(brushColor);
+            item.theVisualizationObject.viewList[0].BigMesh.SharedMaterial.SetTexture("_BrushedTexture", brushedIndicesTexture);
+            item.theVisualizationObject.viewList[0].BigMesh.SharedMaterial.SetFloat("_DataWidth", texSize);
+            item.theVisualizationObject.viewList[0].BigMesh.SharedMaterial.SetFloat("_DataHeight", texSize);
+            item.theVisualizationObject.viewList[0].BigMesh.SharedMaterial.SetFloat("showBrush", Convert.ToSingle(showBrush));
+            item.theVisualizationObject.viewList[0].BigMesh.SharedMaterial.SetColor("brushColor", brushColor);
         }
 
         foreach (var item in brushedLinkingVisualisations)
         {
-            item.View.SetBrushTexture(brushedIndicesTexture);
-            item.View.SetDataWidthBrushingTexture(texSize);
-            item.View.SetDataHeightBrushingTexture(texSize);
-            item.View.SetShowBrush(showBrush);
-            item.View.SetBrushColor(brushColor);
+            item.View.BigMesh.SharedMaterial.SetTexture("_BrushedTexture", brushedIndicesTexture);
+            item.View.BigMesh.SharedMaterial.SetFloat("_DataWidth", texSize);
+            item.View.BigMesh.SharedMaterial.SetFloat("_DataHeight", texSize);
+            item.View.BigMesh.SharedMaterial.SetFloat("showBrush", Convert.ToSingle(showBrush));
+            item.View.BigMesh.SharedMaterial.SetColor("brushColor", brushColor);
         }
 
-        //cachedTexture = (brushingVisualisation.theVisualizationObject.viewList[0].bigMesh.SharedMaterial.GetTexture("_BrushedTexture") as Texture2D);
+        //cachedTexture = (brushingVisualisation.theVisualizationObject.viewList[0].BigMesh.SharedMaterial.GetTexture("_BrushedTexture") as Texture2D);
         //if (cachedTexture.GetPixel(0, 0).r > 0f) print("selected!!");
         //float t = Time.time;
         //cpInt.GetData(brushIni);
@@ -331,6 +333,7 @@ brushingVisualisation.dataSource.getOriginalValue(zbrushedValue, brushingVisuali
             }
         }
     }
+
 
     /// <summary>
     /// on destroy release the buffers on the graphic card
