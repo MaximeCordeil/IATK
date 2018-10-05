@@ -368,14 +368,21 @@ namespace IATK
                             maxSize = theVisualizationObject.creationConfiguration.MaxSize;
 
                             theVisualizationObject.CreateVisualisation();
-
-
+                            
                             updateViewProperties(AbstractVisualisation.PropertyType.SizeValues);
                             updateViewProperties(AbstractVisualisation.PropertyType.X);
                             updateViewProperties(AbstractVisualisation.PropertyType.Y);
                             updateViewProperties(AbstractVisualisation.PropertyType.Z);
                             updateViewProperties(AbstractVisualisation.PropertyType.GeometryType);
                             updateViewProperties(AbstractVisualisation.PropertyType.LinkingDimension);
+
+                            colourDimension = string.IsNullOrEmpty(theVisualizationObject.creationConfiguration.ColourDimension) ? "Undefined" : theVisualizationObject.creationConfiguration.ColourDimension;
+                            sizeDimension = string.IsNullOrEmpty(theVisualizationObject.creationConfiguration.SizeDimension) ? "Undefined" : theVisualizationObject.creationConfiguration.SizeDimension;
+                            dimensionColour = theVisualizationObject.creationConfiguration.colourKeys;
+                            colour = theVisualizationObject.creationConfiguration.colour;
+
+                            updateViewProperties(AbstractVisualisation.PropertyType.Size);
+                            updateViewProperties(AbstractVisualisation.PropertyType.Colour);
 
                             break;
                         case AbstractVisualisation.VisualisationTypes.SCATTERPLOT_MATRIX:
@@ -394,6 +401,13 @@ namespace IATK
                             updateViewProperties(AbstractVisualisation.PropertyType.GeometryType);
                             updateViewProperties(AbstractVisualisation.PropertyType.LinkingDimension);
                             theVisualizationObject.creationConfiguration.Deserialize(ConfigurationFileName());
+                            colourDimension = string.IsNullOrEmpty(theVisualizationObject.creationConfiguration.ColourDimension) ? "Undefined" : theVisualizationObject.creationConfiguration.ColourDimension;
+                            sizeDimension = string.IsNullOrEmpty(theVisualizationObject.creationConfiguration.SizeDimension) ? "Undefined" : theVisualizationObject.creationConfiguration.SizeDimension;
+                            dimensionColour = theVisualizationObject.creationConfiguration.colourKeys;
+                            colour = theVisualizationObject.creationConfiguration.colour;
+
+                            updateViewProperties(AbstractVisualisation.PropertyType.Size);
+                            updateViewProperties(AbstractVisualisation.PropertyType.Colour);
 
 
                             break;
@@ -410,6 +424,13 @@ namespace IATK
                             // the temp fix is to deserialize again to read the correct values again. I suspect this
                             // is because the script is using an old pre-runtime reference.
                             theVisualizationObject.creationConfiguration.Deserialize(ConfigurationFileName());
+                            colourDimension = string.IsNullOrEmpty(theVisualizationObject.creationConfiguration.ColourDimension) ? "Undefined" : theVisualizationObject.creationConfiguration.ColourDimension;
+                            sizeDimension = string.IsNullOrEmpty(theVisualizationObject.creationConfiguration.SizeDimension) ? "Undefined" : theVisualizationObject.creationConfiguration.SizeDimension;
+                            dimensionColour = theVisualizationObject.creationConfiguration.colourKeys;
+                            colour = theVisualizationObject.creationConfiguration.colour;
+
+                            updateViewProperties(AbstractVisualisation.PropertyType.Size);
+                            updateViewProperties(AbstractVisualisation.PropertyType.Colour);
 
                             break;
                         case AbstractVisualisation.VisualisationTypes.GRAPH_LAYOUT:
@@ -418,14 +439,7 @@ namespace IATK
                             break;
                     }
 
-                    colourDimension = string.IsNullOrEmpty(theVisualizationObject.creationConfiguration.ColourDimension) ? "Undefined" : theVisualizationObject.creationConfiguration.ColourDimension;
-                    sizeDimension = string.IsNullOrEmpty(theVisualizationObject.creationConfiguration.SizeDimension) ? "Undefined" : theVisualizationObject.creationConfiguration.SizeDimension;
-                    dimensionColour = theVisualizationObject.creationConfiguration.colourKeys;
-                    colour = theVisualizationObject.creationConfiguration.colour;
-
-                    updateViewProperties(AbstractVisualisation.PropertyType.Size);
-                    updateViewProperties(AbstractVisualisation.PropertyType.Colour);
-
+                   
                     theVisualizationObject.creationConfiguration.disableWriting = false;
                 }
             }

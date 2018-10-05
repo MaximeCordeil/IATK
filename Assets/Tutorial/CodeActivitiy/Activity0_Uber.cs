@@ -154,8 +154,6 @@ public class Activity0_Uber : MonoBehaviour {
         {
             for (int i = 0; i < accordion.Length; i++)
             {
-                //View acc = accordion[i];
-                //accordionPosition(ref acc.transform, t0, t1, (float)i, (float)accordion.Length);
                 accordion[i].transform.position = Vector3.Lerp(t0.position, t1.position, (float)i / (float)accordion.Length);
                 accordion[i].transform.rotation = Quaternion.Lerp(t0.rotation, t1.rotation, (float)i / (float)accordion.Length);
             }
