@@ -336,7 +336,7 @@ public class Axis : MonoBehaviour {
         bool IsDiscreet()
         {
             var type = dataSource[attributeFilter.Attribute].MetaData.type;
-            if (type == DataType.String || type == DataType.Date || type == DataType.Time)
+            if (type == DataType.String || type == DataType.Date)// || type == DataType.Time)
             {
                 return true;
             }

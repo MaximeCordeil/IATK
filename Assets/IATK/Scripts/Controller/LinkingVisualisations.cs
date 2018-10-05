@@ -61,6 +61,11 @@ namespace IATK
             toggleShow = showLinks;
         }
 
+        private void OnDestroy()
+        {
+            Visualisation.OnUpdateViewAction -= Visualisation_OnUpdateViewAction;
+        }
+
         private void Visualisation_OnUpdateViewAction(AbstractVisualisation.PropertyType propertyType)
         {
             if ((visualisationSource != null && visualisationTarget != null) &&

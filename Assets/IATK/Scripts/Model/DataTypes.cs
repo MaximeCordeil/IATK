@@ -75,7 +75,7 @@ namespace IATK
 
         private static bool isTime(string value)
         {
-            return value.Contains(":");
+            return false;// value.Contains(":");
         }
     }
 
