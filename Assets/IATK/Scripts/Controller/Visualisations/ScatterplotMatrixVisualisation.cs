@@ -341,19 +341,37 @@ namespace IATK {
                         break;
 
                     case AbstractVisualisation.PropertyType.DimensionFiltering:
-                        {  //for (int i = 0; i < viewList.Count; i++)
-                           //{
-                           //    viewList[i].SetMinX(visualisationReference.xDimension.minFilter);
-                           //    viewList[i].SetMaxX(visualisationReference.xDimension.maxFilter);
-                           //    viewList[i].SetMinY(visualisationReference.yDimension.minFilter);
-                           //    viewList[i].SetMaxY(visualisationReference.yDimension.maxFilter);
-                           //    viewList[i].SetMinZ(visualisationReference.zDimension.minFilter);
-                           //    viewList[i].SetMaxZ(visualisationReference.zDimension.maxFilter);
-                           //}
+                        {  
                             float[] isFiltered = new float[visualisationReference.dataSource.DataCount];
                             for (int i = 0; i < visualisationReference.dataSource.DimensionCount; i++)
                             {
                                 foreach (DimensionFilter attrFilter in visualisationReference.xScatterplotMatrixDimensions)
+                                {
+                                    if (attrFilter.Attribute == visualisationReference.dataSource[i].Identifier)
+                                    {
+                                        float minFilteringValue = UtilMath.normaliseValue(attrFilter.minFilter, 0f, 1f, attrFilter.minScale, attrFilter.maxScale);
+                                        float maxFilteringValue = UtilMath.normaliseValue(attrFilter.maxFilter, 0f, 1f, attrFilter.minScale, attrFilter.maxScale);
+
+                                        for (int j = 0; j < isFiltered.Length; j++)
+                                        {
+                                            isFiltered[j] = (visualisationReference.dataSource[i].Data[j] < minFilteringValue || visualisationReference.dataSource[i].Data[j] > maxFilteringValue) ? 1.0f : isFiltered[j];
+                                        }
+                                    }
+                                }
+                                foreach (DimensionFilter attrFilter in visualisationReference.yScatterplotMatrixDimensions)
+                                {
+                                    if (attrFilter.Attribute == visualisationReference.dataSource[i].Identifier)
+                                    {
+                                        float minFilteringValue = UtilMath.normaliseValue(attrFilter.minFilter, 0f, 1f, attrFilter.minScale, attrFilter.maxScale);
+                                        float maxFilteringValue = UtilMath.normaliseValue(attrFilter.maxFilter, 0f, 1f, attrFilter.minScale, attrFilter.maxScale);
+
+                                        for (int j = 0; j < isFiltered.Length; j++)
+                                        {
+                                            isFiltered[j] = (visualisationReference.dataSource[i].Data[j] < minFilteringValue || visualisationReference.dataSource[i].Data[j] > maxFilteringValue) ? 1.0f : isFiltered[j];
+                                        }
+                                    }
+                                }
+                                foreach (DimensionFilter attrFilter in visualisationReference.zScatterplotMatrixDimensions)
                                 {
                                     if (attrFilter.Attribute == visualisationReference.dataSource[i].Identifier)
                                     {

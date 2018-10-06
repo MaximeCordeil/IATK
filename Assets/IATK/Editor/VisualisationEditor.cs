@@ -546,12 +546,25 @@ namespace IATK
             EditorGUI.BeginChangeCheck();
 
             scatterplotMatrixListX.DoLayoutList();
+            if (EditorGUI.EndChangeCheck())
+            {
+                dirtyFlags = _globalDirtyFlags;
+            }
+            EditorGUI.BeginChangeCheck();
+
             scatterplotMatrixListY.DoLayoutList();
+            if (EditorGUI.EndChangeCheck())
+            {
+                dirtyFlags = _globalDirtyFlags;
+            }
+
+            EditorGUI.BeginChangeCheck();
+
             scatterplotMatrixListZ.DoLayoutList();
 
             if (EditorGUI.EndChangeCheck())
             {
-                dirtyFlags = AbstractVisualisation.PropertyType.DimensionChange;
+                dirtyFlags = _globalDirtyFlags;
             }
 
         }
