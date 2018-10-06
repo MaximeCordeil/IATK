@@ -21,7 +21,8 @@ public class Activity0_Uber : MonoBehaviour {
     // Use this for initialization
     void Start () {
         csvdata = createCSVDataSource(uberData.text);
-        FacetBy("Base");
+        Uber(csvdata);
+//        FacetBy("Base");
     }
 
     void FacetBy(string attribute)
@@ -57,8 +58,22 @@ public class Activity0_Uber : MonoBehaviour {
         return dataSource;
     }
 
+    public Vector3 Spherical(float r, float theta, float phi)
+    {
+        Vector3 pt = new Vector3();
+        float snt = (float)Mathf.Sin(theta * Mathf.PI / 180);
+        float cnt = (float)Mathf.Cos(theta * Mathf.PI / 180);
+        float snp = (float)Mathf.Sin(phi * Mathf.PI / 180);
+        float cnp = (float)Mathf.Cos(phi * Mathf.PI / 180);
+        pt.x = r * snt * cnp;
+        pt.y = r * cnt;
+        pt.z = -r * snt * snp;
+//        pt.W = 1;
+        return pt;
+    }
+
     // a space time cube
-    View uber(CSVDataSource csvds)
+    View Uber(CSVDataSource csvds)
     {
         // header
         // Date,Time,Lat,Lon,Base
@@ -67,6 +82,26 @@ public class Activity0_Uber : MonoBehaviour {
         gck[0] = new GradientColorKey(Color.blue, 0);
         gck[1] = new GradientColorKey(Color.red, 1);
         g.colorKeys = gck;
+
+        /*
+         * 
+           
+            x = radius * cos(latitude) * sin(longitude)
+            y = radius * sin(latitude)
+            z = -radius * cos(latitude) * cos(longitude)
+         */
+        float radius = 1f;
+
+        //ViewBuilder vb = new ViewBuilder(MeshTopology.Points, "Uber pick up point visualisation").
+        //   initialiseDataView(csvds.DataCount).
+        //   setDataDimension(csvds["Lat"].Data.Select((b, i) => new { index = i, _base = b }).Select(b => radius * Mathf.Cos(b._base) * Mathf.Sin(csvdata["Lon"].Data[b.index])).ToArray()
+        //   , ViewBuilder.VIEW_DIMENSION.X).
+        //   setDataDimension(csvds["Lat"].Data.Select(x => Mathf.Sin(x)).ToArray(),
+        //   ViewBuilder.VIEW_DIMENSION.Y).
+        //   setDataDimension(csvds["Lon"].Data.Select((b, i) => new { index = i, _base = b }).Select(b => -radius * Mathf.Cos(b._base) * Mathf.Cos(csvdata["Lat"].Data[b.index])).ToArray(),
+        //   ViewBuilder.VIEW_DIMENSION.Z).
+        //   setSize(csvds["Base"].Data).
+        //   setColors(csvds["Time"].Data.Select(x => g.Evaluate(x)).ToArray());
 
         // create a view builder with the point topology
         ViewBuilder vb = new ViewBuilder(MeshTopology.Points, "Uber pick up point visualisation").
@@ -87,7 +122,8 @@ public class Activity0_Uber : MonoBehaviour {
         mt.SetFloat("_MinSize", 0.01f);
         mt.SetFloat("_MaxSize", 0.05f);
 
-        return vb.updateView().apply(gameObject, mt);
+        View v = vb.updateView().apply(gameObject, mt);
+        return v;
     }
 
     delegate float[] Filter(float[] ar, CSVDataSource csvds, string fiteredValue, string filteringAttribute);
@@ -150,7 +186,7 @@ public class Activity0_Uber : MonoBehaviour {
         //}
 
         //accordion
-        if (t0 != null && t1 != null)
+        if (t0 != null && t1 != null && accordion!=null)
         {
             for (int i = 0; i < accordion.Length; i++)
             {
