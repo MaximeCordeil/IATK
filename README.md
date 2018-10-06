@@ -116,13 +116,11 @@ ViewBuilder vb = new ViewBuilder (MeshTopology.Points, "Uber pick up point visua
 // create a view builder with the point topology
 View view = vb.updateView().apply(gameObject, mt);
 ```
-
 ## Known issues
 IATK is a prototype for research and there are known issues that we will fix in the near future.
 
 - unrecognised symbols in data source can break the scripts 
 - scatterplot matrices can be slow due to the amount of points to display (if you have a very large dataset and a lot of dimension, scatetrplot matrices will be slow)
-
 
 ## IEEE VIS 2018 tutorial 
 We will give an Immersive Visualisation tutorial with IATK at IEEE VIS 2018.
