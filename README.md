@@ -46,7 +46,7 @@ Create a **Visualisation** object (right click in the hierarchy, IATK/DataSouce)
   <img width="280" height="280" height="280" alt="3dsplom" src=https://user-images.githubusercontent.com/11532065/46408791-a9854b00-c756-11e8-8c05-21ce94e2f463.png> <img width="280" height="280" alt="3dsplomcloseup" src=https://user-images.githubusercontent.com/11532065/46442262-5b029b80-c7ac-11e8-8abc-beeda5040efa.JPG> <img width="280" height="280" alt="3dsplomcloseup" src=https://user-images.githubusercontent.com/11532065/46408792-aa1de180-c756-11e8-9fb8-5f92e5b0fa9e.png>
 
 
-Visualisation designer in the Unity Editor
+### Visualisation designer in the Unity Editor
 
 <!--<p align="center"> 
 </p> -->
