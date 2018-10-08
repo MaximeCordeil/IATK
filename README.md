@@ -69,7 +69,9 @@ Create a **Visualisation** object (right click in the hierarchy, IATK/DataSouce)
 Create visual links between two visualisations. Drag and drop two visualisations objects (source,target) into the Linked Visualisation component. Set the (boolean) ShowLinks to show the links between the 2 visualisations.
 
 4. ***Brushing and Linking***
-It's easy to setup brushing and linking visualisation with IATK. First create a BrushingAndLinking object (right click in hierarchy, IATK>Brushing And Linking). You now have to drag and drop a *Visualisation* object that will act as the controller. 
+<img align = "left" width="280" alt="brushinglinking" src="https://user-images.githubusercontent.com/11532065/46593142-3e03fa80-cb15-11e8-8fe0-bc56d62c10af.PNG"> It's easy to setup brushing and linking visualisation with IATK. First create a BrushingAndLinking object (right click in hierarchy, IATK>Brushing And Linking). 
+You now have to drag and drop a *Visualisation* object that will act as the brush controller: the Brushing Visualisation. Then drag and drop how many visualisations you wish to link to this brushing visualisation in the Brushed Visualisations list. You can also attach a *Linked Visualisation* object to show highlights of the brushed data. 
+
 <!--Define a Brushing visualisation and a list of Brushed visualisation. Define the input shape and the color of the brush. -->
 
 <!--## IATK VR interaction ##
