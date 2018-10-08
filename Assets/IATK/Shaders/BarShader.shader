@@ -71,7 +71,7 @@ Shader "IATK/BarShader"
           		    float4 position : POSITION;
             		float4 color: COLOR;
 					float3 normal: NORMAL;
-					float3 uv_MainTex : TEXCOORD0; // index, vertex size, filtered
+					float4 uv_MainTex : TEXCOORD0; // index, vertex size, filtered. prev size
         		};
 
 				struct v2g
@@ -159,7 +159,7 @@ Shader "IATK/BarShader"
 					v2g o;
 
 					float idx = v.uv_MainTex.x;
-					float size = v.uv_MainTex.y;
+					float size = lerp(v.uv_MainTex.w, v.uv_MainTex.y, _Tween);
 					float isFiltered = v.uv_MainTex.z;
 
 					//lookup the texture to see if the vertex is brushed...
