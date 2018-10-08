@@ -2,7 +2,7 @@
 
 // Upgrade NOTE: replaced '_Object2World' with 'unity_ObjectToWorld'
 
-Shader "IATK/Sphere"
+Shader "IATK/SphereShader"
 {
 	Properties
 	{
@@ -25,7 +25,7 @@ Shader "IATK/Sphere"
 		_MinNormX("_MinNormX",Range(0, 1)) = 0.0
 		_MaxNormX("_MaxNormX",Range(0, 1)) = 1.0
 		_MinNormY("_MinNormY",Range(0, 1)) = 0.0
-		_MaxNormY("_MaxNormY",Range(0, 1)) = 1.0
+		_MaxNormY("_MaxNormY",Range(0, 1)) = 1.0	
 		_MinNormZ("_MinNormZ",Range(0, 1)) = 0.0
 		_MaxNormZ("_MaxNormZ",Range(0, 1)) = 1.0
 		_MySrcMode("_SrcMode", Float) = 5
@@ -172,16 +172,19 @@ Shader "IATK/Sphere"
 		output.pos = normalisedPosition;
 		output.normal = float3(idx, size, isFiltered);
 		output.tex0 = float2(0, 0);
-		output.color = _LightColor0;
+		output.color = v.color;
+
+		//precision filtering
+		float epsilon = -0.00001;
 
 		//filtering
 		if (
-			normalisedPosition.x < _MinX ||
-			normalisedPosition.x > _MaxX ||
-			normalisedPosition.y < _MinY ||
-			normalisedPosition.y > _MaxY ||
-			normalisedPosition.z < _MinZ ||
-			normalisedPosition.z > _MaxZ || isFiltered
+			normalisedPosition.x < (_MinX + epsilon) ||
+			normalisedPosition.x >(_MaxX - epsilon) ||
+			normalisedPosition.y < (_MinY + epsilon) ||
+			normalisedPosition.y >(_MaxY - epsilon) ||
+			normalisedPosition.z < (_MinZ + epsilon) ||
+			normalisedPosition.z >(_MaxZ - epsilon) || isFiltered
 			)
 		{
 			output.color.w = 0;
@@ -250,15 +253,17 @@ Shader "IATK/Sphere"
 		//o.depth = o.color.a > 0.5 ? input.pos.z : 0;
 
 		half3 n = tex2D(_MainTex, input.tex0);
-		n.x = -(n.x - 0.5) / 0.5;
+		n.x = (n.x - 0.5) / 0.5;
 		n.y = (n.y - 0.5) / 0.5;
 		n.z = -(n.z - 0.5) / 0.5;
-		n = UnityObjectToWorldNormal(n);
-		half nl = max(0, dot(n, _WorldSpaceLightPos0.xyz));
+
+		half3 worldNormal = UnityObjectToWorldNormal(n);
+		half nl = max(0, dot(worldNormal, _WorldSpaceLightPos0.xyz));
 
 		o.color = input.color;
+		//o.color = _LightColor0;// *nl;
 		o.color.rgb *= nl;
-		o.color.rgb += ShadeSH9(half4(n, 1));
+		o.color.rgb += ShadeSH9(half4(worldNormal, 1)) * 0.25;
 
 		//o.color = col;
 		half2 d = input.tex0 - float2(0.5, 0.5);
@@ -266,6 +271,7 @@ Shader "IATK/Sphere"
 		{
 			discard;
 		}
+		//UNITY_APPLY_FOG(i.fogCoord, col);
 		return o;
 	}
 

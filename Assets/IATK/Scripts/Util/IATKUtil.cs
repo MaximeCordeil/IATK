@@ -48,6 +48,11 @@ namespace IATK
                     mt = new Material(Shader.Find("IATK/BarShader"));
                     mt.renderQueue = 3000;
                     return mt;
+                case AbstractVisualisation.GeometryType.Spheres:
+                    mt = new Material(Shader.Find("IATK/SphereShader"));
+                    mt.mainTexture = Resources.Load("sphere-texture") as Texture2D;
+                    mt.renderQueue = 3000;
+                    return mt;
                 default:
                     return null;
             }

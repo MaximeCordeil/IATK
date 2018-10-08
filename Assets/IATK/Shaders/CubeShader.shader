@@ -180,17 +180,17 @@ Shader "IATK/CubeShader"
 					o.color =  v.color;
 
 					//precision filtering
-					float epsilon = -0.00001; 
+					float epsilon = -0.00001;
 
 					//filtering
-					if(
-					 normalisedPosition.x < (_MinX + epsilon) ||
-					 normalisedPosition.x > (_MaxX - epsilon) || 
-					 normalisedPosition.y < (_MinY + epsilon) || 
-					 normalisedPosition.y > (_MaxY - epsilon) || 
-					 normalisedPosition.z < (_MinZ + epsilon) || 
-					 normalisedPosition.z > (_MaxZ - epsilon) || isFiltered
-					 )
+					if (
+						normalisedPosition.x < (_MinX + epsilon) ||
+						normalisedPosition.x >(_MaxX - epsilon) ||
+						normalisedPosition.y < (_MinY + epsilon) ||
+						normalisedPosition.y >(_MaxY - epsilon) ||
+						normalisedPosition.z < (_MinZ + epsilon) ||
+						normalisedPosition.z >(_MaxZ - epsilon) || isFiltered
+						)
 					{
 						o.color.w = 0;
 					}
@@ -203,29 +203,29 @@ Shader "IATK/CubeShader"
 				{
 					float3 NEU = float3( size,  size,  size);
 					float3 NED = float3( size, -size,  size);
-					float3 NWU = float3( size,  size, -size);
-					float3 NWD = float3( size, -size, -size);
-					float3 SEU = float3(-size,  size,  size);
-					float3 SED = float3(-size, -size,  size);
+					float3 NWU = float3(-size,  size,  size);
+					float3 NWD = float3(-size, -size,  size);
+					float3 SEU = float3( size,  size, -size);
+					float3 SED = float3( size, -size, -size);
 					float3 SWU = float3(-size,  size, -size);
 					float3 SWD = float3(-size, -size, -size);
 
 					float4 pNEU = float4(position + NEU, 1.0f);
 					float4 pNED = float4(position + NED, 1.0f);
 					float4 pNWU = float4(position + NWU, 1.0f);
-					float4 pNWD = float4(position+ NWD, 1.0f);
+					float4 pNWD = float4(position + NWD, 1.0f);
 
 					float4 pSEU = float4(position + SEU, 1.0f);
 					float4 pSED = float4(position + SED, 1.0f);
 					float4 pSWU = float4(position + SWU, 1.0f);
 					float4 pSWD = float4(position + SWD, 1.0f);
 		
-					float3 nN = float3(0, 0, -1);
-					float3 nS = float3(0, 0, 1);
-					float3 nE = float3(1, 0, 0);
-					float3 nW = float3(-1, 0, 0);
+					float3 nN = float3(0, 0, 1);
+					float3 nS = float3(0, 0, -1);
+					float3 nE = float3(-1, 0, 0);
+					float3 nW = float3(1, 0, 0);
 					float3 nU = float3(0, 1, 0);
-					float3 nD = float3(0, -1, 0);
+					float3 nD = float3(1, -1, 0);
 
 					float4x4 vp = UNITY_MATRIX_MVP;
 					
