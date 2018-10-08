@@ -257,8 +257,9 @@ Shader "IATK/BarShader"
 
 					worldNormal = UnityObjectToWorldNormal(nN);
 					nl = max(0, dot(worldNormal, _WorldSpaceLightPos0.xyz));
-					pIn.color = float4(color.rgb * nl, color.a);
+					pIn.color = float4(_LightColor0.rgb * nl, color.a);
 					pIn.color.rgb += ShadeSH9(half4(worldNormal, 1));
+					pIn.color.rgb *= color.rgb;
 
 					pIn.vertex = UnityObjectToClipPos(pNWU);
 					pIn.tex0 = float2(0.0f, 1.0f);
@@ -282,8 +283,9 @@ Shader "IATK/BarShader"
 
 					worldNormal = UnityObjectToWorldNormal(nW);
 					nl = max(0, dot(worldNormal, _WorldSpaceLightPos0.xyz));
-					pIn.color = float4(color.rgb * nl, color.a);
+					pIn.color = float4(_LightColor0.rgb * nl, color.a);
 					pIn.color.rgb += ShadeSH9(half4(worldNormal, 1));
+					pIn.color.rgb *= color.rgb;
 
 
 					pIn.vertex = UnityObjectToClipPos(pNED);
@@ -308,8 +310,9 @@ Shader "IATK/BarShader"
 
 					worldNormal = UnityObjectToWorldNormal(nU);
 					nl = max(0, dot(worldNormal, _WorldSpaceLightPos0.xyz));
-					pIn.color = float4(color.rgb * nl, color.a);
+					pIn.color = float4(_LightColor0.rgb * nl, color.a);
 					pIn.color.rgb += ShadeSH9(half4(worldNormal, 1));
+					pIn.color.rgb *= color.rgb;
 
 
 
@@ -334,8 +337,9 @@ Shader "IATK/BarShader"
 					// FACE 4
 					worldNormal = UnityObjectToWorldNormal(nS);
 					nl = max(0, dot(worldNormal, _WorldSpaceLightPos0.xyz));
-					pIn.color = float4(color.rgb * nl, color.a);
+					pIn.color = float4(_LightColor0.rgb * nl, color.a);
 					pIn.color.rgb += ShadeSH9(half4(worldNormal, 1));
+					pIn.color.rgb *= color.rgb;
 
 
 					pIn.vertex = UnityObjectToClipPos(pSWU);
@@ -359,8 +363,9 @@ Shader "IATK/BarShader"
 					// FACE 5
 					worldNormal = UnityObjectToWorldNormal(nD);
 					nl = max(0, dot(worldNormal, _WorldSpaceLightPos0.xyz));
-					pIn.color = float4(color.rgb * nl, color.a);
+					pIn.color = float4(_LightColor0.rgb * nl, color.a);
 					pIn.color.rgb += ShadeSH9(half4(worldNormal, 1));
+					pIn.color.rgb *= color.rgb;
 
 
 					pIn.vertex = UnityObjectToClipPos(pNWD);
@@ -384,8 +389,9 @@ Shader "IATK/BarShader"
 					// FACE 6
 					worldNormal = UnityObjectToWorldNormal(nE);
 					nl = max(0, dot(worldNormal, _WorldSpaceLightPos0.xyz));
-					pIn.color = float4(color.rgb * nl, color.a);
+					pIn.color = float4(_LightColor0.rgb * nl, color.a);
 					pIn.color.rgb += ShadeSH9(half4(worldNormal, 1));
+					pIn.color.rgb *= color.rgb;
 
 					pIn.vertex = UnityObjectToClipPos(pNWD);
 					pIn.tex0 = float2(1.0f, 0.0f);

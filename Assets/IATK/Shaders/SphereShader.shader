@@ -249,23 +249,24 @@ Shader "IATK/SphereShader"
 	FS_OUTPUT FS_Main(FS_INPUT input)
 	{
 		FS_OUTPUT o;
-		//o.color = tex2D(_MainTex, input.tex0.xy) *input.color;
-		//o.depth = o.color.a > 0.5 ? input.pos.z : 0;
 
 		half3 n = tex2D(_MainTex, input.tex0);
 		n.x = (n.x - 0.5) / 0.5;
-		n.y = (n.y - 0.5) / 0.5;
+		n.y = -(n.y - 0.5) / 0.5;
 		n.z = -(n.z - 0.5) / 0.5;
 
-		half3 worldNormal = UnityObjectToWorldNormal(n);
+		n = mul(((float3x3)-UNITY_MATRIX_V), n);
+		n = mul((float3x3)unity_ObjectToWorld, n);
+
+		half3 worldNormal = n;
 		half nl = max(0, dot(worldNormal, _WorldSpaceLightPos0.xyz));
 
-		o.color = input.color;
-		//o.color = _LightColor0;// *nl;
+		o.color = _LightColor0;
+		o.color.a = input.color.a;
 		o.color.rgb *= nl;
-		o.color.rgb += ShadeSH9(half4(worldNormal, 1)) * 0.25;
+		o.color.rgb += ShadeSH9(half4(worldNormal, 1));
+		o.color.rgb *= input.color;
 
-		//o.color = col;
 		half2 d = input.tex0 - float2(0.5, 0.5);
 		if (length(d) > 0.5)
 		{
