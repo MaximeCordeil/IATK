@@ -21,8 +21,8 @@ public class Activity0_Uber : MonoBehaviour {
     // Use this for initialization
     void Start () {
         csvdata = createCSVDataSource(uberData.text);
-        Uber(csvdata);
-//        FacetBy("Base");
+//        Uber(csvdata);
+        FacetBy("Base");
     }
 
     void FacetBy(string attribute)
