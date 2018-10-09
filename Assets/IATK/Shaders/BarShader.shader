@@ -338,7 +338,7 @@ Shader "IATK/BarShader"
 					pIn.tex0 = float2(1.0f, 1.0f);
 					triStream.Append(pIn);
 
-					pIn.vertex =  UnityObjectToClipPos( pSWD);
+					pIn.vertex =  UnityObjectToClipPos(pSWD);
 					pIn.tex0 = float2(0.0f, 0.0f);
 					triStream.Append(pIn);
 
@@ -368,33 +368,28 @@ Shader "IATK/BarShader"
 				// Fragment Shader -----------------------------------------------
 				float4 FS_Main(g2f input) : COLOR
 				{
-				if(input.color.w == 0)
-					{
-						//if( dt <= 0.2f)
-						//	return float4(0.1,0.1,0.1,1.0);
-						//else
-						//	if(dx * dx + dy * dy <= 0.25f)
-						//	return float4(0.0, 0.0, 0.0, 1.0);
-						//	else
-						//	{
-							discard;
-							return float4(0.0, 0.0, 0.0, 0.0);
-//							}
-					}
-					else
-					{
-				float dx = input.tex0.x;// - 0.5f;
-			    float dy = input.tex0.y;// - 0.5f;
+                if(input.color.w == 0)
+				{
+                    discard;
+                    return float4(0.0, 0.0, 0.0, 0.0);
+                }
 
-				if(dx > 0.99 || dx < 0.01 || dy <0.01  || dy>0.99 ) return float4(0.0, 0.0, 0.0, input.color.w);
+				else
+				{
+				float dx = input.tex0.x;
+				// - 0.5f;
+				float dy = input.tex0.y;
+				// - 0.5f;
+
+				//if(dx > 0.99 || dx < 0.01 || dy <0.01  || dy>0.99 ) return float4(0.0, 0.0, 0.0, input.color.w);
 			
 				float dt = (dx -0.5) * (dx-0.5) + (dy-0.5) * (dy-0.5);
 				if (input.isBrushed > 0.0 && showBrush >0.0)
-							return brushColor;
-						else
+				return brushColor;
+                    else
 				return float4(input.color.x-dx/2,input.color.y-dx/2,input.color.z-dx/2,input.color.w);
-				}
-			
+                }
+		
 			}
 			ENDCG
 		}

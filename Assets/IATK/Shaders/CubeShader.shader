@@ -179,15 +179,18 @@ Shader "IATK/CubeShader"
 					o.normal = float3(idx, size, isFiltered);
 					o.color =  v.color;
 
+					//precision filtering
+					float epsilon = -0.00001; 
+
 					//filtering
-					if (normalisedPosition.x < _MinX ||
-						normalisedPosition.x > _MaxX || 
-						normalisedPosition.y < _MinY || 
-						normalisedPosition.y > _MaxY || 
-						normalisedPosition.z < _MinZ || 
-						normalisedPosition.z > _MaxZ ||
-						isFiltered
-					)
+					if(
+					 normalisedPosition.x < (_MinX + epsilon) ||
+					 normalisedPosition.x > (_MaxX - epsilon) || 
+					 normalisedPosition.y < (_MinY + epsilon) || 
+					 normalisedPosition.y > (_MaxY - epsilon) || 
+					 normalisedPosition.z < (_MinZ + epsilon) || 
+					 normalisedPosition.z > (_MaxZ - epsilon) || isFiltered
+					 )
 					{
 						o.color.w = 0;
 					}

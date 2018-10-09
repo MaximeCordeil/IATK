@@ -23,9 +23,6 @@ public class BrushingAndLinking : MonoBehaviour
     int kernelHandleBrushTexture;
     int kernelHandleBrushArrayIndices;
 
-    [SerializeField]
-    public List<Material> visualisationsMaterials;
-
     GameObject viewHolder;
     int texSize;
 
@@ -43,6 +40,10 @@ public class BrushingAndLinking : MonoBehaviour
 
     [SerializeField]
     public Color brushColor = Color.red;
+
+    [SerializeField]
+    [Range (1f,10f)]
+    public float brushSizeFactor = 1f;
 
     [SerializeField]
     public Transform input1;

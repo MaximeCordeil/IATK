@@ -799,8 +799,7 @@ namespace IATK
         [MenuItem("GameObject/IATK/BrushingAndLinking", false, 10)]
         static void CreateBrushingAndLinkingPrefab()
         {
-            GameObject obj = new GameObject("[IATK] New Brushing And Linking");
-            obj.AddComponent<BrushingAndLinking>();
+            GameObject obj = (GameObject)Instantiate(Resources.Load("BrushingAndLinking"));// new GameObject("[IATK] New Brushing And Linking");           
             Selection.activeGameObject = obj;
         }
     }
