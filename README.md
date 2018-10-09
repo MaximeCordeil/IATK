@@ -90,21 +90,21 @@ myCSVDataSource = createCSVDataSource(myDataSource.text);
 ```
 Further details (methods, properties) are available in the documention [to come].
 
-2. ViewBuilder
+### ViewBuilder
 IATK uses a fluent design pattern that lets you chain commands to design a visualisation in a single instruction.
-Example:
+Example in the **Scripting** section
 
-3. View
+### View
 Once you have built a View object with the Viewbuilder, you can change the view attributes (colours, positions, sizes, filters ...) . See documentation [to come].
 
-4. Graphics toolkit
+### Graphics toolkit
 The toolkit contains facilities to create high quality graphics dsigned for data visualisation in Virtual and Augmented Reality. The IATK core graphics tools include:
 
 - a **BigMesh** script that allows the creation of visualisations 
 - several shaders to render a lot of data rapidly and efficiently, and custom graphics for data visualisations (thick lines, dots/spheres, cubes/bars)
 - a selection tool (brushing) that enables the selection of data accross several data visualizations.
 
-3. Scripting
+### Scripting
 ```csharp
 // create a view builder with the point topology
 ViewBuilder vb = new ViewBuilder (MeshTopology.Points, "Uber pick up point visualisation").
