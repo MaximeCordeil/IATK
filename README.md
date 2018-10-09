@@ -130,7 +130,7 @@ For attendees, please download:
 
 - this repository
 - [Unity 2017](https://unity3d.com/get-unity/download?thank-you=update&download_nid=49126&os=Win)
-- [Virtual reality toolkit VRTK](https://github.com/thestonefox/VRT)
+- [Virtual reality toolkit VRTK](https://github.com/thestonefox/VRTK)
 
 ***!!! IATK works on Windows machines -  Mac users please [install bootcamp](https://support.apple.com/en-au/HT201468) !!!***
 
@@ -150,6 +150,6 @@ In a near feature we will support:
 - more geometry (e.g. surfaces / volumes)
 
 ## Official members and developpers
-The toolkit is developped by Maxime Cordeil (project leader, Monash University), Kingsley Stephens (Monash University) and Andrew Cunningham (University of South Australia).
+The toolkit is developped by Maxime Cordeil (project leader, Monash University), Andrew Cunningham (University of South Australia) and Kingsley Stephens (Monash University).
 
-Contributors: Tim Dwyer (Monash University), Yalong Yang (Monash University)
+Contributors: Tim Dwyer (Monash University)
