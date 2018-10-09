@@ -12,7 +12,7 @@ First, create a **Data Source** object (right click in the hierarchy, IATK/DataS
 ### Visualisation: an editor menu helper
 IATK has a number of predefined, controlable data visualisation template that are accessible directly in the editor. The **Visualisation** object allows you to access those templates.
 
-Create a **Visualisation** object (right click in the hierarchy, IATK/DataSouce). Drag and drop a **Data Source** object in the *Data Source* field of the Visualisation object. You are now ready to design a data visualisation with the following templates:
+Create a **Visualisation** object (right click in the hierarchy, IATK/Visualisation). Drag and drop a **Data Source** object in the *Data Source* field of the Visualisation object. You are now ready to design a data visualisation with the following templates:
 
 - Simple visualisation: 
   * 2D/3D scatterplots
@@ -66,7 +66,7 @@ Create a **Visualisation** object (right click in the hierarchy, IATK/DataSouce)
 
 <img width="280" alt="3dsparklines" src=  https://user-images.githubusercontent.com/11532065/46444861-4546a380-c7b7-11e8-99a6-3e90300cac71.JPG> <img width="280" alt="3dsparklines" src= https://user-images.githubusercontent.com/11532065/46445099-7e334800-c7b8-11e8-962d-747c236c1fe4.JPG> 
 
-Create visual links between two visualisations. Drag and drop two visualisations objects (source,target) into the Linked Visualisation component. Set the (boolean) ShowLinks to show the links between the 2 visualisations.
+Create visual links between two visualisations (right click IATK>LinkedVisualisation). Drag and drop two visualisations objects (source,target) into the Linked Visualisation component. Set the (boolean) ShowLinks to show the links between the 2 visualisations.
 
 ### Brushing and Linking
 <img align = "left" width="280" alt="brushinglinking" src="https://user-images.githubusercontent.com/11532065/46593142-3e03fa80-cb15-11e8-8fe0-bc56d62c10af.PNG"> It's easy to setup brushing and linking visualisation with IATK. First create a BrushingAndLinking object (right click in hierarchy, IATK>Brushing And Linking). 
@@ -90,21 +90,21 @@ myCSVDataSource = createCSVDataSource(myDataSource.text);
 ```
 Further details (methods, properties) are available in the documention [to come].
 
-2. ViewBuilder
+### ViewBuilder
 IATK uses a fluent design pattern that lets you chain commands to design a visualisation in a single instruction.
-Example:
+Example in the **Scripting** section
 
-3. View
+### View
 Once you have built a View object with the Viewbuilder, you can change the view attributes (colours, positions, sizes, filters ...) . See documentation [to come].
 
-4. Graphics toolkit
+### Graphics toolkit
 The toolkit contains facilities to create high quality graphics dsigned for data visualisation in Virtual and Augmented Reality. The IATK core graphics tools include:
 
 - a **BigMesh** script that allows the creation of visualisations 
 - several shaders to render a lot of data rapidly and efficiently, and custom graphics for data visualisations (thick lines, dots/spheres, cubes/bars)
 - a selection tool (brushing) that enables the selection of data accross several data visualizations.
 
-3. Scripting
+### Scripting
 ```csharp
 // create a view builder with the point topology
 ViewBuilder vb = new ViewBuilder (MeshTopology.Points, "Uber pick up point visualisation").
@@ -132,7 +132,7 @@ For attendees, please download:
 - [Unity 2017](https://unity3d.com/get-unity/download?thank-you=update&download_nid=49126&os=Win)
 - [Virtual reality toolkit VRTK](https://github.com/thestonefox/VRT)
 
-***IATK works on Windows machines -  Mac users: you can use the toolkit in Unity on your mac but some options won't be available (e.g. brushing and linking)***
+***/!\IATK works on Windows machines -  Mac users please [install bootcamp] (https://support.apple.com/en-au/HT201468)/!\***
 
 Setup a VR scene with the Oculus Rift in Unity: https://www.youtube.com/watch?v=psPVNddjgGw&t
 Setup a VR scene with the HTC Vive in Unity: https://www.youtube.com/watch?v=tyFV9oBReqg&list=RDtyFV9oBReqg&start_radio=1
