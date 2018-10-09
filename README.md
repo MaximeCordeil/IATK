@@ -12,7 +12,7 @@ First, create a **Data Source** object (right click in the hierarchy, IATK/DataS
 ### Visualisation: an editor menu helper
 IATK has a number of predefined, controlable data visualisation template that are accessible directly in the editor. The **Visualisation** object allows you to access those templates.
 
-Create a **Visualisation** object (right click in the hierarchy, IATK/DataSouce). Drag and drop a **Data Source** object in the *Data Source* field of the Visualisation object. You are now ready to design a data visualisation with the following templates:
+Create a **Visualisation** object (right click in the hierarchy, IATK/Visualisation). Drag and drop a **Data Source** object in the *Data Source* field of the Visualisation object. You are now ready to design a data visualisation with the following templates:
 
 - Simple visualisation: 
   * 2D/3D scatterplots
@@ -66,7 +66,7 @@ Create a **Visualisation** object (right click in the hierarchy, IATK/DataSouce)
 
 <img width="280" alt="3dsparklines" src=  https://user-images.githubusercontent.com/11532065/46444861-4546a380-c7b7-11e8-99a6-3e90300cac71.JPG> <img width="280" alt="3dsparklines" src= https://user-images.githubusercontent.com/11532065/46445099-7e334800-c7b8-11e8-962d-747c236c1fe4.JPG> 
 
-Create visual links between two visualisations. Drag and drop two visualisations objects (source,target) into the Linked Visualisation component. Set the (boolean) ShowLinks to show the links between the 2 visualisations.
+Create visual links between two visualisations (right click IATK>LinkedVisualisation). Drag and drop two visualisations objects (source,target) into the Linked Visualisation component. Set the (boolean) ShowLinks to show the links between the 2 visualisations.
 
 ### Brushing and Linking
 <img align = "left" width="280" alt="brushinglinking" src="https://user-images.githubusercontent.com/11532065/46593142-3e03fa80-cb15-11e8-8fe0-bc56d62c10af.PNG"> It's easy to setup brushing and linking visualisation with IATK. First create a BrushingAndLinking object (right click in hierarchy, IATK>Brushing And Linking). 
