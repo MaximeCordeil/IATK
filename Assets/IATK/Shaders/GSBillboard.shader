@@ -153,7 +153,7 @@ Shader "IATK/OutlineDots"
 					GS_INPUT output = (GS_INPUT)0;
 					
 					float idx = v.uv_MainTex.x;
-					float size = lerp(v.uv_MainTex.w, v.uv_MainTex.y, _Tween);
+					float size = v.uv_MainTex.y;
 					float isFiltered = v.uv_MainTex.z;
 
 					//lookup the texture to see if the vertex is brushed...

@@ -1,4 +1,4 @@
-﻿// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
 
 // Upgrade NOTE: replaced '_Object2World' with 'unity_ObjectToWorld'
 // Upgrade NOTE: replaced '_World2Object' with 'unity_WorldToObject'
@@ -157,7 +157,7 @@ Shader "IATK/CubeShader"
 					v2g o;
 
 					float idx = v.uv_MainTex.x;
-					float size = lerp(v.uv_MainTex.w, v.uv_MainTex.y, _Tween);
+					float size = v.uv_MainTex.y;
 					float isFiltered = v.uv_MainTex.z;
 
 					//lookup the texture to see if the vertex is brushed...
