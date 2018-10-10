@@ -19,7 +19,8 @@ namespace IATK
             Quads,
             LinesAndDots,
             Cubes,
-            Bars
+            Bars,
+            Spheres
         }
 
         public enum PropertyType
@@ -260,6 +261,14 @@ namespace IATK
                     return builder.updateView().
                     apply(gameObject, mt);
 
+                case AbstractVisualisation.GeometryType.Spheres:
+                    builder.createIndicesPointTopology(); // createIndicesLinkedTopology(dataSource[linkingDimension].Data);
+                    mt = new Material(Shader.Find("IATK/SphereShader"));
+                    mt.mainTexture = Resources.Load("sphere-texture") as Texture2D;
+                    mt.renderQueue = 3000;
+                    return builder.updateView().
+                    apply(gameObject, mt);
+
                 default:
                     return null;
             }
@@ -283,6 +292,8 @@ namespace IATK
                 case AbstractVisualisation.GeometryType.Bars:
                     return MeshTopology.Points;
                 case AbstractVisualisation.GeometryType.Cubes:
+                    return MeshTopology.Points;
+                case AbstractVisualisation.GeometryType.Spheres:
                     return MeshTopology.Points;
 
                 default:

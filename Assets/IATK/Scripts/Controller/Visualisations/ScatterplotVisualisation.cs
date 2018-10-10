@@ -236,7 +236,9 @@ namespace IATK
                                     viewList[i].SetSizeChannel(Enumerable.Repeat(1f, visualisationReference.dataSource[0].Data.Length).ToArray());
                                 }
                             }
-                            creationConfiguration.SizeDimension = visualisationReference.sizeDimension;                                
+                            creationConfiguration.SizeDimension = visualisationReference.sizeDimension;       
+                            viewList[0].Tween();
+
                             break;
 
                         }

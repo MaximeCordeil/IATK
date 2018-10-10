@@ -1,4 +1,4 @@
-﻿// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
 
 // Upgrade NOTE: replaced '_Object2World' with 'unity_ObjectToWorld'
 // Upgrade NOTE: replaced '_World2Object' with 'unity_WorldToObject'
@@ -70,7 +70,7 @@ Shader "IATK/CubeShader"
           		    float4 position : POSITION;
             		float4 color: COLOR;
 					float3 normal: NORMAL;
-					float3 uv_MainTex : TEXCOORD0; // index, vertex size, filtered
+					float4 uv_MainTex : TEXCOORD0; // index, vertex size, filtered, prev size
         		};
 
 				struct v2g
@@ -180,17 +180,17 @@ Shader "IATK/CubeShader"
 					o.color =  v.color;
 
 					//precision filtering
-					float epsilon = -0.00001; 
+					float epsilon = -0.00001;
 
 					//filtering
-					if(
-					 normalisedPosition.x < (_MinX + epsilon) ||
-					 normalisedPosition.x > (_MaxX - epsilon) || 
-					 normalisedPosition.y < (_MinY + epsilon) || 
-					 normalisedPosition.y > (_MaxY - epsilon) || 
-					 normalisedPosition.z < (_MinZ + epsilon) || 
-					 normalisedPosition.z > (_MaxZ - epsilon) || isFiltered
-					 )
+					if (
+						normalisedPosition.x < (_MinX + epsilon) ||
+						normalisedPosition.x >(_MaxX - epsilon) ||
+						normalisedPosition.y < (_MinY + epsilon) ||
+						normalisedPosition.y >(_MaxY - epsilon) ||
+						normalisedPosition.z < (_MinZ + epsilon) ||
+						normalisedPosition.z >(_MaxZ - epsilon) || isFiltered
+						)
 					{
 						o.color.w = 0;
 					}
@@ -203,29 +203,29 @@ Shader "IATK/CubeShader"
 				{
 					float3 NEU = float3( size,  size,  size);
 					float3 NED = float3( size, -size,  size);
-					float3 NWU = float3( size,  size, -size);
-					float3 NWD = float3( size, -size, -size);
-					float3 SEU = float3(-size,  size,  size);
-					float3 SED = float3(-size, -size,  size);
+					float3 NWU = float3(-size,  size,  size);
+					float3 NWD = float3(-size, -size,  size);
+					float3 SEU = float3( size,  size, -size);
+					float3 SED = float3( size, -size, -size);
 					float3 SWU = float3(-size,  size, -size);
 					float3 SWD = float3(-size, -size, -size);
 
 					float4 pNEU = float4(position + NEU, 1.0f);
 					float4 pNED = float4(position + NED, 1.0f);
 					float4 pNWU = float4(position + NWU, 1.0f);
-					float4 pNWD = float4(position+ NWD, 1.0f);
+					float4 pNWD = float4(position + NWD, 1.0f);
 
 					float4 pSEU = float4(position + SEU, 1.0f);
 					float4 pSED = float4(position + SED, 1.0f);
 					float4 pSWU = float4(position + SWU, 1.0f);
 					float4 pSWD = float4(position + SWD, 1.0f);
 		
-					float3 nN = float3(0, 0, -1);
-					float3 nS = float3(0, 0, 1);
-					float3 nE = float3(1, 0, 0);
-					float3 nW = float3(-1, 0, 0);
+					float3 nN = float3(0, 0, 1);
+					float3 nS = float3(0, 0, -1);
+					float3 nE = float3(-1, 0, 0);
+					float3 nW = float3(1, 0, 0);
 					float3 nU = float3(0, 1, 0);
-					float3 nD = float3(0, -1, 0);
+					float3 nD = float3(1, -1, 0);
 
 					float4x4 vp = UNITY_MATRIX_MVP;
 					
@@ -242,8 +242,9 @@ Shader "IATK/CubeShader"
 
 					worldNormal = UnityObjectToWorldNormal(nN);
 					nl = max(0, dot(worldNormal, _WorldSpaceLightPos0.xyz));
-					pIn.color = float4(color.rgb * nl, color.a);
+					pIn.color = float4(_LightColor0.rgb * nl, color.a);
 					pIn.color.rgb += ShadeSH9(half4(worldNormal, 1));
+					pIn.color.rgb *= color.rgb;
 
 					pIn.vertex = UnityObjectToClipPos(pNWU);
 					pIn.tex0 = float2(0.0f, 1.0f);
@@ -267,8 +268,9 @@ Shader "IATK/CubeShader"
 
 					worldNormal = UnityObjectToWorldNormal(nW);
 					nl = max(0, dot(worldNormal, _WorldSpaceLightPos0.xyz));
-					pIn.color = float4(color.rgb * nl, color.a);
+					pIn.color = float4(_LightColor0.rgb * nl, color.a);
 					pIn.color.rgb += ShadeSH9(half4(worldNormal, 1));
+					pIn.color.rgb *= color.rgb;
 
 
 					pIn.vertex = UnityObjectToClipPos( pNED);
@@ -293,8 +295,9 @@ Shader "IATK/CubeShader"
 					
 					worldNormal = UnityObjectToWorldNormal(nU);
 					nl = max(0, dot(worldNormal, _WorldSpaceLightPos0.xyz));
-					pIn.color = float4(color.rgb * nl, color.a);
+					pIn.color = float4(_LightColor0.rgb * nl, color.a);
 					pIn.color.rgb += ShadeSH9(half4(worldNormal, 1));
+					pIn.color.rgb *= color.rgb;
 
 
 
@@ -319,8 +322,9 @@ Shader "IATK/CubeShader"
 					// FACE 4
 					worldNormal = UnityObjectToWorldNormal(nS);
 					nl = max(0, dot(worldNormal, _WorldSpaceLightPos0.xyz));
-					pIn.color = float4(color.rgb * nl, color.a);
+					pIn.color = float4(_LightColor0.rgb * nl, color.a);
 					pIn.color.rgb += ShadeSH9(half4(worldNormal, 1));
+					pIn.color.rgb *= color.rgb;
 
 
 					pIn.vertex = UnityObjectToClipPos(pSWU);
@@ -344,8 +348,9 @@ Shader "IATK/CubeShader"
 					// FACE 5
 					worldNormal = UnityObjectToWorldNormal(nD);
 					nl = max(0, dot(worldNormal, _WorldSpaceLightPos0.xyz));
-					pIn.color = float4(color.rgb * nl, color.a);
+					pIn.color = float4(_LightColor0.rgb * nl, color.a);
 					pIn.color.rgb += ShadeSH9(half4(worldNormal, 1));
+					pIn.color.rgb *= color.rgb;
 
 
 					pIn.vertex = UnityObjectToClipPos(pNWD);
@@ -369,8 +374,9 @@ Shader "IATK/CubeShader"
 					// FACE 6
 					worldNormal = UnityObjectToWorldNormal(nE);
 					nl = max(0, dot(worldNormal, _WorldSpaceLightPos0.xyz));
-					pIn.color = float4(color.rgb * nl, color.a);
+					pIn.color = float4(_LightColor0.rgb * nl, color.a);
 					pIn.color.rgb += ShadeSH9(half4(worldNormal, 1));
+					pIn.color.rgb *= color.rgb;
 
 					pIn.vertex = UnityObjectToClipPos(pNWD);
 					pIn.tex0 = float2(1.0f, 0.0f);
@@ -409,31 +415,23 @@ Shader "IATK/CubeShader"
 				// Fragment Shader -----------------------------------------------
 				float4 FS_Main(g2f input) : COLOR
 				{
-				if(input.color.w == 0)
+					if(input.color.w == 0)
 					{
-						//if( dt <= 0.2f)
-						//	return float4(0.1,0.1,0.1,1.0);
-						//else
-						//	if(dx * dx + dy * dy <= 0.25f)
-						//	return float4(0.0, 0.0, 0.0, 1.0);
-						//	else
-						//	{
-							discard;
-							return float4(0.0, 0.0, 0.0, 0.0);
-//							}
+						discard;
+						return float4(0.0, 0.0, 0.0, 0.0);
 					}
 					else
 					{
-				float dx = input.tex0.x;// - 0.5f;
-			    float dy = input.tex0.y;// - 0.5f;
+						float dx = input.tex0.x;
+						float dy = input.tex0.y;
 
-				if(dx > 0.99 || dx < 0.01 || dy <0.01  || dy>0.99 ) return float4(0.0, 0.0, 0.0, input.color.w);
+						if(dx > 0.99 || dx < 0.01 || dy <0.01  || dy>0.99 ) return float4(0.0, 0.0, 0.0, input.color.w);
 			
-				float dt = (dx -0.5) * (dx-0.5) + (dy-0.5) * (dy-0.5);
-				if (input.isBrushed > 0.0 && showBrush > 0.0)
-					return brushColor;
-				else
-					return input.color;// float4(input.color.x - dx / 2, input.color.y - dx / 2, input.color.z - dx / 2, input.color.w);
+						float dt = (dx -0.5) * (dx-0.5) + (dy-0.5) * (dy-0.5);
+						if (input.isBrushed > 0.0 && showBrush > 0.0)
+							return brushColor;
+						else
+							return input.color;
 				}
 			
 			}

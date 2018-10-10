@@ -278,9 +278,9 @@ namespace IATK
             return normals.ToArray();
         }
 
-        List<Vector3> GetUVList(int channel, Mesh mesh)
+        List<Vector4> GetUVList(int channel, Mesh mesh)
         {
-            List<Vector3> l = new List<Vector3>();
+            List<Vector4> l = new List<Vector4>();
             mesh.GetUVs(channel, l);
             return l;
         }
@@ -313,7 +313,12 @@ namespace IATK
 
 
                 var v = meshUVs[meshVertIdx];
+                var prev = v[component];
                 v[component] = data[dataPtr];
+                if (component == (int)AbstractVisualisation.NormalChannel.Size)
+                {
+                    v[3] = prev;
+                }
                 meshUVs[meshVertIdx] = v;
                 
                 meshVertIdx++;
@@ -787,7 +792,6 @@ namespace IATK
             if (_tween < 1.0f)
             {
                 float v = Mathf.Pow(_tween, 3) * (_tween * (6f * _tween - 15f) + 10f);
-                    //Mathf.SmoothStep(0.0f, 1.0f, _tween);
                 this.SharedMaterial.SetFloat("_Tween", v);
             }
             else

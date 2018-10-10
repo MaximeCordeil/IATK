@@ -65,7 +65,7 @@ Shader "IATK/OutlineDots"
           		    float4 position : POSITION;
             		float4 color: COLOR;
 					float3 normal: NORMAL;
-					float3 uv_MainTex : TEXCOORD0; // index, vertex size, filtered
+					float4 uv_MainTex : TEXCOORD0; // index, vertex size, filtered, prev size
         		};
 				
 				struct GS_INPUT
