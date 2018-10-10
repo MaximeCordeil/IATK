@@ -33,6 +33,7 @@ public class Activity0_Uber : MonoBehaviour {
 
         float[] uniqueValues = csvdata[attribute].MetaData.categories;
         accordion = new View [uniqueValues.Length];
+
         for (int i = 0; i < uniqueValues.Length; i++)
         {
             View view = Facet(csvdata,
@@ -159,7 +160,7 @@ public class Activity0_Uber : MonoBehaviour {
             initialiseDataView(xData.Length).
             setDataDimension(xData, ViewBuilder.VIEW_DIMENSION.X).
             setDataDimension(yData, ViewBuilder.VIEW_DIMENSION.Y).
-            setDataDimension(zData, ViewBuilder.VIEW_DIMENSION.Z).
+            //setDataDimension(zData, ViewBuilder.VIEW_DIMENSION.Z).
             setSize(baseFilter(csvds["Date"].Data,csvds, filteringValue,filteringAttribute)).
             setColors(xData.Select(x => color).ToArray());
 
