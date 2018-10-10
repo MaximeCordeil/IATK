@@ -424,29 +424,32 @@ Shader "IATK/BarShader"
 					float halfS = 0.025f * (_Size + (sizeFactor));
 					float isBrushed = p[0].isBrushed;
 
-			
 					emitCube(p[0].vertex, p[0].color, halfS, isBrushed, triStream);
 				}
 
 				// Fragment Shader -----------------------------------------------
 				float4 FS_Main(g2f input) : COLOR
 				{
-                if(input.color.w == 0)
-				{
-                    discard;
-                    return float4(0.0, 0.0, 0.0, 0.0);
-                }
+					if(input.color.w == 0)
+					{
+						discard;
+						return float4(0.0, 0.0, 0.0, 0.0);
+					}
 
-				float xboarder = 0.01;
-				float yboarder = 0.01 * input.size * input.size;
+					float dx = input.tex0.x;
+					float dy = input.tex0.y;
 
-				if(dx > 1.0 - xboarder || dx < xboarder || dy < yboarder || dy > 1.0 - yboarder) return float4(0.0, 0.0, 0.0, input.color.w);
+					float xboarder = 0.01;
+					float yboarder = 0.01 * input.size * input.size;
+
+					if(dx > 1.0 - xboarder || dx < xboarder || dy < yboarder || dy > 1.0 - yboarder) 
+						return float4(0.0, 0.0, 0.0, input.color.w);
 			
-				if (input.isBrushed > 0.0 && showBrush >0.0)
-							return brushColor;
-						else
-				return input.color;
-				}
+					if (input.isBrushed > 0.0 && showBrush > 0.0)
+						return brushColor;
+					else
+						return input.color;	
+				//}
 			
 			}
 			ENDCG
