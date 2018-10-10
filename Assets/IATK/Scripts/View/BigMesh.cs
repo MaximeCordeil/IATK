@@ -777,27 +777,63 @@ namespace IATK
         }
 
         // handle animations
-        float _tween = 0.0f;
+        float _tweenPosition = 0.0f;
+        float _tweenSize = 0.0f;
 
-        public void Tween()
+        public enum TweenType
         {
-            _tween = 0.0f;
-            this.SharedMaterial.SetFloat("_Tween", 0);
-            EditorApplication.update = DoTheTween;
+            Position,
+            Size
+        }
+
+        public void Tween(TweenType type)
+        {
+            if (type == TweenType.Position)
+            {
+                _tweenPosition = 0.0f;
+                this.SharedMaterial.SetFloat("_Tween", 0);
+                EditorApplication.update = DoTheTween;
+            }
+            else if (type == TweenType.Size)
+            {
+                _tweenSize = 0.0f;
+                this.SharedMaterial.SetFloat("_TweenSize", 0);
+                EditorApplication.update = DoTheTween;
+            }
         }
 
         private void DoTheTween()
         {
-            _tween += Time.deltaTime;
-            if (_tween < 1.0f)
+            bool isTweening = false;
+            
+            _tweenPosition += Time.deltaTime;
+            if (_tweenPosition < 1.0f)
             {
-                float v = Mathf.Pow(_tween, 3) * (_tween * (6f * _tween - 15f) + 10f);
+                float v = Mathf.Pow(_tweenPosition, 3) * (_tweenPosition * (6f * _tweenPosition - 15f) + 10f);
                 this.SharedMaterial.SetFloat("_Tween", v);
+                isTweening = true;
             }
             else
             {
-                _tween = 1.0f;
+                _tweenPosition = 1.0f;
                 this.SharedMaterial.SetFloat("_Tween", 1);
+            }
+
+            _tweenSize += Time.deltaTime;
+            if (_tweenSize < 1.0f)
+            {
+                float v = Mathf.Pow(_tweenSize, 3) * (_tweenSize * (6f * _tweenSize - 15f) + 10f);
+                this.SharedMaterial.SetFloat("_TweenSize", v);
+                isTweening = true;
+            }
+            else
+            {
+                _tweenSize = 1.0f;
+                this.SharedMaterial.SetFloat("_TweenSize", 1);
+            }
+
+            if (!isTweening)
+            {
                 EditorApplication.update = null;
             }
         }

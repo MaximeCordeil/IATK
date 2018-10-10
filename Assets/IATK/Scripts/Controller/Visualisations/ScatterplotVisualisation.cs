@@ -135,12 +135,12 @@ namespace IATK
                         if (visualisationReference.xDimension.Attribute.Equals("Undefined"))
                         {
                             viewList[0].ZeroPosition(0);
-                            viewList[0].Tween();
+                            viewList[0].TweenPosition();
                         }
                         else
                         {
                             viewList[0].UpdateXPositions(visualisationReference.dataSource[visualisationReference.xDimension.Attribute].Data);
-                            viewList[0].Tween();
+                            viewList[0].TweenPosition();
                         }
                         if (creationConfiguration.Axies.ContainsKey(CreationConfiguration.Axis.X))
                         {
@@ -155,12 +155,12 @@ namespace IATK
                         if (visualisationReference.yDimension.Attribute.Equals("Undefined"))
                         {
                             viewList[0].ZeroPosition(1);
-                            viewList[0].Tween();
+                            viewList[0].TweenPosition();
                         }
                         else
                         {
                             viewList[0].UpdateYPositions(visualisationReference.dataSource[visualisationReference.yDimension.Attribute].Data);
-                            viewList[0].Tween();
+                            viewList[0].TweenPosition();
                         }
                         if (creationConfiguration.Axies.ContainsKey(CreationConfiguration.Axis.Y))
                         {
@@ -175,12 +175,12 @@ namespace IATK
                         if (visualisationReference.zDimension.Attribute.Equals("Undefined"))
                         {
                             viewList[0].ZeroPosition(2);
-                            viewList[0].Tween();
+                            viewList[0].TweenPosition();
                         }
                         else
                         {
                             viewList[0].UpdateZPositions(visualisationReference.dataSource[visualisationReference.zDimension.Attribute].Data);
-                            viewList[0].Tween();
+                            viewList[0].TweenPosition();
                         }
                         if (creationConfiguration.Axies.ContainsKey(CreationConfiguration.Axis.Z))
                         {
@@ -237,7 +237,7 @@ namespace IATK
                                 }
                             }
                             creationConfiguration.SizeDimension = visualisationReference.sizeDimension;       
-                            viewList[0].Tween();
+                            viewList[0].TweenSize();
 
                             break;
 

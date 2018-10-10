@@ -288,9 +288,14 @@ namespace IATK
         /// <summary>
         /// Tweens - animates the vertices
         /// </summary>
-        public void Tween()
+        public void TweenPosition()
         {
-            bigMesh.Tween();
+            bigMesh.Tween(BigMesh.TweenType.Position);
+        }
+
+        public void TweenSize()
+        {
+            bigMesh.Tween(BigMesh.TweenType.Size);
         }
 
         /// <summary>

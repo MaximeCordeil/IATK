@@ -27,6 +27,7 @@ Shader "IATK/CubeShader"
 		_MyDstMode("_DstMode", Float) = 10
 
 		_Tween("_Tween", Range(0, 1)) = 1
+		_TweenSize("_TweenSize", Range(0, 1)) = 1
 	}
 
 	SubShader 
@@ -136,6 +137,7 @@ Shader "IATK/CubeShader"
 			float _MaxNormZ;
 			
 			float _Tween;
+			float _TweenSize;
 
 			float4x4 _VP;
 			Texture2D _SpriteTex;
@@ -157,7 +159,6 @@ Shader "IATK/CubeShader"
 					v2g o;
 
 					float idx = v.uv_MainTex.x;
-					float size = v.uv_MainTex.y;
 					float isFiltered = v.uv_MainTex.z;
 
 					//lookup the texture to see if the vertex is brushed...
@@ -165,7 +166,8 @@ Shader "IATK/CubeShader"
 					float4 brushValue = tex2Dlod(_BrushedTexture, float4(indexUV, 0.0, 0.0));
 
 					o.isBrushed = brushValue.r;
-				
+
+					float size = lerp(v.uv_MainTex.w, v.uv_MainTex.y, _TweenSize);
 					float3 pos = lerp(v.normal, v.position, _Tween);
 
 					float4 normalisedPosition = float4(

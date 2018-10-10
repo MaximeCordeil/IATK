@@ -22,6 +22,8 @@
 		_MyDstMode("_DstMode", Float) = 10
 
 		_Tween("_Tween", Range(0, 1)) = 1
+		_TweenSize("_TweenSize", Range(0, 1)) = 1
+
 
 	}
 		SubShader
@@ -106,6 +108,7 @@
 
 	// Time
 	float _Tween;
+	float _TweenSize;
 
 
 	//*********************************
@@ -130,7 +133,6 @@
 		v2g o;
 
 		float idx = v.uv_MainTex.x;
-		float size = v.uv_MainTex.y;
 		float isFiltered = v.uv_MainTex.z;
 
 		//lookup the texture to see if the vertex is brushed...
@@ -139,6 +141,7 @@
 
 		o.isBrushed = brushValue.r;
 				
+		float size = lerp(v.uv_MainTex.w, v.uv_MainTex.y, _TweenSize);
 		float3 pos = lerp(v.normal, v.vertex, _Tween);
 
 		float4 normalisedPosition = float4(
