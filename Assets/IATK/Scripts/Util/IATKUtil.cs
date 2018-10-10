@@ -14,7 +14,7 @@ namespace IATK
         /// <param name="configuration"></param>
         /// <param name="builder"></param>
         /// <returns></returns>
-        public static Material GetMaterialFromTopolgy(AbstractVisualisation.GeometryType configuration)
+        public static Material GetMaterialFromTopology(AbstractVisualisation.GeometryType configuration)
         {
             Material mt = null;
 

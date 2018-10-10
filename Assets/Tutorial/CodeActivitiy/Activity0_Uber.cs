@@ -163,7 +163,7 @@ public class Activity0_Uber : MonoBehaviour {
             setSize(baseFilter(csvds["Date"].Data,csvds, filteringValue,filteringAttribute)).
             setColors(xData.Select(x => color).ToArray());
 
-        Material mt = IATKUtil.GetMaterialFromTopolgy(AbstractVisualisation.GeometryType.Points);
+        Material mt = IATKUtil.GetMaterialFromTopology(AbstractVisualisation.GeometryType.Points);
         mt.SetFloat("_MinSize", 0.01f);
         mt.SetFloat("_MaxSize", 0.05f);
 

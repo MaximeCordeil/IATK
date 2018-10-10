@@ -32,7 +32,7 @@ public class Activity1_lines : MonoBehaviour {
 
         // create a view builder with the point topology
 
-        Material mt = IATKUtil.GetMaterialFromTopolgy(AbstractVisualisation.GeometryType.Lines);
+        Material mt = IATKUtil.GetMaterialFromTopology(AbstractVisualisation.GeometryType.Lines);
         //Material mt = new Material(Shader.Find("IATK/LinesShader"));
         mt.mainTexture = Resources.Load("circle-outline-basic") as Texture2D;
         mt.renderQueue = 3000;
