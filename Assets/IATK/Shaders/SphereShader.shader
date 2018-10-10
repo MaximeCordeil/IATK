@@ -268,7 +268,7 @@ Shader "IATK/SphereShader"
 		o.color.rgb *= input.color;
 
 		half2 d = input.tex0 - float2(0.5, 0.5);
-		if (length(d) > 0.5)
+		if (length(d) > 0.5 || input.color.w == 0)
 		{
 			discard;
 		}
