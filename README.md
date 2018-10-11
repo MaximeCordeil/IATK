@@ -84,6 +84,16 @@ Usage:
 TextAsset myDataSource;
 CSVDataSource myCSVDataSource;
 myCSVDataSource = createCSVDataSource(myDataSource.text);
+
+// a reusable method to create an IATK CSVDataSource object.
+CSVDataSource createCSVDataSource(string data)
+{
+CSVDataSource dataSource;
+dataSource = gameObject.AddComponent<CSVDataSource>();
+dataSource.load(data, null);
+return dataSource;
+}
+
 ```
 Further details (methods, properties) are available in the documention [to come].
 
@@ -102,15 +112,22 @@ The toolkit contains facilities to create high quality graphics dsigned for data
 - a selection tool (brushing) that enables the selection of data accross several data visualizations.
 
 ### Scripting
+Example of building a visualisation from code. The *ViewBuilder* class allows the design of the visualisation. When *applying* (i.e. using the .apply(GameObject go, Material) method) the ViewBuilder returns a View. The View object can then be later updated (e.g. set positions, colors, etc...).
+
 ```csharp
 // create a view builder with the point topology
 ViewBuilder vb = new ViewBuilder (MeshTopology.Points, "Uber pick up point visualisation").
-        initialiseDataView(csvds.DataCount).
-        setDataDimension(csvds["Lat"].Data, ViewBuilder.VIEW_DIMENSION.X).
-        setDataDimension(csvds["Base"].Data, ViewBuilder.VIEW_DIMENSION.Y).
-        setDataDimension(csvds["Lon"].Data, ViewBuilder.VIEW_DIMENSION.Z).
-        setSize(csvds["Base"].Data).
-     setColors(csvds["Time"].Data.Select(x => g.Evaluate(x)).ToArray());
+                     initialiseDataView(csvds.DataCount).
+                     setDataDimension(csvds["Lat"].Data, ViewBuilder.VIEW_DIMENSION.X).
+                     setDataDimension(csvds["Base"].Data, ViewBuilder.VIEW_DIMENSION.Y).
+                     setDataDimension(csvds["Lon"].Data, ViewBuilder.VIEW_DIMENSION.Z).
+                     setSize(csvds["Base"].Data).
+                     setColors(csvds["Time"].Data.Select(x => g.Evaluate(x)).ToArray());
+                     
+// use the IATKUtil class to get the corresponding Material mt 
+Material mt = IATKUtil.GetMaterialFromTopology(AbstractVisualisation.GeometryType.Points);
+mt.SetFloat("_MinSize", 0.01f);
+mt.SetFloat("_MaxSize", 0.05f);
 
 // create a view builder with the point topology
 View view = vb.updateView().apply(gameObject, mt);
