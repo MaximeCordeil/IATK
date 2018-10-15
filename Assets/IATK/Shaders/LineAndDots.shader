@@ -58,7 +58,7 @@
 				float4 vertex : POSITION;
 				float4 color : COLOR;
 				float3 normal : NORMAL;
-				float3 uv_MainTex : TEXCOORD0; // index, vertex size, filtered
+				float4 uv_MainTex : TEXCOORD0; // index, vertex size, filtered
 
 			};
 
@@ -182,11 +182,9 @@
 					float3 up = UNITY_MATRIX_IT_MV[1].xyz;
 					float3 right =  -UNITY_MATRIX_IT_MV[0].xyz;
 
-					float dist = 1;// length(ObjSpaceViewDir(_point.vertex));
-
 					float sizeFactor = normaliseValue(_point.normal.y, 0.0, 1.0, _MinSize, _MaxSize);
-										
-					float halfS = 0.06f * (_Size + (dist * sizeFactor));
+					float dist = 1;
+					float halfS = 0.01f * (_Size + (dist * sizeFactor));
 							
 					float4 v[4];				
 

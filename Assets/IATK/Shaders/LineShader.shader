@@ -149,7 +149,6 @@
 			normaliseValue(pos.y, _MinNormY, _MaxNormY, 0, 1),
 			normaliseValue(pos.z, _MinNormZ, _MaxNormZ, 0, 1), 1.0);
 	
-
 		float4 vert = UnityObjectToClipPos(normalisedPosition);
 
 		o.vertex = vert;
