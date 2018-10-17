@@ -4,6 +4,22 @@
 %IATK provides a *Visualisation* script to help you create and design visualizations within the Unity editor -->
 IATK is an ongoing and open project! We setup a roadmap with features that we would like to see in IATK in a near future.  
 
+## IEEE VIS 2018 tutorial 
+We will give an Immersive Visualisation tutorial with IATK at IEEE VIS 2018.
+For attendees, please download:
+
+- this repository
+- [Unity 2017](https://unity3d.com/get-unity/download?thank-you=update&download_nid=49126&os=Win)
+- [Virtual reality toolkit VRTK](https://github.com/thestonefox/VRTK)
+
+***!!! IATK works on Windows machines -  Mac users please [install bootcamp](https://support.apple.com/en-au/HT201468) !!!***
+
+Setup a VR scene with the Oculus Rift in Unity: https://www.youtube.com/watch?v=psPVNddjgGw&t
+
+Setup a VR scene with the HTC Vive in Unity: https://www.youtube.com/watch?v=tyFV9oBReqg&list=RDtyFV9oBReqg&start_radio=1
+
+Our repository contains sample datasets. Come with your CSV data to the tutorial if you want to give it a go!
+
 ## IATK editor components
 ### Data Source: import data into the scene
 First, create a **Data Source** object (right click in the hierarchy, IATK/DataSouce). Drag and drop a CSV/TSV in the *Data field*. Your data is now imported into the Unity scene!
@@ -137,22 +153,6 @@ IATK is a prototype for research and there are known issues that we will fix in 
 
 - unrecognised symbols in data source can break the scripts 
 - scatterplot matrices can be slow due to the amount of points to display (if you have a very large dataset and a lot of dimension, scatetrplot matrices will be slow)
-
-## IEEE VIS 2018 tutorial 
-We will give an Immersive Visualisation tutorial with IATK at IEEE VIS 2018.
-For attendees, please download:
-
-- this repository
-- [Unity 2017](https://unity3d.com/get-unity/download?thank-you=update&download_nid=49126&os=Win)
-- [Virtual reality toolkit VRTK](https://github.com/thestonefox/VRTK)
-
-***!!! IATK works on Windows machines -  Mac users please [install bootcamp](https://support.apple.com/en-au/HT201468) !!!***
-
-Setup a VR scene with the Oculus Rift in Unity: https://www.youtube.com/watch?v=psPVNddjgGw&t
-
-Setup a VR scene with the HTC Vive in Unity: https://www.youtube.com/watch?v=tyFV9oBReqg&list=RDtyFV9oBReqg&start_radio=1
-
-Our repository contains sample datasets. Come with your CSV data to the tutorial if you want to give it a go!
 
 ## Roadmap
 In a near feature we will support:
