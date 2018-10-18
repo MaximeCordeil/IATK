@@ -3,7 +3,7 @@
 <!-- With IATK, load CSV/TSV files and write simple code using the library to create immersive data visualisations.
 %IATK provides a *Visualisation* script to help you create and design visualizations within the Unity editor -->
 IATK is an ongoing and open project! We setup a roadmap with features that we would like to see in IATK in a near future.  
-
+<br/>
 ## IEEE VIS 2018 tutorial 
 We will give an Immersive Visualisation tutorial with IATK at IEEE VIS 2018.
 For attendees, please download:
