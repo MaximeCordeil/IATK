@@ -21,8 +21,8 @@ public class Activity0_Uber : MonoBehaviour {
     // Use this for initialization
     void Start () {
         csvdata = createCSVDataSource(uberData.text);
-//        Uber(csvdata);
-        FacetBy("Base");
+        Uber(csvdata);
+        //FacetBy("Base");
     }
 
     void FacetBy(string attribute)
@@ -69,7 +69,6 @@ public class Activity0_Uber : MonoBehaviour {
         pt.x = r * snt * cnp;
         pt.y = r * cnt;
         pt.z = -r * snt * snp;
-//        pt.W = 1;
         return pt;
     }
 
@@ -84,42 +83,18 @@ public class Activity0_Uber : MonoBehaviour {
         gck[1] = new GradientColorKey(Color.red, 1);
         g.colorKeys = gck;
 
-        /*
-         * 
-           
-            x = radius * cos(latitude) * sin(longitude)
-            y = radius * sin(latitude)
-            z = -radius * cos(latitude) * cos(longitude)
-         */
-        float radius = 1f;
-
-        //ViewBuilder vb = new ViewBuilder(MeshTopology.Points, "Uber pick up point visualisation").
-        //   initialiseDataView(csvds.DataCount).
-        //   setDataDimension(csvds["Lat"].Data.Select((b, i) => new { index = i, _base = b }).Select(b => radius * Mathf.Cos(b._base) * Mathf.Sin(csvdata["Lon"].Data[b.index])).ToArray()
-        //   , ViewBuilder.VIEW_DIMENSION.X).
-        //   setDataDimension(csvds["Lat"].Data.Select(x => Mathf.Sin(x)).ToArray(),
-        //   ViewBuilder.VIEW_DIMENSION.Y).
-        //   setDataDimension(csvds["Lon"].Data.Select((b, i) => new { index = i, _base = b }).Select(b => -radius * Mathf.Cos(b._base) * Mathf.Cos(csvdata["Lat"].Data[b.index])).ToArray(),
-        //   ViewBuilder.VIEW_DIMENSION.Z).
-        //   setSize(csvds["Base"].Data).
-        //   setColors(csvds["Time"].Data.Select(x => g.Evaluate(x)).ToArray());
-
         // create a view builder with the point topology
         ViewBuilder vb = new ViewBuilder(MeshTopology.Points, "Uber pick up point visualisation").
             initialiseDataView(csvds.DataCount).
             setDataDimension(csvds["Lat"].Data, ViewBuilder.VIEW_DIMENSION.X).
             setDataDimension(csvds["Base"].Data, ViewBuilder.VIEW_DIMENSION.Y).
-            setDataDimension(csvds["Lon"].Data, ViewBuilder.VIEW_DIMENSION.Z).
             setSize(csvds["Base"].Data).
             setColors(csvds["Time"].Data.Select(x => g.Evaluate(x)).ToArray());
 
         // initialise the view builder wiith thhe number of data points and parent GameOBject
 
         //Enumerable.Repeat(1f, dataSource[0].Data.Length).ToArray()
-        Material mt = new Material(Shader.Find("IATK/OutlineDots"));
-        //Material mt = new Material(Shader.Find("IATK/LinesShader"));
-        mt.mainTexture = Resources.Load("circle-outline-basic") as Texture2D;
-        mt.renderQueue = 3000;
+        Material mt = IATKUtil.GetMaterialFromTopology(AbstractVisualisation.GeometryType.Points);            
         mt.SetFloat("_MinSize", 0.01f);
         mt.SetFloat("_MaxSize", 0.05f);
 
@@ -142,10 +117,11 @@ public class Activity0_Uber : MonoBehaviour {
         //B02598
         //B02512
 
-        Filter baseFilter = (ar, ds, fv,fa) =>
+        // filters the array on a particular value in another dimension
+        Filter baseFilter = (array, datasource, value, dimension) =>
         {
-            return ar.Select((b, i) => new { index = i, _base = b })
-            .Where(b => ds.getOriginalValuePrecise(csvds[fa].Data[b.index],fa).ToString() == fv)
+            return array.Select((b, i) => new { index = i, _base = b })
+            .Where(b => datasource.getOriginalValuePrecise(csvds[dimension].Data[b.index],dimension).ToString() == value)
             .Select(b => b._base).ToArray();
         };
 
@@ -179,20 +155,14 @@ public class Activity0_Uber : MonoBehaviour {
 
     // Update is called once per frame
     void Update () {
-        
-        //size of points by distance betwen the two transforms
-        //if (t0 != null && t1 != null)
-        //{
-        //    v.SetSize(Vector3.Distance(t1.transform.position, t0.transform.position));
-        //}
 
         //accordion
         if (t0 != null && t1 != null && accordion!=null)
         {
             for (int i = 0; i < accordion.Length; i++)
             {
-                accordion[i].transform.position = Vector3.Lerp(t0.position, t1.position, (float)i / (float)accordion.Length);
-                accordion[i].transform.rotation = Quaternion.Lerp(t0.rotation, t1.rotation, (float)i / (float)accordion.Length);
+                accordion[i].transform.position = Vector3.Lerp(t0.position - new Vector3(0, 0.5f, 0), t1.position - new Vector3(0, 0.5f, 0), (float)i / (float)(accordion.Length - 1));
+                accordion[i].transform.rotation = Quaternion.Lerp(t0.rotation, t1.rotation, (float)i / (float)(accordion.Length - 1));
             }
         }
 
