@@ -164,7 +164,7 @@ In a near feature we will support:
 - more type of data sources (including real time data)
 - more geometry (e.g. surfaces / volumes)
 
-## Official members and developpers
+## Team
 The toolkit is developped by Maxime Cordeil (project leader, Monash University), Andrew Cunningham (University of South Australia) and Kingsley Stephens (Monash University).
 
 Contributors: Tim Dwyer (Monash University)
