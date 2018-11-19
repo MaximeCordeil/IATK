@@ -167,6 +167,6 @@ In a near feature we will support:
 - more geometry (e.g. surfaces / volumes)
 
 ## Team
-The toolkit is developped by Maxime Cordeil (project leader, Monash University), Andrew Cunningham (University of South Australia) and Kingsley Stephens (Monash University).
+The toolkit is developed by Maxime Cordeil (project leader, Monash University), Andrew Cunningham (University of South Australia) and Kingsley Stephens (Monash University).
 
 Contributors: Tim Dwyer (Monash University)
