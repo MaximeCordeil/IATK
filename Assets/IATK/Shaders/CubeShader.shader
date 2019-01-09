@@ -203,14 +203,16 @@ Shader "IATK/CubeShader"
 
 				void emitCube (float3 position, float4 color, float size, float isBrushed,  inout TriangleStream<g2f> triStream)
 				{
-					float3 NEU = float3( size,  size,  size);
-					float3 NED = float3( size, -size,  size);
-					float3 NWU = float3(-size,  size,  size);
-					float3 NWD = float3(-size, -size,  size);
-					float3 SEU = float3( size,  size, -size);
-					float3 SED = float3( size, -size, -size);
-					float3 SWU = float3(-size,  size, -size);
-					float3 SWD = float3(-size, -size, -size);
+					float xsize = size / (unity_ObjectToWorld[0].x / unity_ObjectToWorld[2].z);
+
+					float3 NEU = float3(xsize, size, size);
+					float3 NED = float3(xsize, -size, size);
+					float3 NWU = float3(-xsize, size, size);
+					float3 NWD = float3(-xsize, -size, size);
+					float3 SEU = float3(xsize, size, -size);
+					float3 SED = float3(xsize, -size, -size);
+					float3 SWU = float3(-xsize, size, -size);
+					float3 SWD = float3(-xsize, -size, -size);
 
 					float4 pNEU = float4(position + NEU, 1.0f);
 					float4 pNED = float4(position + NED, 1.0f);
