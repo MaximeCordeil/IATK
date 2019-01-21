@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
@@ -786,23 +786,53 @@ namespace IATK
             Size
         }
 
+        // update tween delegate. Returns false when the tween is complete
+        delegate bool UpdateTweenDelegate();
+
+        // global list of all tweens callbacks
+        static List<UpdateTweenDelegate> updateTweens = new List<UpdateTweenDelegate>();
+
         public void Tween(TweenType type)
         {
             if (type == TweenType.Position)
             {
                 _tweenPosition = 0.0f;
                 this.SharedMaterial.SetFloat("_Tween", 0);
-                EditorApplication.update = DoTheTween;
+                QueueTween();
             }
             else if (type == TweenType.Size)
             {
                 _tweenSize = 0.0f;
                 this.SharedMaterial.SetFloat("_TweenSize", 0);
-                EditorApplication.update = DoTheTween;
+                QueueTween();
             }
         }
 
-        private void DoTheTween()
+        void UpdateTweens()
+        {
+            List<UpdateTweenDelegate> deleteList = new List<UpdateTweenDelegate>();
+            for (int i = updateTweens.Count() - 1; i >= 0; --i)
+            {
+                bool isTweening = updateTweens[i]();
+                if (!isTweening)
+                {
+                    updateTweens.RemoveAt(i);
+                }
+            }
+            if (updateTweens.Count() == 0)
+            {
+                EditorApplication.update = null;
+            }
+        }
+
+        void QueueTween()
+        {
+            updateTweens.Add(DoTheTween);
+            EditorApplication.update = UpdateTweens;
+        }
+
+        // returns false if complete, else true
+        private bool DoTheTween()
         {
             bool isTweening = false;
             
@@ -831,11 +861,7 @@ namespace IATK
                 _tweenSize = 1.0f;
                 this.SharedMaterial.SetFloat("_TweenSize", 1);
             }
-
-            if (!isTweening)
-            {
-                EditorApplication.update = null;
-            }
+            return isTweening;
         }
     }
 
