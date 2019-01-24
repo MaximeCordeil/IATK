@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
@@ -146,10 +146,10 @@ namespace IATK {
         public string SizeDimension { get; set; }                       // Size mapped to a dimension
         public string LinkingDimension { get; set; }                    // The linking dimension to draw links between points
         public Gradient colourKeys { get; set; }                        // The colormapping
-        public Color colour { get; set; }                               // The colour mapping
-        public float Size;                                              // The Size factor
-        public float MinSize;                                           // The Minimum Size range
-        public float MaxSize;                                           // The Maximum Size range
+        public Color colour = Color.white;                              // The colour mapping
+        public float Size = 0.3f;                                       // The Size factor
+        public float MinSize = 0.01f;                                   // The Minimum Size range
+        public float MaxSize = 1.0f;                                    // The Maximum Size range
 
 
         //avoid erasing properties
@@ -159,9 +159,8 @@ namespace IATK {
         /// Creates an empty configuration
         /// </summary>
         public CreationConfiguration()
-        {
+        { }
 
-        }
         /// <summary>
         /// Serializes the configuration
         /// </summary>
