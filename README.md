@@ -6,7 +6,7 @@ IATK is an ongoing and open project! We setup a roadmap with features that we wo
 <br/>
 <br/>
 ## IEEE VIS 2018 tutorial
-[the slides of our tutorial are available here](https://drive.google.com/open?id=1-uBezockeTltw1x-5gcNsQrAPJ9v08up)
+<!--[the slides of our tutorial are available here](https://drive.google.com/open?id=1-uBezockeTltw1x-5gcNsQrAPJ9v08up) -->
 
 We will give an Immersive Visualisation tutorial with IATK at IEEE VIS 2018.
 For attendees, please download:
