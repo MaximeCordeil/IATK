@@ -426,16 +426,32 @@ namespace IATK
                 case AbstractVisualisation.PropertyType.Scaling:
                     if (visualisationReference.xDimension.Attribute != "Undefined")
                     {
-                        BindMinMaxAxisValues(X_AXIS.GetComponent<Axis>(), visualisationReference.xDimension);
+                        Axis axis = X_AXIS.GetComponent<Axis>();
+                        BindMinMaxAxisValues(axis, visualisationReference.xDimension);
+                        axis.UpdateLength(visualisationReference.width);
                     }
                     if (visualisationReference.yDimension.Attribute != "Undefined")
                     {
-                        BindMinMaxAxisValues(Y_AXIS.GetComponent<Axis>(), visualisationReference.yDimension);
+                        Axis axis = Y_AXIS.GetComponent<Axis>();
+                        BindMinMaxAxisValues(axis, visualisationReference.yDimension);
+                        axis.UpdateLength(visualisationReference.height);
                     }
                     if (visualisationReference.zDimension.Attribute != "Undefined")
                     {
-                        BindMinMaxAxisValues(Z_AXIS.GetComponent<Axis>(), visualisationReference.zDimension);
+                        Axis axis = Z_AXIS.GetComponent<Axis>();
+                        BindMinMaxAxisValues(axis, visualisationReference.zDimension);
+                        axis.UpdateLength(visualisationReference.depth);
                     }
+
+                    foreach (View view in viewList)
+                    {
+                        view.transform.localScale = new Vector3(
+                            visualisationReference.width,
+                            visualisationReference.height,
+                            visualisationReference.depth
+                        );
+                    }
+
                     break;
                 default:
                     break;
@@ -537,35 +553,5 @@ namespace IATK
         // ********************  UNITY METHODS  ************************
         // *************************************************************
 
-        // Use this for initialization
-        
-        private void Update()
-        {
-            // handle update to persistent properties
-            if (X_AXIS != null)
-            {
-                X_AXIS.GetComponent<Axis>().Length = visualisationReference.width;
-                X_AXIS.GetComponent<Axis>().UpdateLength();
-            }
-            if (Y_AXIS != null)
-            {
-                Y_AXIS.GetComponent<Axis>().Length = visualisationReference.height;
-                Y_AXIS.GetComponent<Axis>().UpdateLength();
-            }
-            if (Z_AXIS != null)
-            {
-                Z_AXIS.GetComponent<Axis>().Length = visualisationReference.depth;
-                Z_AXIS.GetComponent<Axis>().UpdateLength();
-            }
-
-            foreach (View view in viewList)
-            {
-                view.transform.localScale = new Vector3(
-                    visualisationReference.width,
-                    visualisationReference.height,
-                    visualisationReference.depth
-                );
-            }
-        }
     }
 }
