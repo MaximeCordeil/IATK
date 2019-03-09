@@ -233,7 +233,7 @@ namespace IATK
                                 }
                                 else
                                 {
-                                    viewList[i].SetSizeChannel(Enumerable.Repeat(1f, visualisationReference.dataSource[0].Data.Length).ToArray());
+                                    viewList[i].SetSizeChannel(new float[visualisationReference.dataSource.DataCount]);
                                 }
                             }
                             creationConfiguration.SizeDimension = visualisationReference.sizeDimension;       
