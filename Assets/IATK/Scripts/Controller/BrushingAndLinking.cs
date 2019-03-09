@@ -3,25 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Diagnostics;
 using System;
+using System.Linq;
+using UnityEngine.Rendering;
 
-public class BrushingAndLinking : MonoBehaviour
-{
+public class BrushingAndLinking : MonoBehaviour {
 
     [SerializeField]
     public ComputeShader computeShader;
-
-    private ComputeBuffer dataBuffer;
-    private ComputeBuffer filteredIndicesBuffer;
-    
     [SerializeField]
     public Material myRenderMaterial;
-
-    RenderTexture brushedIndicesTexture;
-
-    int kernelHandleBrushTexture;
-    int kernelHandleBrushArrayIndices;
-    
-    int texSize;
 
     [SerializeField]
     public List<Visualisation> brushingVisualisations;
@@ -29,11 +19,14 @@ public class BrushingAndLinking : MonoBehaviour
     public List<LinkingVisualisations> brushedLinkingVisualisations;
 
     [SerializeField]
-    public bool showBrush = false;
-
+    public bool isBrushing;
     [SerializeField]
     public Color brushColor = Color.red;
-
+    [SerializeField]
+    [Range(0f, 1f)]
+    public float brushRadius;
+    [SerializeField]
+    public bool showBrush = false;
     [SerializeField]
     [Range (1f,10f)]
     public float brushSizeFactor = 1f;
@@ -44,12 +37,6 @@ public class BrushingAndLinking : MonoBehaviour
     public Transform input2;
 
     [SerializeField]
-    [Range(0f, 1f)]
-    public float radiusSphere;
-
-    [SerializeField]
-    public bool brushButtonController;
-    
     public BrushType BRUSH_TYPE;
     public enum BrushType
     {
@@ -57,6 +44,7 @@ public class BrushingAndLinking : MonoBehaviour
         BOX
     };
 
+    [SerializeField]
     public SelectionType SELECTION_TYPE;
     public enum SelectionType
     {
@@ -65,32 +53,57 @@ public class BrushingAndLinking : MonoBehaviour
         SUBTRACT
     }
 
+    [SerializeField]
+    public List<int> brushedIndices;
 
+    [SerializeField]
     public Material debugObjectTexture;
-    public List<string> brushedData;
+
+    private int kernelComputeBrushTexture;
+    private int kernelComputeBrushedIndices;
+
+    private RenderTexture brushedIndicesTexture;
+    private int texSize;
+
+    private ComputeBuffer dataBuffer;
+    private ComputeBuffer filteredIndicesBuffer;
+    private ComputeBuffer brushedIndicesBuffer;
+
     private bool hasInitialised = false;
     private bool hasFreeBrushReset = false;
+    private AsyncGPUReadbackRequest brushedIndicesRequest;
 
     private void Start()
     {
         InitialiseShaders();
     }
 
+    /// <summary>
+    /// Initialises the indices for the kernels in the compute shader.
+    /// </summary>
     private void InitialiseShaders()
     {
-        kernelHandleBrushTexture = computeShader.FindKernel("CSMain");
+        kernelComputeBrushTexture = computeShader.FindKernel("CSMain");
+        kernelComputeBrushedIndices = computeShader.FindKernel("ComputeBrushedIndicesArray");
     }
 
+    /// <summary>
+    /// Initialises the buffers and textures necessary for the brushing and linking to work.
+    /// </summary>
+    /// <param name="dataCount"></param>
     private void InitialiseBuffersAndTextures(int dataCount)
     {
         dataBuffer = new ComputeBuffer(dataCount, 12);
         dataBuffer.SetData(new Vector3[dataCount]);
-        computeShader.SetBuffer(kernelHandleBrushTexture, "dataBuffer", dataBuffer);
+        computeShader.SetBuffer(kernelComputeBrushTexture, "dataBuffer", dataBuffer);
 
         filteredIndicesBuffer = new ComputeBuffer(dataCount, 4);
         filteredIndicesBuffer.SetData(new float[dataCount]);
-        computeShader.SetBuffer(kernelHandleBrushTexture, "filteredIndicesBuffer", filteredIndicesBuffer);
+        computeShader.SetBuffer(kernelComputeBrushTexture, "filteredIndicesBuffer", filteredIndicesBuffer);
 
+        brushedIndicesBuffer = new ComputeBuffer(dataCount, 4);
+        brushedIndicesBuffer.SetData(Enumerable.Repeat(-1, dataCount).ToArray());
+        computeShader.SetBuffer(kernelComputeBrushedIndices, "brushedIndicesBuffer", brushedIndicesBuffer);
 
         texSize = NextPowerOf2((int)Mathf.Sqrt(dataCount));
         brushedIndicesTexture = new RenderTexture(texSize, texSize, 24);
@@ -101,24 +114,28 @@ public class BrushingAndLinking : MonoBehaviour
         myRenderMaterial.SetTexture("_MainTex", brushedIndicesTexture);
 
         computeShader.SetFloat("_size", texSize);
-        computeShader.SetTexture(kernelHandleBrushTexture, "Result", brushedIndicesTexture);
+        computeShader.SetTexture(kernelComputeBrushTexture, "Result", brushedIndicesTexture);
+        computeShader.SetTexture(kernelComputeBrushedIndices, "Result", brushedIndicesTexture);
 
         hasInitialised = true;
     }
 
-
+    /// <summary>
+    /// Updates the computebuffers with the values specific to the currently brushed visualisation.
+    /// </summary>
+    /// <param name="visualisation"></param>
     public void UpdateComputeBuffers(Visualisation visualisation)
     {
         dataBuffer.SetData(visualisation.theVisualizationObject.viewList[0].BigMesh.getBigMeshVertices());
-        computeShader.SetBuffer(kernelHandleBrushTexture, "dataBuffer", dataBuffer);
+        computeShader.SetBuffer(kernelComputeBrushTexture, "dataBuffer", dataBuffer);
 
         filteredIndicesBuffer.SetData(visualisation.theVisualizationObject.viewList[0].GetFilterChannel());
-        computeShader.SetBuffer(kernelHandleBrushTexture, "filteredIndicesBuffer", filteredIndicesBuffer);
+        computeShader.SetBuffer(kernelComputeBrushTexture, "filteredIndicesBuffer", filteredIndicesBuffer);
     }
 
 
     /// <summary>
-    /// finds the next power of 2 for 
+    /// Finds the next power of 2 for a given number.
     /// </summary>
     /// <param name="number"></param>
     /// <returns></returns>
@@ -136,14 +153,13 @@ public class BrushingAndLinking : MonoBehaviour
 
     private void Update()
     {
-        if (brushButtonController && brushingVisualisations.Count > 0)
+        if (isBrushing && brushingVisualisations.Count > 0 && input1 != null && input2 != null)
         {
             if (hasInitialised)
             {
                 UpdateBrushTexture();
 
-                //EXPERIMENTAL - GET details of original data
-                // getDetailsOnDemand();
+                UpdateBrushedIndices();
             }
             else
             {
@@ -152,6 +168,9 @@ public class BrushingAndLinking : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Updates the brushedIndicesTexture using the visualisations set in the brushingVisualisations list.
+    /// </summary>
     private void UpdateBrushTexture()
     {
         Vector3 projectedPointer1;
@@ -200,18 +219,19 @@ public class BrushingAndLinking : MonoBehaviour
             computeShader.SetFloat("_MinZ", vis.zDimension.minFilter);
             computeShader.SetFloat("_MaxZ", vis.zDimension.maxFilter);
 
-            computeShader.SetFloat("RadiusSphere", radiusSphere);
+            computeShader.SetFloat("RadiusSphere", brushRadius);
 
             computeShader.SetFloat("width", vis.width);
             computeShader.SetFloat("height", vis.height);
             computeShader.SetFloat("depth", vis.depth);
 
-            // Tell the shader whether or not the visualisation's points have already been reset by a previous brush, required to allow for multiple visualisations to be brushed
+            // Tell the shader whether or not the visualisation's points have already been reset by a previous brush, required to allow for
+            // multiple visualisations to be brushed with the free selection tool
             if (SELECTION_TYPE == SelectionType.FREE)
                 computeShader.SetBool("HasFreeBrushReset", hasFreeBrushReset);
 
-            //run the compute shader with all the filtering parameters
-            computeShader.Dispatch(kernelHandleBrushTexture, Mathf.CeilToInt(texSize / 32f), Mathf.CeilToInt(texSize / 32f), 1);
+            // Run the compute shader
+            computeShader.Dispatch(kernelComputeBrushTexture, Mathf.CeilToInt(texSize / 32f), Mathf.CeilToInt(texSize / 32f), 1);
 
             vis.theVisualizationObject.viewList[0].BigMesh.SharedMaterial.SetTexture("_BrushedTexture", brushedIndicesTexture);
             vis.theVisualizationObject.viewList[0].BigMesh.SharedMaterial.SetFloat("_DataWidth", texSize);
@@ -223,17 +243,39 @@ public class BrushingAndLinking : MonoBehaviour
         }
     }
 
-    
     /// <summary>
-    /// on destroy release the buffers on the graphic card
+    /// Updates the brushedIndices list with the currently brushed indices. A value of 1 represents brushed, -1 represents not brushed (boolean values are not supported).
     /// </summary>
-    void OnDestroy()
+    private void UpdateBrushedIndices()
+    {
+        // Wait for request to finish
+        if (brushedIndicesRequest.done)
+        {
+            // Get values from request
+            if (!brushedIndicesRequest.hasError)
+            {
+                brushedIndices = brushedIndicesRequest.GetData<int>().ToList();
+            }
+
+            // Dispatch again
+            computeShader.Dispatch(kernelComputeBrushedIndices, Mathf.CeilToInt(brushedIndicesBuffer.count / 32f), 1, 1);
+            brushedIndicesRequest = AsyncGPUReadback.Request(brushedIndicesBuffer);
+        }
+    }
+
+    /// <summary>
+    /// Releases the buffers on the graphics card.
+    /// </summary>
+    private void OnDestroy()
     {
         if (dataBuffer != null)
             dataBuffer.Release();
 
         if (filteredIndicesBuffer != null)
             filteredIndicesBuffer.Release();
+
+        if (brushedIndicesBuffer != null)
+            brushedIndicesBuffer.Release();
     }
 
     private void OnApplicationQuit()
@@ -243,5 +285,8 @@ public class BrushingAndLinking : MonoBehaviour
 
         if (filteredIndicesBuffer != null)
             filteredIndicesBuffer.Release();
+
+        if (brushedIndicesBuffer != null)
+            brushedIndicesBuffer.Release();
     }
 }
