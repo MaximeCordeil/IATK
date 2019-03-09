@@ -178,6 +178,11 @@ public class Axis : MonoBehaviour {
         }
     }
 
+    public void UpdateLength()
+    {
+        UpdateLength(Length);
+    }
+
     public void UpdateLength(float length)
     {
         Length = length;
