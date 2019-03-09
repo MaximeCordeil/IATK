@@ -285,6 +285,17 @@ namespace IATK
             return l;
         }
 
+        public List<Vector4> GetUVs(int channel)
+        {
+            List<Vector4> uvs = new List<Vector4>();
+            foreach (var mesh in meshList)
+            {
+                uvs.AddRange(GetUVList(channel, mesh));
+            }
+
+            return uvs;
+        }
+
         public void MapUVChannel(int channel, int component, float[] data)
         {
             int total = meshList.Sum(x => x.vertexCount);

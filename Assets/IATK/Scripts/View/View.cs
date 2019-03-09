@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace IATK
@@ -63,6 +64,15 @@ namespace IATK
         public void SetFilterChannel(float[] filteredData)
         {
             bigMesh.MapUVChannel(0, (int)AbstractVisualisation.NormalChannel.Filter, filteredData);
+        }
+
+        /// <summary>
+        /// Gets the filtered data
+        /// </summary>
+        /// <returns></returns>
+        public float[] GetFilterChannel()
+        {
+            return bigMesh.GetUVs(0).Select(v => v.z).ToArray();
         }
 
         /// <summary>
