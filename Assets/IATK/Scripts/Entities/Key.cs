@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 namespace IATK
@@ -11,51 +12,57 @@ namespace IATK
         public TextMeshPro Legend;
 
         private string legend="";
-
-
-        // Use this for initialization
-        void Start()
-        {
-
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-
-        }
-
+        
         public void UpdateProperties(AbstractVisualisation.PropertyType propertyType, Visualisation v)
         {
             legend = "";
 
+            // Size by
+            if (v.sizeDimension != "Undefined")
+                legend += "<b>Size By:</b> " + v.sizeDimension + "\n";
+
+            // Linking dimension
+            if (v.linkingDimension != "Undefined")
+                legend += "<b>Linking Attribute:<b> " + v.linkingDimension + "\n";
+
+            // Visualisation can only have a color dimension or a color palette dimension, not both
+            // Color by
             if (v.colourDimension != "Undefined")
             {
                 gradientColorLineRenderer.gameObject.SetActive(true);
-                legend += "Colour: " + v.colourDimension + "\n";
+                legend += "<b>Colour By:</b> " + v.colourDimension + "\n";
                 SetGradientColor(v.dimensionColour);
             }
-
-            if (v.sizeDimension != "Undefined")
-                legend += "Size: " + v.sizeDimension + "\n";
-            if (v.linkingDimension != "Undefined")
-                legend += "Linking Attribute: " + v.linkingDimension + "\n";
-
-            if (v.colorPaletteDimension != "Undefined")
+            // Color palette
+            else if (v.colorPaletteDimension != "Undefined")
             {
                 gradientColorLineRenderer.gameObject.SetActive(false);
-                legend += "Colour: " + v.colorPaletteDimension + "\n";
-                float[] uniqueValues = v.dataSource[v.colorPaletteDimension].MetaData.categories;
-                string[] stringValues = new string[uniqueValues.Length];
+                legend += "<b>Colour Palette:</b> " + v.colorPaletteDimension + "\n";
 
-                for (int i = 0; i < uniqueValues.Length; i++)
-                    stringValues[i] = v.dataSource.getOriginalValue(uniqueValues[i], v.colorPaletteDimension).ToString();
+                List<float> categories = v.dataSource[v.colorPaletteDimension].MetaData.categories.ToList();
+                string[] values = new string[categories.Count];
+
+                for (int i = 0; i < categories.Count; i++)
+                {
+                    values[i] = v.dataSource.getOriginalValue(categories[i], v.colorPaletteDimension).ToString();
+                }
+
+                // Sort categories
+                List<float> sortedCategories = categories.OrderBy(x => x).ToList();
 
                 for (int i = 0; i < v.coloursPalette.Length; i++)
                 {
-                    legend += "<color=#" + ColorUtility.ToHtmlStringRGB(v.coloursPalette[i]) + "> *** </color>" + stringValues[i] + "\n";
+                    int idx = categories.IndexOf(sortedCategories[i]);
+                    legend += "<color=#" + ColorUtility.ToHtmlStringRGB(v.coloursPalette[idx]) + "> ||||| </color>" + values[idx] + "\n";
                 }
             }
+
+            // Hide the gradient if no color by
+            if (v.colourDimension == "Undefined")
+            {
+                gradientColorLineRenderer.gameObject.SetActive(false);
+            }
+
             Legend.text = legend;
         }
 

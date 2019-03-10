@@ -203,7 +203,7 @@ namespace IATK
 
             key = (GameObject)Instantiate(Resources.Load("Key"));
             key.transform.parent = transform;
-            key.transform.localPosition = new Vector3(-1f, 1f, 0f);
+            key.transform.localPosition = new Vector3(0.15f, 1.165f, 0f);
         }
 
         public void updateView(AbstractVisualisation.PropertyType propertyType)
@@ -236,8 +236,9 @@ namespace IATK
             OnUpdateViewAction(propertyType);
 
             if (key != null)
-                key.GetComponent<Key>().UpdateProperties(propertyType, this);
-
+            {
+                updateKey();
+            }
         }
 
         public void updateProperties()
@@ -281,6 +282,20 @@ namespace IATK
             }
 
             return indices.ToArray();
+        }
+
+        private void updateKey()
+        {
+            key.GetComponent<Key>().UpdateProperties(AbstractVisualisation.PropertyType.None, this);
+
+            if (yDimension.Attribute != "Undefined")
+            {
+                key.transform.localPosition = new Vector3(0.2f, height + 0.25f, 0f);
+            }
+            else
+            {
+                key.transform.localPosition = new Vector3(0.2f, 0.2f, 0f);
+            }
         }
 
 

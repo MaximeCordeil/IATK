@@ -33,26 +33,23 @@ float _MaxNormY;
 float _MinNormZ;
 float _MaxNormZ;
 
-float pointer1x;
-float pointer1y;
-float pointer1z;
+float3 pointer1;
+float3 pointer2;
 
-float pointer2x;
-float pointer2y;
-float pointer2z;
+float width;
+float height;
+float depth;
 
 float RadiusSphere;
 
-//struct VecIndexPair
-//{
-//    float3 pos;
-//    int index;
-//};
-
 int BrushMode;
+int SelectionMode;
+
+bool HasFreeBrushReset;
 
 RWStructuredBuffer<float3> dataBuffer;
-RWStructuredBuffer<int> brushedIndices;
+StructuredBuffer<float> filteredIndicesBuffer;
+RWStructuredBuffer<int> brushedIndicesBuffer;
 
 //brush circle
 bool brush2DInCircle(float3 center, float radius, float4 testPoint)
@@ -67,10 +64,9 @@ bool brushSphere(float3 center, float radius, float3 testPoint)
 {
 	float3 displacementToCenter = testPoint - center;
 	float radiusSqr = radius * radius;
-	bool intersects = length(displacementToCenter) < radiusSqr;
+	bool intersects = dot(displacementToCenter, displacementToCenter) < radiusSqr;
 
 	return intersects;
-
 }
 
 bool brushCube(float3 TFL, float3 BBR, float3 testPoint)
@@ -104,16 +100,16 @@ bool Brush(int brushType, float3 filteredPosition)
 	{
 		//brush sphere
 	case 0:
-		return brushSphere(float3(pointer1x, pointer1y, pointer1z), RadiusSphere, filteredPosition);
+		return brushSphere(float3(pointer1.x, pointer1.y, pointer1.z), RadiusSphere, filteredPosition);
 		//brush cube
 	case 1:
-		float3 TL = float3(pointer1x, pointer1y, pointer1z);
-		float3 BR = float3(pointer2x, pointer2y, pointer2z);
+		float3 TL = float3(pointer1.x, pointer1.y, pointer1.z);
+		float3 BR = float3(pointer2.x, pointer2.y, pointer2.z);
 
 		if (TL.x > BR.x || TL.y < BR.y || TL.z > BR.z)
 		{
 			TL = BR;
-			BR = float3(pointer1x, pointer1y, pointer1z);
+			BR = float3(pointer1.x, pointer1.y, pointer1.z);
 		}
 
 		return brushCube(TL, BR, filteredPosition);
@@ -143,80 +139,70 @@ float normaliseValue(float value, float i0, float i1, float j0, float j1)
 	return (j0 - (L * i0) + (L * value));
 }
 
-[numthreads(8, 1, 1)]
-void ComputeBrushedIndicesArray(uint3 id : SV_DispatchThreadID)
-{
-	// 1 calculate the brushing for the current pixel
-
-	int idx = id.x;
-	//vertex shader stage
-
-	float3 filteredPosition = float3(
-		normaliseValue(dataBuffer[idx].x, _MinNormX, _MaxNormX, 0, 1),
-		normaliseValue(dataBuffer[idx].y, _MinNormY, _MaxNormY, 0, 1),
-		normaliseValue(dataBuffer[idx].z, _MinNormZ, _MaxNormZ, 0, 1));
-
-	//filters out dots 
-	if (
-		(filteredPosition.x >= _MinX &&
-			filteredPosition.x <= _MaxX &&
-			filteredPosition.y >= _MinY &&
-			filteredPosition.y <= _MaxY &&
-			filteredPosition.z >= _MinZ &&
-			filteredPosition.z <= _MaxZ
-			))
-	{
-		if (Brush(BrushMode, filteredPosition))
-		{
-			brushedIndices[idx] = 1;
-		}
-		else
-		{
-			brushedIndices[idx] = -1;
-		}
-	}
-	else
-	{
-		brushedIndices[idx] = -1;
-	}
-
-}
-
-
 [numthreads(32, 32, 1)]
 void CSMain(uint3 id : SV_DispatchThreadID)
 {
-	// 1 calculate the brushing for the current pixel
+	// TODO: DOES NOT WORK WITH NEGATIVE WIDTH/HEIGHT/DEPTH
 
 	int idx = id.x + id.y * _size;
-	//vertex shader stage
-
-	float3 filteredPosition = float3(
-		normaliseValue(dataBuffer[idx].x, _MinNormX, _MaxNormX, 0, 1),
-		normaliseValue(dataBuffer[idx].y, _MinNormY, _MaxNormY, 0, 1),
-		normaliseValue(dataBuffer[idx].z, _MinNormZ, _MaxNormZ, 0, 1));
-
-	//filters out dots 
-	if (
-		(filteredPosition.x >= _MinX &&
-			filteredPosition.x <= _MaxX &&
-			filteredPosition.y >= _MinY &&
-			filteredPosition.y <= _MaxY &&
-			filteredPosition.z >= _MinZ &&
-			filteredPosition.z <= _MaxZ
-			))
+	
+	// Ignore indices that are filtered
+	if (!filteredIndicesBuffer[idx])
 	{
-		if (Brush(BrushMode, filteredPosition))
+		float3 filteredPosition = float3(
+			normaliseValue(dataBuffer[idx].x, _MinNormX, _MaxNormX, 0, width),
+			normaliseValue(dataBuffer[idx].y, _MinNormY, _MaxNormY, 0, height),
+			normaliseValue(dataBuffer[idx].z, _MinNormZ, _MaxNormZ, 0, depth));
+
+		// Filter out indices
+		if (
+			(filteredPosition.x >= _MinX &&
+				filteredPosition.x <= _MaxX * width &&
+				filteredPosition.y >= _MinY &&
+				filteredPosition.y <= _MaxY * height &&
+				filteredPosition.z >= _MinZ &&
+				filteredPosition.z <= _MaxZ * depth
+				))
 		{
-			Result[id.xy] = float4(1.0, 0.0, 0.0, 1.0); // brushed}
+			if (Brush(BrushMode, filteredPosition))
+			{
+				switch (SelectionMode) {
+					// Free selection	
+					case 0:
+					// Additive selection
+					case 1:
+						Result[id.xy] = float4(1.0, 0.0, 0.0, 1.0);  // brushed
+						break;
+
+					// Subtractive selection
+					case 2:
+					default:
+						Result[id.xy] = float4(0.0, 0.0, 0.0, 1.0);  // not brushed
+						break;
+				}
+			}
+			// Free selection un-brushes points
+			else if (SelectionMode == 0 && !HasFreeBrushReset)
+			{
+				Result[id.xy] = float4(0.0, 0.0, 0.0, 1.0);  // not brushed
+			}
 		}
 		else
 		{
-			Result[id.xy] = float4(0.0, 1.0, 0.0, 1.0); // not brushed
+			Result[id.xy] = float4(0.0, 0.0, 0.0, 1.0);  // not brushed
 		}
 	}
+}
+
+[numthreads(32, 1, 1)]
+void ComputeBrushedIndicesArray(uint3 id : SV_DispatchThreadID)
+{
+	int x = id.x % _size;
+	int y = floor(id.x / _size);
+	float2 pos = float2(x, y);
+
+	if (Result[pos].x > 0.0)
+		brushedIndicesBuffer[id.x] = 1;
 	else
-	{
-		Result[id.xy] = float4(0.0, 1.0, 0.0, 1.0); // not brushed
-	}
+		brushedIndicesBuffer[id.x] = -1;
 }
