@@ -289,136 +289,144 @@ namespace IATK
             textualDimensionsList = new Dictionary<string, Dictionary<int, string>>();
             textualDimensionsListReverse = new Dictionary<string, Dictionary<string, int>>();
 
-            Dictionary<string, List<string>> distinctStringsDictionary = new Dictionary<string, List<string>>();  // key: dimension, value: list of distinct values for that dimension
 
             string[] lines = data.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
             if (loadHeaderImpl(lines))
             {
                 float[,] dataArray = new float[lines.Length - 1, DimensionCount]; // ignore the first line of identifiers
                 dataCount = dataArray.GetUpperBound(0) + 1;
-                
+
                 if (lines.Length > 1)
                 {
-                    // line reading
+                    //line reading
                     for (int i = 1; i < lines.Length; i++)
                     {
                         string[] values = lines[i].Split(split);
 
-                        // dimension reading
-                        for (int k = 0; k < dimensionData.Count; k++)
+                        //dimension reading
+                        for (int k = 0; k < values.Count(); k++)
                         {
+
                             string cleanedValue = cleanDataString(values[k]);
-                            
-                            switch (dimensionData[k].MetaData.type)
-                            {
-                                case DataType.Bool:
+
+                            //1- get the corresponding type
+                            if (k <= dimensionData.Count - 1) switch (dimensionData[k].MetaData.type)
                                 {
-                                    bool result = false;
-                                    bool.TryParse(cleanedValue, out result);
-                                    dataArray[i - 1, k] = Convert.ToSingle(result);
-                                    break;
-                                }
+                                    case DataType.Bool:
+                                        {
+                                            bool result = false;
+                                            bool.TryParse(cleanedValue, out result);
+                                            dataArray[i - 1, k] = Convert.ToSingle(result);
+                                            break;
+                                        }
+                                    case DataType.Date:
+                                        {
+                                            string[] valH = cleanedValue.Split('\\');
+                                            if (valH.Length == 2)
+                                                dataArray[i - 1, k] = float.Parse(valH[0]) * 60f + float.Parse(valH[1]);
+                                            else if (valH.Length == 3)
+                                                dataArray[i - 1, k] = float.Parse(valH[0]) * 3600f + float.Parse(valH[1]) * 60f + float.Parse(valH[2]);
+                                            else dataArray[i - 1, k] = 0f;
+                                            break;
+                                        }
 
-                                case DataType.Date:
-                                {
-                                    string[] valH = cleanedValue.Split('\\');
-                                    if (valH.Length == 2)
-                                        dataArray[i - 1, k] = float.Parse(valH[0]) * 60f + float.Parse(valH[1]);
-                                    else if (valH.Length == 3)
-                                        dataArray[i - 1, k] = float.Parse(valH[0]) * 3600f + float.Parse(valH[1]) * 60f + float.Parse(valH[2]);
-                                    else dataArray[i - 1, k] = 0f;
-                                    break;
-                                }
+                                    case DataType.Time:
+                                        {
+                                            string[] valH = cleanedValue.Split(':');
+                                            if (valH.Length == 2)
+                                                dataArray[i - 1, k] = float.Parse(valH[0]) * 60f + float.Parse(valH[1]);
+                                            else if (valH.Length == 3)
+                                                dataArray[i - 1, k] = float.Parse(valH[0]) * 3600f + float.Parse(valH[1]) * 60f + float.Parse(valH[2]);
+                                            else dataArray[i - 1, k] = 0f;
+                                            break;
+                                        }
 
-                                case DataType.Time:
-                                {
-                                    string[] valH = cleanedValue.Split(':');
-                                    if (valH.Length == 2)
-                                        dataArray[i - 1, k] = float.Parse(valH[0]) * 60f + float.Parse(valH[1]);
-                                    else if (valH.Length == 3)
-                                        dataArray[i - 1, k] = float.Parse(valH[0]) * 3600f + float.Parse(valH[1]) * 60f + float.Parse(valH[2]);
-                                    else dataArray[i - 1, k] = 0f;
-                                    break;
-                                }
+                                    case DataType.Int:
+                                        {
+                                            int result = 0;
+                                            int.TryParse(cleanedValue, out result);
+                                            dataArray[i - 1, k] = (float)result;
+                                            break;
+                                        }
+                                    case DataType.Float:
+                                        {
+                                            double result = 0.0f;
+                                            double.TryParse(cleanedValue, out result);
+                                            dataArray[i - 1, k] = (float)result;
+                                            break;
+                                        }
+                                    case DataType.String:
+                                        {
+                                            //check if we have a dictionnary for this dimension
+                                            if (textualDimensionsList.ContainsKey(dimensionData[k].Identifier))
+                                            {
+                                                //if encoded
+                                                //get the dictionary
+                                                int valueToEncode;
+                                                Dictionary<string, int> dimensionDictionaryReverse = textualDimensionsListReverse[dimensionData[k].Identifier];
+                                                Dictionary<int, string> dimensionDictionary = textualDimensionsList[dimensionData[k].Identifier];
 
-                                case DataType.Int:
-                                {
-                                    int result = 0;
-                                    int.TryParse(cleanedValue, out result);
-                                    dataArray[i - 1, k] = (float)result;
-                                    break;
-                                }
+                                                if (dimensionDictionaryReverse.ContainsKey(cleanedValue))
+                                                {
+                                                    valueToEncode = dimensionDictionaryReverse[cleanedValue];
+                                                    dataArray[i - 1, k] = valueToEncode;
+                                                }
+                                                else
+                                                {
+                                                    //increment from the last added element
+                                                    int lastEncodedValue = dimensionDictionaryReverse.Values.OrderBy(x => x).Last() + 1;
 
-                                case DataType.Float:
-                                {
-                                    double result = 0.0f;
-                                    double.TryParse(cleanedValue, out result);
-                                    dataArray[i - 1, k] = (float)result;
-                                    break;
-                                }
+                                                    dimensionDictionaryReverse.Add(cleanedValue, lastEncodedValue);
+                                                    dimensionDictionary.Add(lastEncodedValue, cleanedValue);
+                                                    textualDimensionsListReverse[dimensionData[k].Identifier] = dimensionDictionaryReverse;
+                                                    textualDimensionsList[dimensionData[k].Identifier] = dimensionDictionary;
 
-                                case DataType.String:
-                                {
-                                    List<string> distinctStrings;
-                                    // Get the list of distinct strings for this dimension (if it doesn't exist, create one
-                                    if (!distinctStringsDictionary.TryGetValue(dimensionData[k].Identifier, out distinctStrings))
-                                    {
-                                        distinctStrings = new List<string>();
-                                        distinctStringsDictionary[dimensionData[k].Identifier] = distinctStrings;
-                                    }
+                                                    dataArray[i - 1, k] = lastEncodedValue;
+                                                }
+                                            }
+                                            else //if not create one and add the first value
+                                            {
+                                                Dictionary<int, string> newEntry = new Dictionary<int, string>();
+                                                Dictionary<string, int> newEntryReverse = new Dictionary<string, int>();
 
-                                    if (!distinctStrings.Contains(cleanedValue))
-                                        distinctStrings.Add(cleanedValue);
-                                    break;
-                                }
+                                                newEntry.Add(0, cleanedValue);
+                                                newEntryReverse.Add(cleanedValue, 0);
 
-                                default:
-                                {
-                                    dataArray[i - 1, k] = 0f;
-                                    break;
-                                }
-                            }
-                        } 
-                    }
-                }
+                                                textualDimensionsList.Add(dimensionData[k].Identifier, newEntry);
+                                                textualDimensionsListReverse.Add(dimensionData[k].Identifier, newEntryReverse);
+                                            }
+                                            ////lookup if already encoded
+                                            //if (textualDimensionsReverse.ContainsKey(cleanedValue))
+                                            //{
+                                            //    dataArray[i - 1, k] = textualDimensionsReverse[cleanedValue];// textualDimensions.FirstOrDefault(x => x.Value == cleanedValue).Key;
+                                            //}
+                                            //else
+                                            //{
+                                            //    //new key
+                                            //    textualPointer++;
+                                            //    textualDimensions.Add((int)textualPointer, cleanedValue);
+                                            //    textualDimensionsReverse.Add(cleanedValue, (int)textualPointer);
+                                            //    dataArray[i - 1, k] = textualPointer;
+                                            //}
+                                            break;
+                                        }
+                                    default:
+                                        {
+                                            dataArray[i - 1, k] = 0f;
+                                            break;
+                                        }
+                                }// end switch
 
-                // Populate textual dimensions list
-                foreach (string textualDimension in distinctStringsDictionary.Keys)
-                {
-                    // Create dictionaries that will be added to the textualDimensionsLists
-                    Dictionary<int, string> textualDimensionsEntry = new Dictionary<int, string>();
-                    Dictionary<string, int> textualDimensionsEntryReverse = new Dictionary<string, int>();
-
-                    // Sort the string values for this dimension
-                    List<string> distinctSortedValues = distinctStringsDictionary[textualDimension];
-                    distinctSortedValues.Sort();
-
-                    // Populate the dictionaries
-                    for (int i = 0; i < distinctSortedValues.Count; i++)
-                    {
-                        textualDimensionsEntry[i] = distinctSortedValues[i];
-                        textualDimensionsEntryReverse[distinctSortedValues[i]] = i;
-                    }
-
-                    // Add the dictionaries to the textual dimensions list
-                    textualDimensionsList[textualDimension] = textualDimensionsEntry;
-                    textualDimensionsListReverse[textualDimension] = textualDimensionsEntryReverse;
-
-                    // Get dimension index
-                    int index = dimensionData.FindIndex(d => d.Identifier == textualDimension);
-
-                    // Fill in the data array
-                    for (int i = 1; i < lines.Length; i++)
-                    {
-                        string value = lines[i].Split(split)[index];
-                        dataArray[i - 1, index] = textualDimensionsEntryReverse[value];
+                        } // end k
                     }
                 }
 
                 // Populate data structure
+                //float[] output = new float[dataCount];
                 for (int i = 0; i < DimensionCount; ++i)
                 {
                     dimensionData[i].setData(NormaliseCol(dataArray, metadataPreset, i), textualDimensionsList);
+
                 }
 
                 // Raise load event
