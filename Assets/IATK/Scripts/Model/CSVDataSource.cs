@@ -421,6 +421,8 @@ namespace IATK
                     }
                 }
 
+                // TODO: SORT MULTIPLE VALUES/CRITERIA
+
                 // Populate data structure
                 //float[] output = new float[dataCount];
                 for (int i = 0; i < DimensionCount; ++i)
