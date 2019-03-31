@@ -5,11 +5,14 @@
 IATK is an ongoing and open project! We setup a roadmap with features that we would like to see in IATK in a near future.  
 <br/>
 <br/>
-## IEEE VIS 2018 tutorial
+
+-- ## Tutorial
+A video tutorial of IATK [can be found here] (https://vimeo.com/320646218)
+The actual tutorial starts at 01:12
 <!--[the slides of our tutorial are available here](https://drive.google.com/open?id=1-uBezockeTltw1x-5gcNsQrAPJ9v08up) -->
 
-We will give an Immersive Visualisation tutorial with IATK at IEEE VIS 2018.
-For attendees, please download:
+<!-- -- We will give an Immersive Visualisation tutorial with IATK at IEEE VIS 2018. -->
+Required downloads:
 
 - this repository
 - [Unity 2017](https://unity3d.com/get-unity/download?thank-you=update&download_nid=49126&os=Win)
