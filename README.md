@@ -7,7 +7,7 @@ IATK is an ongoing and open project! We setup a roadmap with features that we wo
 <br/>
 
 ## Tutorial
-A video tutorial of IATK [can be found here] (https://vimeo.com/320646218)
+A video tutorial of IATK [can be found here](https://vimeo.com/320646218)
 The actual tutorial starts at 01:12
 <!--[the slides of our tutorial are available here](https://drive.google.com/open?id=1-uBezockeTltw1x-5gcNsQrAPJ9v08up) -->
 
