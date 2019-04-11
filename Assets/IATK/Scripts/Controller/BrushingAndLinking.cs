@@ -126,11 +126,14 @@ public class BrushingAndLinking : MonoBehaviour {
     /// <param name="visualisation"></param>
     public void UpdateComputeBuffers(Visualisation visualisation)
     {
-        dataBuffer.SetData(visualisation.theVisualizationObject.viewList[0].BigMesh.getBigMeshVertices());
-        computeShader.SetBuffer(kernelComputeBrushTexture, "dataBuffer", dataBuffer);
+        if (visualisation.visualisationType == AbstractVisualisation.VisualisationTypes.SCATTERPLOT)
+        {
+            dataBuffer.SetData(visualisation.theVisualizationObject.viewList[0].BigMesh.getBigMeshVertices());
+            computeShader.SetBuffer(kernelComputeBrushTexture, "dataBuffer", dataBuffer);
 
-        filteredIndicesBuffer.SetData(visualisation.theVisualizationObject.viewList[0].GetFilterChannel());
-        computeShader.SetBuffer(kernelComputeBrushTexture, "filteredIndicesBuffer", filteredIndicesBuffer);
+            filteredIndicesBuffer.SetData(visualisation.theVisualizationObject.viewList[0].GetFilterChannel());
+            computeShader.SetBuffer(kernelComputeBrushTexture, "filteredIndicesBuffer", filteredIndicesBuffer);
+        }
     }
 
 

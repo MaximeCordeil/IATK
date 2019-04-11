@@ -327,6 +327,33 @@ namespace IATK
             return this;
         }
 
+        /// <summary>
+        /// Use the normal to store the vertex index, size
+        /// </summary>
+        public ViewBuilder createIndicesPointTopology(int totalPoints)
+        {
+            for (int i = 0; i < totalPoints; i++)
+            {
+                Vector3 n = uvs[i];
+                n[0] = (float)i;
+                uvs[i] = n;
+            }
+            return this;
+        }
+
+        public ViewBuilder createIndicesPointTopology(float[] vertexIndices)
+        {
+
+            for (int i = 0; i < vertexIndices.Length; i++)
+            {
+                Vector3 n = uvs[i];
+                n[0] = vertexIndices[i];
+                uvs[i] = n;
+            }
+
+            return this;
+        }
+
         public ViewBuilder createIndicesLinkedTopology(float[] linkingField)
         {
             //the first member of the Tuple is the index in the index buffer, 
