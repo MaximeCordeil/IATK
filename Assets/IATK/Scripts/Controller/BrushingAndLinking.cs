@@ -236,11 +236,15 @@ public class BrushingAndLinking : MonoBehaviour {
             // Run the compute shader
             computeShader.Dispatch(kernelComputeBrushTexture, Mathf.CeilToInt(texSize / 32f), Mathf.CeilToInt(texSize / 32f), 1);
 
-            vis.theVisualizationObject.viewList[0].BigMesh.SharedMaterial.SetTexture("_BrushedTexture", brushedIndicesTexture);
-            vis.theVisualizationObject.viewList[0].BigMesh.SharedMaterial.SetFloat("_DataWidth", texSize);
-            vis.theVisualizationObject.viewList[0].BigMesh.SharedMaterial.SetFloat("_DataHeight", texSize);
-            vis.theVisualizationObject.viewList[0].BigMesh.SharedMaterial.SetFloat("showBrush", Convert.ToSingle(showBrush));
-            vis.theVisualizationObject.viewList[0].BigMesh.SharedMaterial.SetColor("brushColor", brushColor);
+            foreach (var view in vis.theVisualizationObject.viewList)
+            {
+                view.BigMesh.SharedMaterial.SetTexture("_BrushedTexture", brushedIndicesTexture);
+                view.BigMesh.SharedMaterial.SetFloat("_DataWidth", texSize);
+                view.BigMesh.SharedMaterial.SetFloat("_DataHeight", texSize);
+                view.BigMesh.SharedMaterial.SetFloat("showBrush", Convert.ToSingle(showBrush));
+                view.BigMesh.SharedMaterial.SetColor("brushColor", brushColor);
+            }
+           
 
             hasFreeBrushReset = true;
         }
