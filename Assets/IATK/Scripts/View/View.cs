@@ -51,6 +51,15 @@ namespace IATK
         /// <summary>
         /// Maps a data array to the size of the glyphs
         /// </summary>
+        /// <param name="vertexIdData"></param>
+        public void SetVertexIdChannel(float[] vertexIdData)
+        {
+            bigMesh.MapUVChannel(0, (int)AbstractVisualisation.NormalChannel.VertexId, vertexIdData);
+        }
+
+        /// <summary>
+        /// Maps a data array to the size of the glyphs
+        /// </summary>
         /// <param name="sizeData"></param>
         public void SetSizeChannel(float[] sizeData)
         {

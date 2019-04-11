@@ -191,7 +191,7 @@ Shader "IATK/Quads"
 				{
 					GS_INPUT output = (GS_INPUT)0;
 
-					float idx = v.uv_MainTex.x;
+					float idx = v.uv_MainTex.x % _DataWidth;
 					float isFiltered = v.uv_MainTex.z;
 
 					//lookup the texture to see if the vertex is brushed...
@@ -306,7 +306,6 @@ Shader "IATK/Quads"
 				}
 				if (input.isBrushed && showBrush>0.0) return brushColor;
 				else return float4(input.color.x - dt*0.15,input.color.y - dt*0.15,input.color.z - dt*0.15,input.color.w);
-
 				}
 
 				
