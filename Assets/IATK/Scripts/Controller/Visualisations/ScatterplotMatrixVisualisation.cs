@@ -25,8 +25,8 @@ namespace IATK {
                 {
                     for (int k = 0; k < 64; k++)
                     {
-
-                        if(AxisHolder[i,j,k]!=null)
+                    //    if (i != j)//
+                            if (AxisHolder[i,j,k]!=null)
                         {
                             foreach (var item in AxisHolder[i, j, k])
                             {
@@ -77,9 +77,9 @@ namespace IATK {
                     {
                         for (int k = 0; k < visualisationReference.zScatterplotMatrixDimensions.Length; k++)
                         {
-                          //  if (i != j && i != k && j != k)
+                            if (!(i == j && j == k && i == k))
                             {
-                                if (visualisationReference.xScatterplotMatrixDimensions[i] != null
+                               if (visualisationReference.xScatterplotMatrixDimensions[i] != null
                                && visualisationReference.yScatterplotMatrixDimensions[j] != null
                                && visualisationReference.zScatterplotMatrixDimensions[k] != null)
                                 {
@@ -123,7 +123,7 @@ namespace IATK {
                 {
                     for (int j = 0; j < visualisationReference.yScatterplotMatrixDimensions.Length; j++)
                     {
-                     //   if (i != j)
+                        if (i != j)
                         {
                             if (visualisationReference.xScatterplotMatrixDimensions[i] != null
                                    && visualisationReference.yScatterplotMatrixDimensions[j] != null)

@@ -235,11 +235,14 @@
 			fixed4 frag (g2f i) : SV_Target
 			{
 				if (i.isBrushed > 0.0 && showBrush > 0.0)
-				return brushColor;
+				{
+					if (brushColor.w < 0.01) discard;
+					return brushColor;
+				}
 				else
 				if(i.color.w>0)
 				return i.color;	
-				else {discard; return 	i.color;	
+				else {discard; return i.color;	
 		}
 			}
 			ENDCG

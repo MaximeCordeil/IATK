@@ -336,6 +336,22 @@ public class Axis : MonoBehaviour {
         }
     }
 
+    public void Update()
+    {
+        //check if the transforms of the normalisers have been moved
+        if (minNormaliserObject.hasChanged)
+        {       //raise event
+            visualisationReference.updateViewProperties(AbstractVisualisation.PropertyType.AttributeFiltering);
+            minNormaliserObject.hasChanged = false;
+        }
+            if (maxNormaliserObject.hasChanged)
+        {
+            //raise event
+            visualisationReference.updateViewProperties(AbstractVisualisation.PropertyType.DimensionChangeFiltering);
+            maxNormaliserObject.hasChanged = false;
+        }
+    }
+
     class BasicAxisLabelDelegate : AxisLabelDelegate
     {
         public AttributeFilter attributeFilter;

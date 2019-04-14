@@ -86,7 +86,7 @@ public class BrushingAndLinking : MonoBehaviour {
         kernelComputeBrushTexture = computeShader.FindKernel("CSMain");
         kernelComputeBrushedIndices = computeShader.FindKernel("ComputeBrushedIndicesArray");
     }
-
+    
     /// <summary>
     /// Initialises the buffers and textures necessary for the brushing and linking to work.
     /// </summary>
@@ -154,7 +154,7 @@ public class BrushingAndLinking : MonoBehaviour {
         return (int)Mathf.Pow(2, pos);
     }
 
-    private void Update()
+    public void Update()
     {
         if (isBrushing && brushingVisualisations.Count > 0 && input1 != null && input2 != null)
         {
@@ -168,6 +168,30 @@ public class BrushingAndLinking : MonoBehaviour {
             {
                 InitialiseBuffersAndTextures(brushingVisualisations[0].dataSource.DataCount);
             }
+        }
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            UpdateBrushedIndices();
+            List<int> indicesBrushed = new List<int>();
+
+            for (int i = 0; i < brushedIndices.Count; i++)
+            {
+                if(brushedIndices[i] >0)
+                indicesBrushed.Add(i);
+            }
+
+            foreach (var item in indicesBrushed)
+            {
+                float xVal = brushingVisualisations[0].dataSource[brushingVisualisations[0].xDimension.Attribute].Data[item];
+                float yVal = brushingVisualisations[0].dataSource[brushingVisualisations[0].yDimension.Attribute].Data[item];
+                float zVal = brushingVisualisations[0].dataSource[brushingVisualisations[0].zDimension.Attribute].Data[item];
+
+                print("X: " + brushingVisualisations[0].dataSource.getOriginalValue(xVal, brushingVisualisations[0].xDimension.Attribute)
+                   + " Y: " + brushingVisualisations[0].dataSource.getOriginalValue(yVal, brushingVisualisations[0].yDimension.Attribute) 
+                   + " Z: " + brushingVisualisations[0].dataSource.getOriginalValue(zVal, brushingVisualisations[0].zDimension.Attribute));
+            }
+            
         }
     }
 
