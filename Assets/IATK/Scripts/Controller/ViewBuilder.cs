@@ -368,6 +368,10 @@ namespace IATK
                     Indices.Add(node-1);
                     Indices.Add(edgeNode);
                 }
+
+                Vector3 n = uvs[node-1];
+                n.x = (float)(node -1);
+                uvs[node-1] = n;
             }
             
             return this;

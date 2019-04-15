@@ -139,12 +139,10 @@
 				float2 indexUV = float2((idx % _DataWidth) / _DataWidth, ((idx / _DataWidth) / _DataHeight));
 				float4 brushValue = tex2Dlod(_BrushedTexture, float4(indexUV, 0.0, 0.0));
 
-
-				o.isBrushed = brushValue.r;// > 0.001;
+				o.isBrushed = brushValue.r;
 
 				float size = lerp(v.uv_MainTex.w, v.uv_MainTex.y, _TweenSize);
 				float3 pos = lerp(v.normal, v.vertex, _Tween);
-
 
 				float4 normalisedPosition = float4(
 					normaliseValue(pos.x, _MinNormX, _MaxNormX, 0, 1),
@@ -230,8 +228,16 @@
 				if (points[0].color.w == 0) points[1].color.w = 0;
 				if (points[1].color.w == 0) points[0].color.w = 0;
 
-				emitPoint(points[0], triStream);
-				emitPoint(points[1], triStream);
+				v2g point0 = points[0];
+				v2g point1 = points[1];
+
+				if(point0.isBrushed > 0)
+				point1.isBrushed = point0.isBrushed;
+				if (point1.isBrushed >0)
+				point0.isBrushed = point1.isBrushed;
+
+				emitPoint(point0, triStream);
+				emitPoint(point1, triStream);
 
 				//line geometry
 				float4 p0 = UnityObjectToClipPos(points[0].vertex);
@@ -304,8 +310,6 @@
 
 			}
 
-			
-			
 			fixed4 frag (g2f i) : SV_Target
 			{
 				if(i.isLine)
@@ -313,14 +317,9 @@
 				fixed4 col = i.color;
 				
 				if (i.isBrushed && showBrush>0.0) col = brushColor;
-				// TODO : test outline shader
-
-				//float dx = i.tex0.x;// - 0.5f;
-			    //float dy = i.tex0.y;// - 0.5f;
-
-				//if(dx > 0.95 || dx < 0.05 /*|| dy <0.1  || dy>0.9*/ ) return float4(0.0, 1.0, 0.0, 1.0);
+				else
 				if(col.w == 0) {discard; return float4(0.0,0.0,0.0,0.0);}
-				return  col;
+				return col;
 				}
 				else
 				{
@@ -329,24 +328,12 @@
 					float dy = i.tex0.y - 0.5f;
 
 					float dt = dx * dx + dy * dy;
-					
-					//if(input.color.x > 0.2 && input.color.y > 0.2 && input.color.z > 0.2)
-					//{
-					//			discard;
-					//		return float4(0.0, 0.0, 0.0, 0.0);
-					//}
+				
+
 					if(i.color.w == 0)
 					{
-						//if( dt <= 0.2f)
-						//	return float4(0.1,0.1,0.1,1.0);
-						//else
-						//	if(dx * dx + dy * dy <= 0.25f)
-						//	return float4(0.0, 0.0, 0.0, 1.0);
-						//	else
-						//	{
 							discard;
 							return float4(0.0, 0.0, 0.0, 0.0);
-//							}
 					}
 					else
 					{
