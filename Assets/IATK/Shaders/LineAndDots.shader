@@ -176,54 +176,54 @@
 
 			void emitPoint(v2g _point, inout TriangleStream<g2f> triStream)
 			{
-					float4x4 MV = UNITY_MATRIX_MV;
-					float4x4 vp = UNITY_MATRIX_VP;
+				float4x4 MV = UNITY_MATRIX_MV;
+				float4x4 vp = UNITY_MATRIX_VP;
 
-					float3 up = UNITY_MATRIX_IT_MV[1].xyz;
-					float3 right =  -UNITY_MATRIX_IT_MV[0].xyz;
+				float3 up = UNITY_MATRIX_IT_MV[1].xyz;
+				float3 right =  -UNITY_MATRIX_IT_MV[0].xyz;
 
-					float sizeFactor = normaliseValue(_point.normal.y, 0.0, 1.0, _MinSize, _MaxSize);
-					float dist = 1;
-					float halfS = 0.01f * (_Size + (dist * sizeFactor));
+				float sizeFactor = normaliseValue(_point.normal.y, 0.0, 1.0, _MinSize, _MaxSize);
+				float dist = 1;
+				float halfS = 0.05f * (_Size + (dist * sizeFactor));
 							
-					float4 v[4];				
+				float4 v[4];				
 
-					v[0] = float4(_point.vertex + halfS * right - halfS * up, 1.0f);
-					v[1] = float4(_point.vertex + halfS * right + halfS * up, 1.0f);
-					v[2] = float4(_point.vertex - halfS * right - halfS * up, 1.0f);
-					v[3] = float4(_point.vertex - halfS * right + halfS * up, 1.0f);
+				v[0] = float4(_point.vertex + halfS * right - halfS * up, 1.0f);
+				v[1] = float4(_point.vertex + halfS * right + halfS * up, 1.0f);
+				v[2] = float4(_point.vertex - halfS * right - halfS * up, 1.0f);
+				v[3] = float4(_point.vertex - halfS * right + halfS * up, 1.0f);
 		
-					g2f pIn;
+				g2f pIn;
 					
-					pIn.isBrushed = _point.isBrushed;
-					pIn.color = _point.color;
-					pIn.isLine = false;
+				pIn.isBrushed = _point.isBrushed;
+				pIn.color = _point.color;
+				pIn.isLine = false;
 
-					pIn.vertex = UnityObjectToClipPos(v[0]);					
-					pIn.tex0 = float2(1.0f, 0.0f);
-					pIn.isBrushed = _point.isBrushed; 
-					triStream.Append(pIn);
+				pIn.vertex = UnityObjectToClipPos(v[0]);					
+				pIn.tex0 = float2(1.0f, 0.0f);
+				pIn.isBrushed = _point.isBrushed; 
+				triStream.Append(pIn);
 
-					pIn.vertex = UnityObjectToClipPos(v[1]);
-					pIn.tex0 = float2(1.0f, 1.0f);
-					pIn.isBrushed = _point.isBrushed;
-					triStream.Append(pIn);
+				pIn.vertex = UnityObjectToClipPos(v[1]);
+				pIn.tex0 = float2(1.0f, 1.0f);
+				pIn.isBrushed = _point.isBrushed;
+				triStream.Append(pIn);
 
-					pIn.vertex = UnityObjectToClipPos(v[2]);
-					pIn.isBrushed = _point.isBrushed;
-					pIn.tex0 = float2(0.0f, 0.0f);
-					triStream.Append(pIn);
+				pIn.vertex = UnityObjectToClipPos(v[2]);
+				pIn.isBrushed = _point.isBrushed;
+				pIn.tex0 = float2(0.0f, 0.0f);
+				triStream.Append(pIn);
 
-					pIn.vertex = UnityObjectToClipPos(v[3]);
-					pIn.isBrushed = _point.isBrushed;
-					pIn.tex0 = float2(0.0f, 1.0f);
-					triStream.Append(pIn);
-					triStream.RestartStrip();
+				pIn.vertex = UnityObjectToClipPos(v[3]);
+				pIn.isBrushed = _point.isBrushed;
+				pIn.tex0 = float2(0.0f, 1.0f);
+				triStream.Append(pIn);
+				triStream.RestartStrip();
 
 
 			}
 
-			[maxvertexcount(32)]
+			[maxvertexcount(16)]
 			void geom(line v2g points[2], inout TriangleStream<g2f> triStream)
 			{
 				//handle brushing line topoolgy

@@ -220,7 +220,7 @@ namespace IATK
                        apply(gameObject, mt);
 
                 case AbstractVisualisation.GeometryType.Lines:
-                    if (visualisationReference.graphDimension == "Undefined")
+                    if (visualisationReference.graphDimension != "Undefined")
                     {
                         CSVDataSource csvds = (CSVDataSource)(visualisationReference.dataSource);
                         builder.createIndicesGraphTopology(csvds.GraphEdges);
@@ -230,7 +230,7 @@ namespace IATK
                         apply(gameObject, mt);
                     }
                     else
-                    if (visualisationReference.linkingDimension == "Undefined")
+                    if (visualisationReference.linkingDimension != "Undefined")
                     {
                         throw new UnityException("'Linkinfield' or 'GraphDimension' is undefined. Please select a linking field or a graph dimension");
                     }

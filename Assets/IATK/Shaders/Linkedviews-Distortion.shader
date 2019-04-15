@@ -235,7 +235,7 @@ Shader "Staxestk/Linked-Views-Material"
 		else
 		{
 			float4 col = i.color;
-			col.a = 0.12;
+			//col.a = 0.12;
 			return col;
 		};
 	}
