@@ -72,18 +72,25 @@ namespace IATK
         public Gradient dimensionColour;
 
         [Tooltip("The blending mode source")]
-//        public UnityEngine.Rendering.BlendMode blendingModeSource;
         public string blendingModeSource = UnityEngine.Rendering.BlendMode.SrcAlpha.ToString();
 
         [Tooltip("The blending mode destination")]
-        //        public UnityEngine.Rendering.BlendMode blendingModeDestination;
         public string blendingModeDestination = UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha.ToString();
 
         [Tooltip("The dimension to map the size to")]
         public string sizeDimension;
 
-        [Tooltip("The dimension that links data points")]
+        [Tooltip("The dimension that links data points for trajectories")]
         public string linkingDimension;
+
+        [Tooltip("The dimension that links origin points to destination")]
+        public string originDimension;
+
+        [Tooltip("The dimension that links origin points to destination")]
+        public string destinationDimension;
+
+        [Tooltip("The graph dimension that links data points for networks")]
+        public string graphDimension;
 
         [Tooltip("The number of loaded data points")]
         public string dataPoints = "";

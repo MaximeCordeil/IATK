@@ -36,6 +36,10 @@ namespace IATK
         private SerializedProperty maxSizeProperty;
 
         private SerializedProperty linkingDimensionProperty;
+        private SerializedProperty originDimensionProperty;
+        private SerializedProperty destinationDimensionProperty;
+        private SerializedProperty graphDimensionProperty;
+
         private SerializedProperty visualisationTypeProperty;
 
         private SerializedProperty xScatterplotMatrixDimensionsProperty;
@@ -166,6 +170,10 @@ namespace IATK
             minSizeProperty = serializedObject.FindProperty("minSize");
             maxSizeProperty = serializedObject.FindProperty("maxSize");
             linkingDimensionProperty = serializedObject.FindProperty("linkingDimension");
+            originDimensionProperty = serializedObject.FindProperty("originDimension");
+            destinationDimensionProperty = serializedObject.FindProperty("destinationDimension");
+            graphDimensionProperty = serializedObject.FindProperty("graphDimension");
+
             visualisationTypeProperty = serializedObject.FindProperty("visualisationType");
 
             attributeFiltersProperty = serializedObject.FindProperty("attributeFilters");
@@ -401,6 +409,8 @@ namespace IATK
 
             }
 
+            EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
+            EditorGUILayout.LabelField("Aesthetics", EditorStyles.boldLabel);
 
             EditorGUI.BeginChangeCheck();
 
@@ -424,8 +434,8 @@ namespace IATK
                 if (colorPaletteDimensionProperty.stringValue != "Undefined")
                 {
                     int nbPaletteCategories = dataSource.getNumberOfCategories(colorPaletteDimensionProperty.stringValue);
-                    float[] uniqueValues = dataSource[colorPaletteDimensionProperty.stringValue].MetaData.categories;
-
+                    //float[] uniqueValues = dataSource[colorPaletteDimensionProperty.stringValue].MetaData.categories;
+                    
                     colourPaletteProperty.ClearArray();
                     colourPaletteProperty.arraySize = nbPaletteCategories;
                     colourDimensionProperty.stringValue = "Undefined";
@@ -437,15 +447,27 @@ namespace IATK
                 EditorGUI.BeginChangeCheck();
 
                 float[] paletteValues = dataSource[colorPaletteDimensionProperty.stringValue].MetaData.categories;
+                float[] ordererdPalette = paletteValues.OrderBy(x => x).ToArray();
+                List<int> sortedId = new List<int>();
+
+                //not optimal...
+                // adding an inderiction pointer indices to reorder values on the GUI -- not sorted in database
+                for (int idOri = 0; idOri < ordererdPalette.Length; idOri++)
+                {
+                    //what's the id of the non sorted?
+                    float sortEl = ordererdPalette[idOri];
+                    int _sortedId = paletteValues.ToList().IndexOf(sortEl);
+                    sortedId.Add(_sortedId);
+                }
+
                 int nbPaletteCategories = paletteValues.Length;
 
                 EditorGUI.indentLevel += 1;
                 for (int i = 0; i < nbPaletteCategories; i++)
                 {
-
                     EditorGUILayout.PropertyField(
-                        colourPaletteProperty.GetArrayElementAtIndex(i),
-                        new GUIContent(dataSource.getOriginalValue(paletteValues[i], colorPaletteDimensionProperty.stringValue).ToString())
+                        colourPaletteProperty.GetArrayElementAtIndex(sortedId[i]),
+                        new GUIContent(dataSource.getOriginalValue(paletteValues[sortedId[i]], colorPaletteDimensionProperty.stringValue).ToString())
                     );
                 }
                 EditorGUI.indentLevel -= 1;
@@ -490,22 +512,12 @@ namespace IATK
                 }
             }
 
+            
             if (EnumPopup("Size dimension", dimensions.ToArray(), sizeDimensionProperty))
             {
                 dirtyFlags = AbstractVisualisation.PropertyType.Size;
             }
 
-            if (EnumPopup("Linking dimension", dimensions.ToArray(), linkingDimensionProperty))
-            {
-                dirtyFlags = AbstractVisualisation.PropertyType.LinkingDimension;
-            }
-
-            EditorGUI.BeginChangeCheck();
-            EditorGUILayout.PropertyField(attributeFiltersProperty, true);
-            if (EditorGUI.EndChangeCheck())
-            {
-                dirtyFlags = AbstractVisualisation.PropertyType.AttributeFiltering;
-            }
             // Size
             EditorGUI.BeginChangeCheck();
 
@@ -517,6 +529,39 @@ namespace IATK
             {
                 dirtyFlags = AbstractVisualisation.PropertyType.SizeValues;
             }
+
+            EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
+            EditorGUILayout.LabelField("Connectivity", EditorStyles.boldLabel);
+            
+            if (EnumPopup("Linking dimension", dimensions.ToArray(), linkingDimensionProperty))
+            {
+                dirtyFlags = AbstractVisualisation.PropertyType.LinkingDimension;
+            }
+
+            if (EnumPopup("Origin dimension", dimensions.ToArray(), originDimensionProperty))
+            {
+                dirtyFlags = AbstractVisualisation.PropertyType.OriginDimension;
+            }
+
+            if (EnumPopup("Destination dimension", dimensions.ToArray(), destinationDimensionProperty))
+            {
+                dirtyFlags = AbstractVisualisation.PropertyType.DestinationDimension;
+            }
+
+            if (EnumPopup("Graph dimension", dimensions.ToArray(), graphDimensionProperty))
+            {
+                dirtyFlags = AbstractVisualisation.PropertyType.GraphDimension;
+            }
+
+            EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
+
+            EditorGUI.BeginChangeCheck();
+            EditorGUILayout.PropertyField(attributeFiltersProperty, true);
+            if (EditorGUI.EndChangeCheck())
+            {
+                dirtyFlags = AbstractVisualisation.PropertyType.AttributeFiltering;
+            }
+           
 
             // Visualisation dimensions
             EditorGUI.BeginChangeCheck();
@@ -566,7 +611,6 @@ namespace IATK
             {
                 dirtyFlags = _globalDirtyFlags;
             }
-
         }
 
         void ShowParallelCoordinatesMenu(ref AbstractVisualisation.PropertyType? dirtyFlags)

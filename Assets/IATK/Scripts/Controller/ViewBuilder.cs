@@ -354,7 +354,27 @@ namespace IATK
             return this;
         }
 
-        public ViewBuilder createIndicesLinkedTopology(float[] linkingField)
+        // for graphs, OD data
+        public ViewBuilder createIndicesGraphTopology(Dictionary<int, List<int>> nodeEdges)
+        {
+
+            foreach (var nodEdg in nodeEdges)
+            {
+                int node = nodEdg.Key;
+                List<int> edges = nodEdg.Value;
+
+                foreach (var edgeNode in edges)
+                {
+                    Indices.Add(node-1);
+                    Indices.Add(edgeNode);
+                }
+            }
+            
+            return this;
+        }
+
+        // for trajectories, time series
+        public ViewBuilder createIndicesConnectedLineTopology(float[] linkingField)
         {
             //the first member of the Tuple is the index in the index buffer, 
             // the second member is the index in the Vertex Buffer.

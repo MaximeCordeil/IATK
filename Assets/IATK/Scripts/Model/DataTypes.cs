@@ -13,7 +13,8 @@ namespace IATK
         Bool,
         String,
         Date,
-        Time
+        Time,
+        Graph
     }
 
     public static class DataTypeExtension
@@ -40,6 +41,10 @@ namespace IATK
             {
                 return DataType.Float;
             }
+            else if(isGraph(data))
+            {
+                return DataType.Graph;
+            }
             else if (!String.IsNullOrEmpty(data))
             {
                 return DataType.String;
@@ -48,6 +53,11 @@ namespace IATK
             {
                 return DataType.Undefined;
             }
+        }
+
+        private static bool isGraph(string data)
+        {
+            return data.Contains("|");
         }
 
         private static bool isBool(string value)

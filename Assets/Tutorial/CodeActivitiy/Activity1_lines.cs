@@ -28,7 +28,7 @@ public class Activity1_lines : MonoBehaviour {
                 setDataDimension(csvds["open"].Data, ViewBuilder.VIEW_DIMENSION.Z).
                 setSize(csvds["volume"].Data).
                 setColors(csvds["volume"].Data.Select(x => g.Evaluate(x)).ToArray()).
-                createIndicesLinkedTopology(csvds["stock"].Data);
+                createIndicesConnectedLineTopology(csvds["stock"].Data);
 
         // create a view builder with the point topology
 
