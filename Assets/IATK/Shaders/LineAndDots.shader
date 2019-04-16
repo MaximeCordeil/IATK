@@ -344,11 +344,8 @@
 						if (i.isBrushed && showBrush>0.0) return brushColor;
 						else
 						return float4(i.color.x-dt*0.75,i.color.y-dt*0.75,i.color.z-dt*0.75,i.color.w);
-					}// float4(input.color.x-dt*0.25,input.color.y-dt*0.25,input.color.z-dt*0.25,1.0);
+					}
 					else
-					//if(dx * dx + dy * dy <= 0.21f)
-					//return float4(0.0, 0.0, 0.0, 1.0);
-					//else
 					{
 					discard;	
 					return float4(0.1, 0.1, 0.1, 1.0);

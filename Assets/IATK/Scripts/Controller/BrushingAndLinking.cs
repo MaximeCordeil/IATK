@@ -169,30 +169,37 @@ public class BrushingAndLinking : MonoBehaviour {
                 InitialiseBuffersAndTextures(brushingVisualisations[0].dataSource.DataCount);
             }
         }
+        
+    }
 
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
+    /// <summary>
+    /// Returns a list with all indices - if index > 0, index is brushed. It's not otherwise
+    /// </summary>
+    /// <returns></returns>
+    public List<int> GetBrushedIndices()
+    {
+
             UpdateBrushedIndices();
             List<int> indicesBrushed = new List<int>();
 
             for (int i = 0; i < brushedIndices.Count; i++)
             {
-                if(brushedIndices[i] >0)
-                indicesBrushed.Add(i);
+                if (brushedIndices[i] > 0)
+                    indicesBrushed.Add(i);
             }
 
-            foreach (var item in indicesBrushed)
-            {
-                float xVal = brushingVisualisations[0].dataSource[brushingVisualisations[0].xDimension.Attribute].Data[item];
-                float yVal = brushingVisualisations[0].dataSource[brushingVisualisations[0].yDimension.Attribute].Data[item];
-                float zVal = brushingVisualisations[0].dataSource[brushingVisualisations[0].zDimension.Attribute].Data[item];
+        //foreach (var item in indicesBrushed)
+        //{
+        //    float xVal = brushingVisualisations[0].dataSource[brushingVisualisations[0].xDimension.Attribute].Data[item];
+        //    float yVal = brushingVisualisations[0].dataSource[brushingVisualisations[0].yDimension.Attribute].Data[item];
+        //    float zVal = brushingVisualisations[0].dataSource[brushingVisualisations[0].zDimension.Attribute].Data[item];
 
-                print("X: " + brushingVisualisations[0].dataSource.getOriginalValue(xVal, brushingVisualisations[0].xDimension.Attribute)
-                   + " Y: " + brushingVisualisations[0].dataSource.getOriginalValue(yVal, brushingVisualisations[0].yDimension.Attribute) 
-                   + " Z: " + brushingVisualisations[0].dataSource.getOriginalValue(zVal, brushingVisualisations[0].zDimension.Attribute));
-            }
-            
-        }
+        //    //print("X: " + brushingVisualisations[0].dataSource.getOriginalValue(xVal, brushingVisualisations[0].xDimension.Attribute)
+        //    //   + " Y: " + brushingVisualisations[0].dataSource.getOriginalValue(yVal, brushingVisualisations[0].yDimension.Attribute)
+        //    //   + " Z: " + brushingVisualisations[0].dataSource.getOriginalValue(zVal, brushingVisualisations[0].zDimension.Attribute));
+        //}
+
+        return indicesBrushed;
     }
 
     /// <summary>
