@@ -232,16 +232,18 @@ namespace IATK
                     else
                     if (visualisationReference.linkingDimension != "Undefined")
                     {
-                        throw new UnityException("'Linkinfield' or 'GraphDimension' is undefined. Please select a linking field or a graph dimension");
-                    }
-                    else
-                    {
                         builder.createIndicesConnectedLineTopology(visualisationReference.dataSource[visualisationReference.linkingDimension].Data);
                         mt = new Material(Shader.Find("IATK/LinesShader"));
                         mt.renderQueue = 3000;
                         return builder.updateView().
                         apply(gameObject, mt);
                     }
+                    else
+                    {
+                        throw new UnityException("'Linkinfield' or 'GraphDimension' is undefined. Please select a linking field or a graph dimension");
+                    }
+                    break;                    
+
                 case AbstractVisualisation.GeometryType.Quads:
                     builder.createIndicesPointTopology();
                     mt = new Material(Shader.Find("IATK/Quads"));
