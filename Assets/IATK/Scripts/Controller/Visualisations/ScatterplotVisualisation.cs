@@ -348,7 +348,7 @@ namespace IATK
             UpdateVisualisationAxes(propertyType);
         }
 
-        protected void UpdateVisualisationAxes(AbstractVisualisation.PropertyType propertyType)
+        public void UpdateVisualisationAxes(AbstractVisualisation.PropertyType propertyType)
         {
             switch (propertyType)
             {
