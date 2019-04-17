@@ -5,12 +5,20 @@
 IATK is an ongoing and open project! We setup a roadmap with features that we would like to see in IATK in a near future.  
 <br/>
 <br/>
-## IEEE VIS 2018 tutorial 
-We will give an Immersive Visualisation tutorial with IATK at IEEE VIS 2018.
-For attendees, please download:
+
+# Dependencies
+IATK requires the [MapBox Unity Plugin](https://www.mapbox.com/)
+
+## Tutorial
+A video tutorial of IATK [can be found here](https://vimeo.com/320646218)
+The actual tutorial starts at 01:12
+<!--[the slides of our tutorial are available here](https://drive.google.com/open?id=1-uBezockeTltw1x-5gcNsQrAPJ9v08up) -->
+
+<!-- -- We will give an Immersive Visualisation tutorial with IATK at IEEE VIS 2018. -->
+Required downloads:
 
 - this repository
-- [Unity 2017](https://unity3d.com/get-unity/download?thank-you=update&download_nid=49126&os=Win)
+- [Unity 2018](https://unity3d.com/get-unity/)
 - [Virtual reality toolkit VRTK](https://github.com/thestonefox/VRTK)
 
 ***!!! IATK works on Windows machines -  Mac users please [install bootcamp](https://support.apple.com/en-au/HT201468) !!!***
