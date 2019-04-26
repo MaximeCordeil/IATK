@@ -21,6 +21,7 @@ Shader "Staxestk/Linked-Views-Material"
 		_btr2("Back Top Right Axis 2", Vector) = (1,1,-1,0)
 		_bbl2("Back Bottom Left Axis 2", Vector) = (-1,-1,-1,0)
 		_bbr2("Back Bottom Right Axis 2", Vector) = (1,-1,-1,0)
+		_Alpha("_Alpha", Float) = 1.0
 
 	}
 		SubShader
@@ -120,6 +121,9 @@ Shader "Staxestk/Linked-Views-Material"
 	float _DataHeight;
 	float showBrush;
 	float4 brushColor;
+
+	//aestethics
+	float _Alpha;
 
 	// VERTEX SHADER
 	gs_in vert(appdata v)
@@ -231,11 +235,12 @@ Shader "Staxestk/Linked-Views-Material"
 	fixed4 frag(v2f i) : SV_Target
 	{
 		if (i.isBrushed > 0.0 && showBrush > 0.0)
-		return brushColor;
+		return float4(brushColor.x,brushColor.y,brushColor.z, _Alpha);
 		else
 		{
-			float4 col = i.color;
+			float4 col = float4(i.color.x, i.color.y, i.color.z,_Alpha);
 			//col.a = 0.12;
+			if (_Alpha < 0.01) discard;
 			return col;
 		};
 	}

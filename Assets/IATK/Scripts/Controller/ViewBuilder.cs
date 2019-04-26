@@ -251,6 +251,7 @@ namespace IATK
                                                colours.ToArray(),
                                                normals.ToArray(),
                                                uvs.ToArray(),
+                                               uv2s.ToArray(),
                                                chunkSizeList.ToArray(),
                                                material,
                                                LineLength.ToArray());

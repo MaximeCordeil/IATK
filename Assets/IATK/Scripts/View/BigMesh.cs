@@ -31,6 +31,7 @@ namespace IATK
             public Color[] colours;             // The colours for each vertex
             public Vector3[] normals;           // The normals of the mesh
             public Vector3[] uvs;               // The uvs of the mesh
+            public Vector3[] uvsAnimation;      // Store the information for animation  
 
             public int[] lineLength;
             public int[] chunkIndicesSize;
@@ -38,7 +39,7 @@ namespace IATK
             public Material material;           // The material to apply to the mesh
             public Dictionary<int, int> indexToVertexDictionary;         // Dictionnary that links index buffer indices to vertex buffer indices
 
-            public BigMeshData(MeshTopology meshTopology, Vector3[] vertices, int[] indices, Color[] colours, Vector3[] normals, Vector3[] uvs, int[] chunkIndicesSize, Material material, int[] lineLength)
+            public BigMeshData(MeshTopology meshTopology, Vector3[] vertices, int[] indices, Color[] colours, Vector3[] normals, Vector3[] uvs, Vector3[] uvsAnimation, int[] chunkIndicesSize, Material material, int[] lineLength)
             {
                 this.meshTopology = meshTopology;
                 this.vertices = vertices;
@@ -46,9 +47,11 @@ namespace IATK
                 this.colours = colours;
                 this.normals = normals;
                 this.uvs = uvs;
+                this.uvsAnimation = uvsAnimation;
                 this.chunkIndicesSize = chunkIndicesSize;
                 this.material = material;
                 this.lineLength = lineLength;
+                
 
             }
         }
@@ -684,7 +687,7 @@ namespace IATK
             mesh.normals = normals;
             mesh.colors = colours;
             mesh.SetUVs(0, uvs.ToList());
-
+            
             mesh.RecalculateBounds();
 
             if (normals == null || normals.Length == 0)

@@ -35,6 +35,9 @@ namespace IATK
         public Visualisation visualisationTarget = null;
 
         public bool showLinks;
+        [Range(0f,1f)]
+        public float linkTransparency;
+
         bool toggleShow;
 
         Material linkerMaterial;
@@ -59,6 +62,7 @@ namespace IATK
 
             if(visualisationSource != null && visualisationTarget !=null) LinkVisualisations();
             toggleShow = showLinks;
+            
         }
 
         private void OnDestroy()
@@ -154,6 +158,9 @@ namespace IATK
                 linkerMaterial.SetFloat("_MaxNormY2", visualisationTarget.yDimension.maxScale);
                 linkerMaterial.SetFloat("_MaxNormZ1", visualisationSource.zDimension.maxScale);
                 linkerMaterial.SetFloat("_MaxNormZ2", visualisationTarget.zDimension.maxScale);
+
+                //set alpha
+                linkerMaterial.SetFloat("_Alpha", linkTransparency);
 
             }
             toggleShow = showLinks;
