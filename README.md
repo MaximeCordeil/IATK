@@ -6,6 +6,19 @@ IATK is an ongoing and open project! We setup a roadmap with features that we wo
 <br/>
 <br/>
 
+## Publication
+
+IATK was published at IEEE VR 2019 - Please use following reference:
+
+@inproceedings{cordeil2019iatk,
+  title={IATK: An Immersive Analytics Toolkit},
+  author={Cordeil, Maxime and Cunningham, Andrew and Bach, Benjamin and Hurter, Christophe and Thomas, Bruce H and Marriott, Kim and Dwyer, Tim},
+  booktitle={2019 IEEE Conference on Virtual Reality and 3D User Interfaces (VR)},
+  pages={200--209},
+  year={2019},
+  organization={IEEE}
+}
+
 ## Tutorial
 A video tutorial of IATK [can be found here](https://vimeo.com/320646218)
 The actual tutorial starts at 01:12
