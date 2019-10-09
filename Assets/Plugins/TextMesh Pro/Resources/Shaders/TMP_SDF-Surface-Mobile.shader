@@ -1,7 +1,3 @@
-// Copyright (C) 2014 - 2016 Stephan Schaem - All Rights Reserved
-// This code can only be used under the standard Unity Asset Store End User License Agreement
-// A Copy of the EULA APPENDIX 1 is available at http://unity3d.com/company/legal/as_terms
-
 // Simplified version of the SDF Surface shader :
 // - No support for Bevel, Bump or envmap
 // - Diffuse only lighting
@@ -41,6 +37,7 @@ Properties {
 	_ScaleX				("Scale X", float) = 1.0
 	_ScaleY				("Scale Y", float) = 1.0
 	_PerspectiveFilter	("Perspective Correction", Range(0, 1)) = 0.875
+	_Sharpness			("Sharpness", Range(-1,1)) = 0
 
 	_VertexOffsetX		("Vertex OffsetX", float) = 0
 	_VertexOffsetY		("Vertex OffsetY", float) = 0
@@ -76,6 +73,7 @@ SubShader {
 		fixed4	color		: COLOR;
 		float2	uv_MainTex;
 		float2	uv2_FaceTex;
+		float2  uv2_OutlineTex;
 		float2	param;					// Weight, Scale
 		float3	viewDirEnv;		
 	};
@@ -103,10 +101,12 @@ SubShader {
 		struct v2f {
 			V2F_SHADOW_CASTER;
 			float2	uv			: TEXCOORD1;
+			float2	uv2			: TEXCOORD3;
 			float	alphaClip	: TEXCOORD2;
 		};
 
 		uniform float4 _MainTex_ST;
+		uniform float4 _OutlineTex_ST;
 		float _OutlineWidth;
 		float _FaceDilate;
 		float _ScaleRatioA;
@@ -116,6 +116,7 @@ SubShader {
 			v2f o;
 			TRANSFER_SHADOW_CASTER(o)
 			o.uv = TRANSFORM_TEX(v.texcoord, _MainTex);
+			o.uv2 = TRANSFORM_TEX(v.texcoord, _OutlineTex);
 			o.alphaClip = o.alphaClip = (1.0 - _OutlineWidth * _ScaleRatioA - _FaceDilate * _ScaleRatioA) / 2;
 			return o;
 		}
