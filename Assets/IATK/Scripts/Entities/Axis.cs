@@ -115,7 +115,7 @@ public class Axis : MonoBehaviour {
     {
         labelDelegate = new BasicAxisLabelDelegate(AttributeFilter, visualisationReference.dataSource);
 
-        for (int i = 0; i < labelDelegate.NumberOfLabels(); ++i)
+        for (int i = 0; i < axisLabels.Count; ++i)
         {
             var go = axisLabels[i];
             go.text = labelDelegate.LabelText(i);
@@ -335,7 +335,7 @@ public class Axis : MonoBehaviour {
         
         bool IsDiscreet()
         {
-            var type = dataSource[attributeFilter.Attribute].MetaData.type;
+            var type = dataSource[attributeFilter.Attribute]?.MetaData.type;
             if (type == DataType.String || type == DataType.Date)// || type == DataType.Time)
             {
                 return true;
