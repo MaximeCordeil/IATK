@@ -1,9 +1,3 @@
-// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
-
-// Copyright (C) 2014 - 2016 Stephan Schaem - All Rights Reserved
-// This code can only be used under the standard Unity Asset Store End User License Agreement
-// A Copy of the EULA APPENDIX 1 is available at http://unity3d.com/company/legal/as_terms
-
 Shader "TextMeshPro/Sprite"
 {
 	Properties
@@ -18,7 +12,7 @@ Shader "TextMeshPro/Sprite"
 		_StencilReadMask ("Stencil Read Mask", Float) = 255
 
 		_ColorMask ("Color Mask", Float) = 15
-		_ClipRect ("Clip Rect", vector) = (-10000, -10000, 10000, 10000)
+		_ClipRect ("Clip Rect", vector) = (-32767, -32767, 32767, 32767)
 
 		[Toggle(UNITY_UI_ALPHACLIP)] _UseUIAlphaClip ("Use Alpha Clip", Float) = 0
 	}
@@ -59,6 +53,7 @@ Shader "TextMeshPro/Sprite"
 			#include "UnityCG.cginc"
 			#include "UnityUI.cginc"
 
+			#pragma multi_compile __ UNITY_UI_CLIP_RECT
 			#pragma multi_compile __ UNITY_UI_ALPHACLIP
 			
 			struct appdata_t
@@ -79,10 +74,6 @@ Shader "TextMeshPro/Sprite"
 			fixed4 _Color;
 			fixed4 _TextureSampleAdd;
 			float4 _ClipRect;
-
-#if UNITY_VERSION < 530
-			bool _UseClipRect;
-#endif
 
 			v2f vert(appdata_t IN)
 			{
@@ -106,15 +97,12 @@ Shader "TextMeshPro/Sprite"
 			{
 				half4 color = (tex2D(_MainTex, IN.texcoord) + _TextureSampleAdd) * IN.color;
 				
-			#if UNITY_VERSION < 530
-				if (_UseClipRect)
+				#if UNITY_UI_CLIP_RECT
 					color.a *= UnityGet2DClipping(IN.worldPosition.xy, _ClipRect);
-			#else
-				color.a *= UnityGet2DClipping(IN.worldPosition.xy, _ClipRect);
-			#endif
-				
+				#endif
+
 				#ifdef UNITY_UI_ALPHACLIP
-				clip (color.a - 0.001);
+					clip (color.a - 0.001);
 				#endif
 
 				return color;
