@@ -707,12 +707,14 @@ namespace IATK
 
                 string meshNameInPath = "Assets/SavedMeshes/" + "Mesh_" + indexCount.ToString() + ".asset";
 
+#if UNITY_EDITOR
                 AssetDatabase.CreateAsset(mesh, meshNameInPath);
                 AssetDatabase.SaveAssets();
 
                 Mesh m = AssetDatabase.LoadAssetAtPath<Mesh>(meshNameInPath);
                 
                 mf.mesh = m;
+#endif
                 indexCount++;
             }
             foreach (Transform child in theMesh.transform)
@@ -792,13 +794,17 @@ namespace IATK
             {
                 _tweenPosition = 0.0f;
                 this.SharedMaterial.SetFloat("_Tween", 0);
+#if UNITY_EDITOR
                 EditorApplication.update = DoTheTween;
+#endif
             }
             else if (type == TweenType.Size)
             {
                 _tweenSize = 0.0f;
                 this.SharedMaterial.SetFloat("_TweenSize", 0);
+#if UNITY_EDITOR
                 EditorApplication.update = DoTheTween;
+#endif
             }
         }
 
@@ -834,7 +840,9 @@ namespace IATK
 
             if (!isTweening)
             {
+#if UNITY_EDITOR
                 EditorApplication.update = null;
+#endif
             }
         }
     }
