@@ -286,15 +286,15 @@ namespace IATK
 
         void OnEnable()
         {
-            
-        if (uid == null)
-        {
-            uid = Guid.NewGuid().ToString().Substring(0, 8);
-        }
 
-        if(theVisualizationObject!=null)
-        RuntimeEditorLoadAndSaveConfiguration();      
-        
+            if (uid == null)
+            {
+                uid = Guid.NewGuid().ToString().Substring(0, 8);
+            }
+
+            if (theVisualizationObject != null)
+                RuntimeEditorLoadAndSaveConfiguration();
+
         }
 
         void RuntimeEditorLoadAndSaveConfiguration()
@@ -308,7 +308,7 @@ namespace IATK
             // create the new view reference list
             foreach (var view in views)
             {
-                view.BigMesh = GetComponentInChildren<BigMesh>();
+                view.BigMesh = view.GetComponentInChildren<BigMesh>();
                 view.onViewChangeEvent += updateView;   // Receive notifications when the view configuration changes
                 theVisualizationObject.viewList.Add(view);
             }
@@ -342,119 +342,120 @@ namespace IATK
             }
 
             // load serialized view configuration from disk
-#if UNITY_EDITOR
-            //if(!EditorApplication.isPlayingOrWillChangePlaymode)
+            if (File.Exists(ConfigurationFileName()) || Resources.Load(ConfigurationFileName()) != null)
             {
-                if (File.Exists(ConfigurationFileName()))
+                if (theVisualizationObject.creationConfiguration == null) theVisualizationObject.creationConfiguration = new CreationConfiguration();
+                if (!dataSource.IsLoaded) dataSource.load();
+
+                theVisualizationObject.creationConfiguration.Deserialize(ConfigurationFileName());
+                theVisualizationObject.creationConfiguration.disableWriting = true;
+
+                visualisationType = theVisualizationObject.creationConfiguration.VisualisationType;
+
+                switch (visualisationType)
                 {
-                    if (theVisualizationObject.creationConfiguration == null) theVisualizationObject.creationConfiguration = new CreationConfiguration();
-                    if (!dataSource.IsLoaded) dataSource.load();
+                    case AbstractVisualisation.VisualisationTypes.SCATTERPLOT:
+                        if (theVisualizationObject.creationConfiguration.Axies.ContainsKey(CreationConfiguration.Axis.X)) xDimension.Attribute = theVisualizationObject.creationConfiguration.Axies[CreationConfiguration.Axis.X];
+                        if (theVisualizationObject.creationConfiguration.Axies.ContainsKey(CreationConfiguration.Axis.Y)) yDimension.Attribute = theVisualizationObject.creationConfiguration.Axies[CreationConfiguration.Axis.Y];
+                        if (theVisualizationObject.creationConfiguration.Axies.ContainsKey(CreationConfiguration.Axis.Z)) zDimension.Attribute = theVisualizationObject.creationConfiguration.Axies[CreationConfiguration.Axis.Z];
 
-                    theVisualizationObject.creationConfiguration.Deserialize(ConfigurationFileName());
-                    theVisualizationObject.creationConfiguration.disableWriting = true;
+                        linkingDimension = string.IsNullOrEmpty(theVisualizationObject.creationConfiguration.LinkingDimension) ? "Undefined" : theVisualizationObject.creationConfiguration.LinkingDimension;
+                        geometry = theVisualizationObject.creationConfiguration.Geometry;
+                        minSize = theVisualizationObject.creationConfiguration.MinSize;
+                        maxSize = theVisualizationObject.creationConfiguration.MaxSize;
 
-                    visualisationType = theVisualizationObject.creationConfiguration.VisualisationType;                  
+                        theVisualizationObject.CreateVisualisation();
 
-                    switch (visualisationType)
-                    {
-                        case AbstractVisualisation.VisualisationTypes.SCATTERPLOT:
-                            if (theVisualizationObject.creationConfiguration.Axies.ContainsKey(CreationConfiguration.Axis.X)) xDimension.Attribute = theVisualizationObject.creationConfiguration.Axies[CreationConfiguration.Axis.X];
-                            if (theVisualizationObject.creationConfiguration.Axies.ContainsKey(CreationConfiguration.Axis.Y)) yDimension.Attribute = theVisualizationObject.creationConfiguration.Axies[CreationConfiguration.Axis.Y];
-                            if (theVisualizationObject.creationConfiguration.Axies.ContainsKey(CreationConfiguration.Axis.Z)) zDimension.Attribute = theVisualizationObject.creationConfiguration.Axies[CreationConfiguration.Axis.Z];
+                        updateViewProperties(AbstractVisualisation.PropertyType.SizeValues);
+                        updateViewProperties(AbstractVisualisation.PropertyType.X);
+                        updateViewProperties(AbstractVisualisation.PropertyType.Y);
+                        updateViewProperties(AbstractVisualisation.PropertyType.Z);
+                        updateViewProperties(AbstractVisualisation.PropertyType.GeometryType);
+                        updateViewProperties(AbstractVisualisation.PropertyType.LinkingDimension);
 
-                            linkingDimension = string.IsNullOrEmpty(theVisualizationObject.creationConfiguration.LinkingDimension) ? "Undefined" : theVisualizationObject.creationConfiguration.LinkingDimension;
-                            geometry = theVisualizationObject.creationConfiguration.Geometry;
-                            minSize = theVisualizationObject.creationConfiguration.MinSize;
-                            maxSize = theVisualizationObject.creationConfiguration.MaxSize;
+                        colourDimension = string.IsNullOrEmpty(theVisualizationObject.creationConfiguration.ColourDimension) ? "Undefined" : theVisualizationObject.creationConfiguration.ColourDimension;
+                        sizeDimension = string.IsNullOrEmpty(theVisualizationObject.creationConfiguration.SizeDimension) ? "Undefined" : theVisualizationObject.creationConfiguration.SizeDimension;
+                        dimensionColour = theVisualizationObject.creationConfiguration.colourKeys;
+                        colour = theVisualizationObject.creationConfiguration.colour;
 
-                            theVisualizationObject.CreateVisualisation();
-                            
-                            updateViewProperties(AbstractVisualisation.PropertyType.SizeValues);
-                            updateViewProperties(AbstractVisualisation.PropertyType.X);
-                            updateViewProperties(AbstractVisualisation.PropertyType.Y);
-                            updateViewProperties(AbstractVisualisation.PropertyType.Z);
-                            updateViewProperties(AbstractVisualisation.PropertyType.GeometryType);
-                            updateViewProperties(AbstractVisualisation.PropertyType.LinkingDimension);
+                        updateViewProperties(AbstractVisualisation.PropertyType.Size);
+                        updateViewProperties(AbstractVisualisation.PropertyType.Colour);
 
-                            colourDimension = string.IsNullOrEmpty(theVisualizationObject.creationConfiguration.ColourDimension) ? "Undefined" : theVisualizationObject.creationConfiguration.ColourDimension;
-                            sizeDimension = string.IsNullOrEmpty(theVisualizationObject.creationConfiguration.SizeDimension) ? "Undefined" : theVisualizationObject.creationConfiguration.SizeDimension;
-                            dimensionColour = theVisualizationObject.creationConfiguration.colourKeys;
-                            colour = theVisualizationObject.creationConfiguration.colour;
+                        break;
+                    case AbstractVisualisation.VisualisationTypes.SCATTERPLOT_MATRIX:
 
-                            updateViewProperties(AbstractVisualisation.PropertyType.Size);
-                            updateViewProperties(AbstractVisualisation.PropertyType.Colour);
+                        linkingDimension = string.IsNullOrEmpty(theVisualizationObject.creationConfiguration.LinkingDimension) ? "Undefined" : theVisualizationObject.creationConfiguration.LinkingDimension;
+                        geometry = theVisualizationObject.creationConfiguration.Geometry;
+                        minSize = theVisualizationObject.creationConfiguration.MinSize;
+                        maxSize = theVisualizationObject.creationConfiguration.MaxSize;
 
-                            break;
-                        case AbstractVisualisation.VisualisationTypes.SCATTERPLOT_MATRIX:
+                        theVisualizationObject.CreateVisualisation();
 
-                            linkingDimension = string.IsNullOrEmpty(theVisualizationObject.creationConfiguration.LinkingDimension) ? "Undefined" : theVisualizationObject.creationConfiguration.LinkingDimension;
-                            geometry = theVisualizationObject.creationConfiguration.Geometry;
-                            minSize = theVisualizationObject.creationConfiguration.MinSize;
-                            maxSize = theVisualizationObject.creationConfiguration.MaxSize;
+                        updateViewProperties(AbstractVisualisation.PropertyType.SizeValues);
+                        updateViewProperties(AbstractVisualisation.PropertyType.X);
+                        updateViewProperties(AbstractVisualisation.PropertyType.Y);
+                        updateViewProperties(AbstractVisualisation.PropertyType.Z);
+                        updateViewProperties(AbstractVisualisation.PropertyType.GeometryType);
+                        updateViewProperties(AbstractVisualisation.PropertyType.LinkingDimension);
+                        theVisualizationObject.creationConfiguration.Deserialize(ConfigurationFileName());
+                        colourDimension = string.IsNullOrEmpty(theVisualizationObject.creationConfiguration.ColourDimension) ? "Undefined" : theVisualizationObject.creationConfiguration.ColourDimension;
+                        sizeDimension = string.IsNullOrEmpty(theVisualizationObject.creationConfiguration.SizeDimension) ? "Undefined" : theVisualizationObject.creationConfiguration.SizeDimension;
+                        dimensionColour = theVisualizationObject.creationConfiguration.colourKeys;
+                        colour = theVisualizationObject.creationConfiguration.colour;
 
-                            theVisualizationObject.CreateVisualisation();
-
-                            updateViewProperties(AbstractVisualisation.PropertyType.SizeValues);
-                            updateViewProperties(AbstractVisualisation.PropertyType.X);
-                            updateViewProperties(AbstractVisualisation.PropertyType.Y);
-                            updateViewProperties(AbstractVisualisation.PropertyType.Z);
-                            updateViewProperties(AbstractVisualisation.PropertyType.GeometryType);
-                            updateViewProperties(AbstractVisualisation.PropertyType.LinkingDimension);
-                            theVisualizationObject.creationConfiguration.Deserialize(ConfigurationFileName());
-                            colourDimension = string.IsNullOrEmpty(theVisualizationObject.creationConfiguration.ColourDimension) ? "Undefined" : theVisualizationObject.creationConfiguration.ColourDimension;
-                            sizeDimension = string.IsNullOrEmpty(theVisualizationObject.creationConfiguration.SizeDimension) ? "Undefined" : theVisualizationObject.creationConfiguration.SizeDimension;
-                            dimensionColour = theVisualizationObject.creationConfiguration.colourKeys;
-                            colour = theVisualizationObject.creationConfiguration.colour;
-
-                            updateViewProperties(AbstractVisualisation.PropertyType.Size);
-                            updateViewProperties(AbstractVisualisation.PropertyType.Colour);
+                        updateViewProperties(AbstractVisualisation.PropertyType.Size);
+                        updateViewProperties(AbstractVisualisation.PropertyType.Colour);
 
 
-                            break;
-                        case AbstractVisualisation.VisualisationTypes.PARALLEL_COORDINATES:
-                            parallelCoordinatesDimensions = theVisualizationObject.creationConfiguration.parallelCoordinatesDimensions;
-                            updateViewProperties(AbstractVisualisation.PropertyType.DimensionChange);
-                            size = theVisualizationObject.creationConfiguration.Size;
-                            minSize = theVisualizationObject.creationConfiguration.MinSize;
-                            maxSize = theVisualizationObject.creationConfiguration.MaxSize;
-                            updateViewProperties(AbstractVisualisation.PropertyType.SizeValues);
-                            // TEMP_FIX:
-                            // Issue: for some reason after updateViewProperties(PropertyType.DimensionChange) call
-                            // the creationConfiguration object is overwritten and some properties take old values
-                            // the temp fix is to deserialize again to read the correct values again. I suspect this
-                            // is because the script is using an old pre-runtime reference.
-                            theVisualizationObject.creationConfiguration.Deserialize(ConfigurationFileName());
-                            colourDimension = string.IsNullOrEmpty(theVisualizationObject.creationConfiguration.ColourDimension) ? "Undefined" : theVisualizationObject.creationConfiguration.ColourDimension;
-                            sizeDimension = string.IsNullOrEmpty(theVisualizationObject.creationConfiguration.SizeDimension) ? "Undefined" : theVisualizationObject.creationConfiguration.SizeDimension;
-                            dimensionColour = theVisualizationObject.creationConfiguration.colourKeys;
-                            colour = theVisualizationObject.creationConfiguration.colour;
+                        break;
+                    case AbstractVisualisation.VisualisationTypes.PARALLEL_COORDINATES:
+                        parallelCoordinatesDimensions = theVisualizationObject.creationConfiguration.parallelCoordinatesDimensions;
+                        updateViewProperties(AbstractVisualisation.PropertyType.DimensionChange);
+                        size = theVisualizationObject.creationConfiguration.Size;
+                        minSize = theVisualizationObject.creationConfiguration.MinSize;
+                        maxSize = theVisualizationObject.creationConfiguration.MaxSize;
+                        updateViewProperties(AbstractVisualisation.PropertyType.SizeValues);
+                        // TEMP_FIX:
+                        // Issue: for some reason after updateViewProperties(PropertyType.DimensionChange) call
+                        // the creationConfiguration object is overwritten and some properties take old values
+                        // the temp fix is to deserialize again to read the correct values again. I suspect this
+                        // is because the script is using an old pre-runtime reference.
+                        theVisualizationObject.creationConfiguration.Deserialize(ConfigurationFileName());
+                        colourDimension = string.IsNullOrEmpty(theVisualizationObject.creationConfiguration.ColourDimension) ? "Undefined" : theVisualizationObject.creationConfiguration.ColourDimension;
+                        sizeDimension = string.IsNullOrEmpty(theVisualizationObject.creationConfiguration.SizeDimension) ? "Undefined" : theVisualizationObject.creationConfiguration.SizeDimension;
+                        dimensionColour = theVisualizationObject.creationConfiguration.colourKeys;
+                        colour = theVisualizationObject.creationConfiguration.colour;
 
-                            updateViewProperties(AbstractVisualisation.PropertyType.Size);
-                            updateViewProperties(AbstractVisualisation.PropertyType.Colour);
+                        updateViewProperties(AbstractVisualisation.PropertyType.Size);
+                        updateViewProperties(AbstractVisualisation.PropertyType.Colour);
 
-                            break;
-                        case AbstractVisualisation.VisualisationTypes.GRAPH_LAYOUT:
-                            break;
-                        default:
-                            break;
-                    }
-
-                   
-                    theVisualizationObject.creationConfiguration.disableWriting = false;
+                        break;
+                    case AbstractVisualisation.VisualisationTypes.GRAPH_LAYOUT:
+                        break;
+                    default:
+                        break;
                 }
+
+
+                theVisualizationObject.creationConfiguration.disableWriting = false;
             }
-#endif
         }
 
         private string ConfigurationFileName()
         {
+#if UNITY_EDITOR
             string PathName = Application.dataPath + "/" + theVisualizationObject.serializedObjectPath;
             return PathName + "/" + uid + ".json";
+#else
+            // in a build we use resource loading, so don't need app path or extension
+            string PathName = theVisualizationObject.serializedObjectPath.Replace("Resources/", "");
+            return PathName + "/" + uid;
+#endif
         }
 
-         //<summary>
-         //Destroy immediately all the views
-         //</summary>
+        //<summary>
+        //Destroy immediately all the views
+        //</summary>
         void destroyView()
         {
             string backupname = name;

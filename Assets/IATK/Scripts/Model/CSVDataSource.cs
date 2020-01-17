@@ -449,6 +449,15 @@ namespace IATK
             float minDimension = result.Min();
             float maxDimension = result.Max();
 
+            if (minDimension == maxDimension)
+            {
+                // where there are no distinct values, need the dimension to be distinct 
+                // otherwise lots of maths breaks with division by zero, etc.
+                // this is the most elegant hack I could think of, but should be fixed properly in future
+                minDimension -= 1.0f; 
+                maxDimension += 1.0f;
+            }
+
             DataSource.DimensionData.Metadata metadata = dimensionData[col].MetaData;
 
             metadata.minValue = minDimension;

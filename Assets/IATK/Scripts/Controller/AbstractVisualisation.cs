@@ -81,7 +81,7 @@ namespace IATK
         public CreationConfiguration creationConfiguration;
 
         [HideInInspector]
-        public string serializedObjectPath = "SerializedFields";
+        public string serializedObjectPath = "Resources/SerializedFields"; // moved to Resources  folder to support builds
 
         // ******************************************************
         // ABSTRACT METHODS THAT VISUALISATIONS HAVE TO IMPLEMENT
