@@ -63,8 +63,19 @@ namespace IATK
 
         // PROPERTIES
 
-        public Material SharedMaterial {                              // The common material shared between all submeshes
-            get; private set;
+        [SerializeField] // needs to be serialized for build support
+        private Material sharedMaterial;
+
+        // The common material shared between all submeshes
+        public Material SharedMaterial {                              
+            get
+            {
+                return sharedMaterial;
+            }
+            private set
+            {
+                sharedMaterial = value;
+            }
         }
 
         // PUBLIC
