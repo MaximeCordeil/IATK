@@ -342,7 +342,7 @@ namespace IATK
             }
 
             // load serialized view configuration from disk
-            if (File.Exists(ConfigurationFileName()) || Resources.Load(ConfigurationFileName()) != null)
+            if (File.Exists(ConfigurationFileName()))
             {
                 if (theVisualizationObject.creationConfiguration == null) theVisualizationObject.creationConfiguration = new CreationConfiguration();
                 if (!dataSource.IsLoaded) dataSource.load();
@@ -443,14 +443,8 @@ namespace IATK
 
         private string ConfigurationFileName()
         {
-#if UNITY_EDITOR
-            string PathName = Application.dataPath + "/" + theVisualizationObject.serializedObjectPath;
-            return PathName + "/" + uid + ".json";
-#else
-            // in a build we use resource loading, so don't need app path or extension
-            string PathName = theVisualizationObject.serializedObjectPath.Replace("Resources/", "");
-            return PathName + "/" + uid;
-#endif
+            string PathName = Application.streamingAssetsPath + Path.DirectorySeparatorChar + theVisualizationObject.serializedObjectPath;
+            return PathName + Path.DirectorySeparatorChar + uid + ".json";
         }
 
         //<summary>

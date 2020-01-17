@@ -81,15 +81,7 @@ namespace IATK {
 
         public void DeSerialize(string serializedObjectPath, CreationConfiguration cf)
         {
-#if UNITY_EDITOR
-            string text = File.ReadAllText(serializedObjectPath);
-#else
-            // in a build we load from resource asset
-            string text = Resources.Load<TextAsset>(serializedObjectPath).text;
-            Debug.Log("Loaded from resource (" + serializedObjectPath + "): " + (text.Length != 0));
-#endif
-
-            SerializableCreationConfiguration scc = JsonUtility.FromJson<SerializableCreationConfiguration>(text);
+            SerializableCreationConfiguration scc = JsonUtility.FromJson<SerializableCreationConfiguration>(File.ReadAllText(serializedObjectPath));
 
             cf.VisualisationType = (AbstractVisualisation.VisualisationTypes)System.Enum.Parse(typeof(AbstractVisualisation.VisualisationTypes), scc.VisualisationType);
 

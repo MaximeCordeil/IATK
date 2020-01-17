@@ -81,7 +81,7 @@ namespace IATK
         public CreationConfiguration creationConfiguration;
 
         [HideInInspector]
-        public string serializedObjectPath = "Resources/SerializedFields"; // moved to Resources  folder to support builds
+        public string serializedObjectPath = "SerializedFields"; 
 
         // ******************************************************
         // ABSTRACT METHODS THAT VISUALISATIONS HAVE TO IMPLEMENT
@@ -168,8 +168,8 @@ namespace IATK
 
         private string ConfigurationFileName()
         {
-            string PathName = Application.dataPath + "/" + serializedObjectPath;
-            return PathName + "/" + visualisationReference.uid + ".json";
+            string PathName = Application.streamingAssetsPath + Path.DirectorySeparatorChar + serializedObjectPath;
+            return PathName + Path.DirectorySeparatorChar + visualisationReference.uid + ".json";
         }
 
         /// <summary>
