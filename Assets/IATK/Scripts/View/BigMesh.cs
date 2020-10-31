@@ -822,24 +822,30 @@ namespace IATK
         // global list of all tweens callbacks
         static List<UpdateTweenDelegate> updateTweens = new List<UpdateTweenDelegate>();
 
+        private bool hasTweens = false;
+        
+        private void Update()
+        {
+            #if !UNITY_EDITOR
+            if (hasTweens)
+            {
+                UpdateTweens();
+            }
+            #endif
+        }
+
         public void Tween(TweenType type)
         {
             if (type == TweenType.Position)
             {
                 _tweenPosition = 0.0f;
                 this.SharedMaterial.SetFloat("_Tween", 0);
-#if UNITY_EDITOR
-                EditorApplication.update = DoTheTween;
-#endif
                 QueueTween();
             }
             else if (type == TweenType.Size)
             {
                 _tweenSize = 0.0f;
                 this.SharedMaterial.SetFloat("_TweenSize", 0);
-#if UNITY_EDITOR
-                EditorApplication.update = DoTheTween;
-#endif
                 QueueTween();
             }
         }
@@ -855,16 +861,27 @@ namespace IATK
                     updateTweens.RemoveAt(i);
                 }
             }
+            #if UNITY_EDITOR
             if (updateTweens.Count() == 0)
             {
                 EditorApplication.update = null;
             }
+            #else
+            if (updateTweens.Count() == 0)
+            {
+                hasTweens = false;
+            }
+            #endif
         }
 
         void QueueTween()
         {
             updateTweens.Add(DoTheTween);
+            #if UNITY_EDITOR
             EditorApplication.update = UpdateTweens;
+            #else
+            hasTweens = true;
+            #endif
         }
 
         // returns false if complete, else true
@@ -896,13 +913,6 @@ namespace IATK
             {
                 _tweenSize = 1.0f;
                 this.SharedMaterial.SetFloat("_TweenSize", 1);
-            }
-
-            if (!isTweening)
-            {
-#if UNITY_EDITOR
-                EditorApplication.update = null;
-#endif
             }
             return isTweening;
         }
