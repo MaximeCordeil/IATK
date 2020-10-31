@@ -360,7 +360,7 @@ namespace IATK
                     else if (X_AXIS != null)
                     {
                         Axis a = X_AXIS.GetComponent<Axis>();
-                        a.Init(visualisationReference.dataSource, visualisationReference.xDimension, visualisationReference);
+                        a.Initialise(visualisationReference.dataSource, visualisationReference.xDimension, visualisationReference);
                         BindMinMaxAxisValues(a, visualisationReference.xDimension);
                     }
                     else if (visualisationReference.xDimension.Attribute != "Undefined")
@@ -379,7 +379,7 @@ namespace IATK
                     else if (Y_AXIS != null)
                     {
                         Axis a = Y_AXIS.GetComponent<Axis>();
-                        a.Init(visualisationReference.dataSource, visualisationReference.yDimension, visualisationReference);
+                        a.Initialise(visualisationReference.dataSource, visualisationReference.yDimension, visualisationReference);
                         BindMinMaxAxisValues(a, visualisationReference.yDimension);
                     }
                     else if (visualisationReference.yDimension.Attribute != "Undefined")
@@ -397,7 +397,7 @@ namespace IATK
                     else if (Z_AXIS != null)
                     {
                         Axis a = Z_AXIS.GetComponent<Axis>();
-                        a.Init(visualisationReference.dataSource, visualisationReference.zDimension, visualisationReference);
+                        a.Initialise(visualisationReference.dataSource, visualisationReference.zDimension, visualisationReference);
                         BindMinMaxAxisValues(Z_AXIS.GetComponent<Axis>(), visualisationReference.zDimension);
                     }
                     else if (visualisationReference.zDimension.Attribute != "Undefined")

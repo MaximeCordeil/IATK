@@ -105,26 +105,6 @@ namespace IATK
         // ******************************************************
 
         /// <summary>
-        /// Binds metadata to an axis component
-        /// </summary>
-        /// <param name="axis"></param>
-        /// <param name="dim"></param>
-        protected void BindMinMaxAxisValues(Axis axis, DimensionFilter dim)
-        {
-            object minvalue = visualisationReference.dataSource.getOriginalValue(dim.minFilter, dim.Attribute);
-            object maxvalue = visualisationReference.dataSource.getOriginalValue(dim.maxFilter, dim.Attribute);
-
-            object minScaledvalue = visualisationReference.dataSource.getOriginalValue(dim.minScale, dim.Attribute);
-            object maxScaledvalue = visualisationReference.dataSource.getOriginalValue(dim.maxScale, dim.Attribute);
-
-            axis.AttributeFilter = dim;
-            axis.UpdateLabelAttribute(dim.Attribute);
-
-            axis.SetMinNormalizer(dim.minScale);
-            axis.SetMaxNormalizer(dim.maxScale);
-        }
-
-        /// <summary>
         /// Creates an axis Gameobject with metadata
         /// </summary>
         /// <param name="propertyType"></param>
@@ -145,13 +125,32 @@ namespace IATK
             AxisHolder.transform.localPosition = position;
 
             Axis axis = AxisHolder.GetComponent<Axis>();
+            axis.Initialise(visualisationReference.dataSource, dimensionFilter, visualisationReference);
             axis.SetDirection((int)propertyType);
-
-            axis.Init(visualisationReference.dataSource, dimensionFilter, visualisationReference);
             BindMinMaxAxisValues(axis, dimensionFilter);
 
 
             return AxisHolder;
+        }
+
+        /// <summary>
+        /// Binds metadata to an axis component
+        /// </summary>
+        /// <param name="axis"></param>
+        /// <param name="dim"></param>
+        protected void BindMinMaxAxisValues(Axis axis, DimensionFilter dim)
+        {
+            object minvalue = visualisationReference.dataSource.getOriginalValue(dim.minFilter, dim.Attribute);
+            object maxvalue = visualisationReference.dataSource.getOriginalValue(dim.maxFilter, dim.Attribute);
+
+            object minScaledvalue = visualisationReference.dataSource.getOriginalValue(dim.minScale, dim.Attribute);
+            object maxScaledvalue = visualisationReference.dataSource.getOriginalValue(dim.maxScale, dim.Attribute);
+
+            axis.AttributeFilter = dim;
+            
+            axis.UpdateAxisAttribute(dim.Attribute);
+            axis.SetMinNormalizer(dim.minScale);
+            axis.SetMaxNormalizer(dim.maxScale);
         }
 
         /// <summary>
