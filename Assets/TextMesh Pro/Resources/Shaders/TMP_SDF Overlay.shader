@@ -64,10 +64,7 @@ Properties {
 	_ScaleX				("Scale X", float) = 1.0
 	_ScaleY				("Scale Y", float) = 1.0
 	_PerspectiveFilter	("Perspective Correction", Range(0, 1)) = 0.875
-<<<<<<< HEAD:Assets/Plugins/TextMesh Pro/Resources/Shaders/TMP_SDF Overlay.shader
 	_Sharpness			("Sharpness", Range(-1,1)) = 0
-=======
->>>>>>> feature/2018BM:Assets/TextMesh Pro/Resources/Shaders/TMP_SDF Overlay.shader
 
 	_VertexOffsetX		("Vertex OffsetX", float) = 0
 	_VertexOffsetY		("Vertex OffsetY", float) = 0
@@ -124,20 +121,13 @@ SubShader {
 		#pragma multi_compile __ UNITY_UI_CLIP_RECT
 		#pragma multi_compile __ UNITY_UI_ALPHACLIP
 
-<<<<<<< HEAD:Assets/Plugins/TextMesh Pro/Resources/Shaders/TMP_SDF Overlay.shader
-=======
-
->>>>>>> feature/2018BM:Assets/TextMesh Pro/Resources/Shaders/TMP_SDF Overlay.shader
 		#include "UnityCG.cginc"
 		#include "UnityUI.cginc"
 		#include "TMPro_Properties.cginc"
 		#include "TMPro.cginc"
 
 		struct vertex_t {
-<<<<<<< HEAD:Assets/Plugins/TextMesh Pro/Resources/Shaders/TMP_SDF Overlay.shader
 			UNITY_VERTEX_INPUT_INSTANCE_ID
-=======
->>>>>>> feature/2018BM:Assets/TextMesh Pro/Resources/Shaders/TMP_SDF Overlay.shader
 			float4	position		: POSITION;
 			float3	normal			: NORMAL;
 			fixed4	color			: COLOR;
@@ -147,11 +137,8 @@ SubShader {
 
 
 		struct pixel_t {
-<<<<<<< HEAD:Assets/Plugins/TextMesh Pro/Resources/Shaders/TMP_SDF Overlay.shader
 			UNITY_VERTEX_INPUT_INSTANCE_ID
 			UNITY_VERTEX_OUTPUT_STEREO
-=======
->>>>>>> feature/2018BM:Assets/TextMesh Pro/Resources/Shaders/TMP_SDF Overlay.shader
 			float4	position		: SV_POSITION;
 			fixed4	color			: COLOR;
 			float2	atlas			: TEXCOORD0;		// Atlas
@@ -172,7 +159,6 @@ SubShader {
 
 		pixel_t VertShader(vertex_t input)
 		{
-<<<<<<< HEAD:Assets/Plugins/TextMesh Pro/Resources/Shaders/TMP_SDF Overlay.shader
 			pixel_t output;
 
 			UNITY_INITIALIZE_OUTPUT(pixel_t, output);
@@ -180,27 +166,17 @@ SubShader {
 			UNITY_TRANSFER_INSTANCE_ID(input,output);
 			UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
 
-=======
->>>>>>> feature/2018BM:Assets/TextMesh Pro/Resources/Shaders/TMP_SDF Overlay.shader
 			float bold = step(input.texcoord1.y, 0);
 
 			float4 vert = input.position;
 			vert.x += _VertexOffsetX;
 			vert.y += _VertexOffsetY;
-<<<<<<< HEAD:Assets/Plugins/TextMesh Pro/Resources/Shaders/TMP_SDF Overlay.shader
-
-=======
->>>>>>> feature/2018BM:Assets/TextMesh Pro/Resources/Shaders/TMP_SDF Overlay.shader
 			float4 vPosition = UnityObjectToClipPos(vert);
 
 			float2 pixelSize = vPosition.w;
 			pixelSize /= float2(_ScaleX, _ScaleY) * abs(mul((float2x2)UNITY_MATRIX_P, _ScreenParams.xy));
 			float scale = rsqrt(dot(pixelSize, pixelSize));
-<<<<<<< HEAD:Assets/Plugins/TextMesh Pro/Resources/Shaders/TMP_SDF Overlay.shader
 			scale *= abs(input.texcoord1.y) * _GradientScale * (_Sharpness + 1);
-=======
-			scale *= abs(input.texcoord1.y) * _GradientScale * 1.5;
->>>>>>> feature/2018BM:Assets/TextMesh Pro/Resources/Shaders/TMP_SDF Overlay.shader
 			if (UNITY_MATRIX_P[3][3] == 0) scale = lerp(abs(scale) * (1 - _PerspectiveFilter), scale, abs(dot(UnityObjectToWorldNormal(input.normal.xyz), normalize(WorldSpaceViewDir(vert)))));
 
 			float weight = lerp(_WeightNormal, _WeightBold, bold) / 4.0;
@@ -238,7 +214,6 @@ SubShader {
 			float2 faceUV = TRANSFORM_TEX(textureUV, _FaceTex);
 			float2 outlineUV = TRANSFORM_TEX(textureUV, _OutlineTex);
 
-<<<<<<< HEAD:Assets/Plugins/TextMesh Pro/Resources/Shaders/TMP_SDF Overlay.shader
 			
 			output.position = vPosition;
 			output.color = input.color;
@@ -251,21 +226,6 @@ SubShader {
 			output.underlayColor =	underlayColor;
 			#endif
 			output.textures = float4(faceUV, outlineUV);
-=======
-			pixel_t output = {
-				vPosition,
-				input.color,
-				input.texcoord0,
-				float4(alphaClip, scale, bias, weight),
-				half4(vert.xy * 2 - clampedRect.xy - clampedRect.zw, 0.25 / (0.25 * half2(_MaskSoftnessX, _MaskSoftnessY) + pixelSize.xy)),
-				mul((float3x3)_EnvMatrix, _WorldSpaceCameraPos.xyz - mul(unity_ObjectToWorld, vert).xyz),
-			#if (UNDERLAY_ON || UNDERLAY_INNER)
-				float4(input.texcoord0 + bOffset, bScale, bBias),
-				underlayColor,
-			#endif
-				float4(faceUV, outlineUV),
-			};
->>>>>>> feature/2018BM:Assets/TextMesh Pro/Resources/Shaders/TMP_SDF Overlay.shader
 
 			return output;
 		}
@@ -273,11 +233,8 @@ SubShader {
 
 		fixed4 PixShader(pixel_t input) : SV_Target
 		{
-<<<<<<< HEAD:Assets/Plugins/TextMesh Pro/Resources/Shaders/TMP_SDF Overlay.shader
 			UNITY_SETUP_INSTANCE_ID(input);
 
-=======
->>>>>>> feature/2018BM:Assets/TextMesh Pro/Resources/Shaders/TMP_SDF Overlay.shader
 			float c = tex2D(_MainTex, input.atlas).a;
 		
 		#ifndef UNDERLAY_ON

@@ -5,16 +5,11 @@ PluginImporter:
   serializedVersion: 2
   iconMap: {}
   executionOrder: {}
-<<<<<<< HEAD
   defineConstraints: []
   isPreloaded: 0
   isOverridable: 0
   isExplicitlyReferenced: 0
   validateReferences: 1
-=======
-  isPreloaded: 0
-  isOverridable: 0
->>>>>>> feature/2018BM
   platformData:
   - first:
       Any: 

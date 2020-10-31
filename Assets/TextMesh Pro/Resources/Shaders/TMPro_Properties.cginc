@@ -82,7 +82,4 @@ uniform float 		_GradientScale;
 uniform float		_ScaleX;
 uniform float		_ScaleY;
 uniform float		_PerspectiveFilter;
-<<<<<<< HEAD:Assets/Plugins/TextMesh Pro/Resources/Shaders/TMPro_Properties.cginc
 uniform float		_Sharpness;
-=======
->>>>>>> feature/2018BM:Assets/TextMesh Pro/Resources/Shaders/TMPro_Properties.cginc
