@@ -251,6 +251,7 @@ namespace IATK
                                                colours.ToArray(),
                                                normals.ToArray(),
                                                uvs.ToArray(),
+                                               uv2s.ToArray(),
                                                chunkSizeList.ToArray(),
                                                material,
                                                LineLength.ToArray());
@@ -327,7 +328,58 @@ namespace IATK
             return this;
         }
 
-        public ViewBuilder createIndicesLinkedTopology(float[] linkingField)
+        /// <summary>
+        /// Use the normal to store the vertex index, size
+        /// </summary>
+        public ViewBuilder createIndicesPointTopology(int totalPoints)
+        {
+            for (int i = 0; i < totalPoints; i++)
+            {
+                Vector3 n = uvs[i];
+                n[0] = (float)i;
+                uvs[i] = n;
+            }
+            return this;
+        }
+
+        public ViewBuilder createIndicesPointTopology(float[] vertexIndices)
+        {
+
+            for (int i = 0; i < vertexIndices.Length; i++)
+            {
+                Vector3 n = uvs[i];
+                n[0] = vertexIndices[i];
+                uvs[i] = n;
+            }
+
+            return this;
+        }
+
+        // for graphs, OD data
+        public ViewBuilder createIndicesGraphTopology(Dictionary<int, List<int>> nodeEdges)
+        {
+
+            foreach (var nodEdg in nodeEdges)
+            {
+                int node = nodEdg.Key;
+                List<int> edges = nodEdg.Value;
+
+                foreach (var edgeNode in edges)
+                {
+                    Indices.Add(node-1);
+                    Indices.Add(edgeNode);
+                }
+
+                Vector3 n = uvs[node-1];
+                n.x = (float)(node -1);
+                uvs[node-1] = n;
+            }
+            
+            return this;
+        }
+
+        // for trajectories, time series
+        public ViewBuilder createIndicesConnectedLineTopology(float[] linkingField)
         {
             //the first member of the Tuple is the index in the index buffer, 
             // the second member is the index in the Vertex Buffer.

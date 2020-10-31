@@ -32,10 +32,12 @@ namespace IATK
             set { textualDimensionsListReverse = value; }
         }
 
+        public Dictionary<int, List<int>> GraphEdges = new Dictionary<int, List<int>>();
+
         private bool isQuitting;
         private int dataCount;
         // CSV, TSV,BSV implementation
-        char[] split = new char[] { ',', '\t', ';', '|' };
+        char[] split = new char[] { ',', '\t', ';'};
 
         // PUBLIC
 
@@ -355,6 +357,23 @@ namespace IATK
                                             dataArray[i - 1, k] = (float)result;
                                             break;
                                         }
+                                    case DataType.Graph:
+                                        {
+                                            char[] graphSeparator = new char[] { '|' };
+                                            string[] edges = cleanedValue.Split(graphSeparator);
+
+                                            List<int> localEdges = new List<int>();
+
+                                            //read edges
+                                            for (int ed=0;ed<edges.Length;ed++)
+                                            {
+                                                if(edges[ed]!="")
+                                                localEdges.Add(int.Parse(edges[ed]));
+                                            }
+                                            GraphEdges.Add(i, localEdges);
+
+                                            break;
+                                        }
                                     case DataType.String:
                                         {
                                             //check if we have a dictionnary for this dimension
@@ -421,6 +440,8 @@ namespace IATK
                     }
                 }
 
+                // TODO: SORT MULTIPLE VALUES/CRITERIA
+
                 // Populate data structure
                 //float[] output = new float[dataCount];
                 for (int i = 0; i < DimensionCount; ++i)
@@ -463,7 +484,7 @@ namespace IATK
             metadata.minValue = minDimension;
             metadata.maxValue = maxDimension;
             metadata.categories = result.Distinct().Select(x => normaliseValue(x, minDimension, maxDimension, 0.0f, 1.0f)).ToArray();
-            metadata.categoryCount = result.Distinct().Count();
+            metadata.categoryCount = metadata.categories.Count();
             metadata.binCount = (int)(maxDimension - minDimension + 1);
 
             if (metadataPreset != null)

@@ -72,18 +72,25 @@ namespace IATK
         public Gradient dimensionColour;
 
         [Tooltip("The blending mode source")]
-//        public UnityEngine.Rendering.BlendMode blendingModeSource;
         public string blendingModeSource = UnityEngine.Rendering.BlendMode.SrcAlpha.ToString();
 
         [Tooltip("The blending mode destination")]
-        //        public UnityEngine.Rendering.BlendMode blendingModeDestination;
         public string blendingModeDestination = UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha.ToString();
 
         [Tooltip("The dimension to map the size to")]
         public string sizeDimension;
 
-        [Tooltip("The dimension that links data points")]
+        [Tooltip("The dimension that links data points for trajectories")]
         public string linkingDimension;
+
+        [Tooltip("The dimension that links origin points to destination")]
+        public string originDimension;
+
+        [Tooltip("The dimension that links origin points to destination")]
+        public string destinationDimension;
+
+        [Tooltip("The graph dimension that links data points for networks")]
+        public string graphDimension;
 
         [Tooltip("The number of loaded data points")]
         public string dataPoints = "";
@@ -203,7 +210,7 @@ namespace IATK
 
             key = (GameObject)Instantiate(Resources.Load("Key"));
             key.transform.parent = transform;
-            key.transform.localPosition = new Vector3(-1f, 1f, 0f);
+            key.transform.localPosition = new Vector3(0.15f, 1.165f, 0f);
         }
 
         public void updateView(AbstractVisualisation.PropertyType propertyType)
@@ -236,8 +243,9 @@ namespace IATK
             OnUpdateViewAction(propertyType);
 
             if (key != null)
-                key.GetComponent<Key>().UpdateProperties(propertyType, this);
-
+            {
+                updateKey();
+            }
         }
 
         public void updateProperties()
@@ -281,6 +289,20 @@ namespace IATK
             }
 
             return indices.ToArray();
+        }
+
+        private void updateKey()
+        {
+            key.GetComponent<Key>().UpdateProperties(AbstractVisualisation.PropertyType.None, this);
+
+            if (yDimension.Attribute != "Undefined")
+            {
+                key.transform.localPosition = new Vector3(0.2f, height + 0.25f, 0f);
+            }
+            else
+            {
+                key.transform.localPosition = new Vector3(0.2f, 0.2f, 0f);
+            }
         }
 
 

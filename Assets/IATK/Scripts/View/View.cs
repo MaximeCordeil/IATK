@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace IATK
@@ -50,6 +51,15 @@ namespace IATK
         /// <summary>
         /// Maps a data array to the size of the glyphs
         /// </summary>
+        /// <param name="vertexIdData"></param>
+        public void SetVertexIdChannel(float[] vertexIdData)
+        {
+            bigMesh.MapUVChannel(0, (int)AbstractVisualisation.NormalChannel.VertexId, vertexIdData);
+        }
+
+        /// <summary>
+        /// Maps a data array to the size of the glyphs
+        /// </summary>
         /// <param name="sizeData"></param>
         public void SetSizeChannel(float[] sizeData)
         {
@@ -63,6 +73,15 @@ namespace IATK
         public void SetFilterChannel(float[] filteredData)
         {
             bigMesh.MapUVChannel(0, (int)AbstractVisualisation.NormalChannel.Filter, filteredData);
+        }
+
+        /// <summary>
+        /// Gets the filtered data
+        /// </summary>
+        /// <returns></returns>
+        public float[] GetFilterChannel()
+        {
+            return bigMesh.GetUVs(0).Select(v => v.z).ToArray();
         }
 
         /// <summary>

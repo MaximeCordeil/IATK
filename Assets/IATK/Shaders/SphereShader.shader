@@ -263,7 +263,10 @@ Shader "IATK/SphereShader"
 		half3 worldNormal = n;
 		half nl = max(0, dot(worldNormal, _WorldSpaceLightPos0.xyz));
 
+
 		o.color = _LightColor0;
+		if (input.isBrushed && showBrush>0.0) o.color = brushColor;
+		else
 		o.color.a = input.color.a;
 		o.color.rgb *= nl;
 		o.color.rgb += ShadeSH9(half4(worldNormal, 1));
@@ -275,6 +278,7 @@ Shader "IATK/SphereShader"
 			discard;
 		}
 		//UNITY_APPLY_FOG(i.fogCoord, col);
+		//else
 		return o;
 	}
 

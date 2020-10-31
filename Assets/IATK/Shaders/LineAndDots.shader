@@ -139,12 +139,10 @@
 				float2 indexUV = float2((idx % _DataWidth) / _DataWidth, ((idx / _DataWidth) / _DataHeight));
 				float4 brushValue = tex2Dlod(_BrushedTexture, float4(indexUV, 0.0, 0.0));
 
-
-				o.isBrushed = brushValue.r;// > 0.001;
+				o.isBrushed = brushValue.r;
 
 				float size = lerp(v.uv_MainTex.w, v.uv_MainTex.y, _TweenSize);
 				float3 pos = lerp(v.normal, v.vertex, _Tween);
-
 
 				float4 normalisedPosition = float4(
 					normaliseValue(pos.x, _MinNormX, _MaxNormX, 0, 1),
@@ -176,62 +174,70 @@
 
 			void emitPoint(v2g _point, inout TriangleStream<g2f> triStream)
 			{
-					float4x4 MV = UNITY_MATRIX_MV;
-					float4x4 vp = UNITY_MATRIX_VP;
+				float4x4 MV = UNITY_MATRIX_MV;
+				float4x4 vp = UNITY_MATRIX_VP;
 
-					float3 up = UNITY_MATRIX_IT_MV[1].xyz;
-					float3 right =  -UNITY_MATRIX_IT_MV[0].xyz;
+				float3 up = UNITY_MATRIX_IT_MV[1].xyz;
+				float3 right =  -UNITY_MATRIX_IT_MV[0].xyz;
 
-					float sizeFactor = normaliseValue(_point.normal.y, 0.0, 1.0, _MinSize, _MaxSize);
-					float dist = 1;
-					float halfS = 0.01f * (_Size + (dist * sizeFactor));
+				float sizeFactor = normaliseValue(_point.normal.y, 0.0, 1.0, _MinSize, _MaxSize);
+				float dist = 1;
+				float halfS = 0.05f * (_Size + (dist * sizeFactor));
 							
-					float4 v[4];				
+				float4 v[4];				
 
-					v[0] = float4(_point.vertex + halfS * right - halfS * up, 1.0f);
-					v[1] = float4(_point.vertex + halfS * right + halfS * up, 1.0f);
-					v[2] = float4(_point.vertex - halfS * right - halfS * up, 1.0f);
-					v[3] = float4(_point.vertex - halfS * right + halfS * up, 1.0f);
+				v[0] = float4(_point.vertex + halfS * right - halfS * up, 1.0f);
+				v[1] = float4(_point.vertex + halfS * right + halfS * up, 1.0f);
+				v[2] = float4(_point.vertex - halfS * right - halfS * up, 1.0f);
+				v[3] = float4(_point.vertex - halfS * right + halfS * up, 1.0f);
 		
-					g2f pIn;
+				g2f pIn;
 					
-					pIn.isBrushed = _point.isBrushed;
-					pIn.color = _point.color;
-					pIn.isLine = false;
+				pIn.isBrushed = _point.isBrushed;
+				pIn.color = _point.color;
+				pIn.isLine = false;
 
-					pIn.vertex = UnityObjectToClipPos(v[0]);					
-					pIn.tex0 = float2(1.0f, 0.0f);
-					pIn.isBrushed = _point.isBrushed; 
-					triStream.Append(pIn);
+				pIn.vertex = UnityObjectToClipPos(v[0]);					
+				pIn.tex0 = float2(1.0f, 0.0f);
+				pIn.isBrushed = _point.isBrushed; 
+				triStream.Append(pIn);
 
-					pIn.vertex = UnityObjectToClipPos(v[1]);
-					pIn.tex0 = float2(1.0f, 1.0f);
-					pIn.isBrushed = _point.isBrushed;
-					triStream.Append(pIn);
+				pIn.vertex = UnityObjectToClipPos(v[1]);
+				pIn.tex0 = float2(1.0f, 1.0f);
+				pIn.isBrushed = _point.isBrushed;
+				triStream.Append(pIn);
 
-					pIn.vertex = UnityObjectToClipPos(v[2]);
-					pIn.isBrushed = _point.isBrushed;
-					pIn.tex0 = float2(0.0f, 0.0f);
-					triStream.Append(pIn);
+				pIn.vertex = UnityObjectToClipPos(v[2]);
+				pIn.isBrushed = _point.isBrushed;
+				pIn.tex0 = float2(0.0f, 0.0f);
+				triStream.Append(pIn);
 
-					pIn.vertex = UnityObjectToClipPos(v[3]);
-					pIn.isBrushed = _point.isBrushed;
-					pIn.tex0 = float2(0.0f, 1.0f);
-					triStream.Append(pIn);
-					triStream.RestartStrip();
+				pIn.vertex = UnityObjectToClipPos(v[3]);
+				pIn.isBrushed = _point.isBrushed;
+				pIn.tex0 = float2(0.0f, 1.0f);
+				triStream.Append(pIn);
+				triStream.RestartStrip();
 
 
 			}
 
-			[maxvertexcount(32)]
+			[maxvertexcount(16)]
 			void geom(line v2g points[2], inout TriangleStream<g2f> triStream)
 			{
 				//handle brushing line topoolgy
 				if (points[0].color.w == 0) points[1].color.w = 0;
 				if (points[1].color.w == 0) points[0].color.w = 0;
 
-				emitPoint(points[0], triStream);
-				emitPoint(points[1], triStream);
+				v2g point0 = points[0];
+				v2g point1 = points[1];
+
+				if(point0.isBrushed > 0)
+				point1.isBrushed = point0.isBrushed;
+				if (point1.isBrushed >0)
+				point0.isBrushed = point1.isBrushed;
+
+				emitPoint(point0, triStream);
+				emitPoint(point1, triStream);
 
 				//line geometry
 				float4 p0 = UnityObjectToClipPos(points[0].vertex);
@@ -304,8 +310,6 @@
 
 			}
 
-			
-			
 			fixed4 frag (g2f i) : SV_Target
 			{
 				if(i.isLine)
@@ -313,14 +317,9 @@
 				fixed4 col = i.color;
 				
 				if (i.isBrushed && showBrush>0.0) col = brushColor;
-				// TODO : test outline shader
-
-				//float dx = i.tex0.x;// - 0.5f;
-			    //float dy = i.tex0.y;// - 0.5f;
-
-				//if(dx > 0.95 || dx < 0.05 /*|| dy <0.1  || dy>0.9*/ ) return float4(0.0, 1.0, 0.0, 1.0);
+				else
 				if(col.w == 0) {discard; return float4(0.0,0.0,0.0,0.0);}
-				return  col;
+				return col;
 				}
 				else
 				{
@@ -329,24 +328,12 @@
 					float dy = i.tex0.y - 0.5f;
 
 					float dt = dx * dx + dy * dy;
-					
-					//if(input.color.x > 0.2 && input.color.y > 0.2 && input.color.z > 0.2)
-					//{
-					//			discard;
-					//		return float4(0.0, 0.0, 0.0, 0.0);
-					//}
+				
+
 					if(i.color.w == 0)
 					{
-						//if( dt <= 0.2f)
-						//	return float4(0.1,0.1,0.1,1.0);
-						//else
-						//	if(dx * dx + dy * dy <= 0.25f)
-						//	return float4(0.0, 0.0, 0.0, 1.0);
-						//	else
-						//	{
 							discard;
 							return float4(0.0, 0.0, 0.0, 0.0);
-//							}
 					}
 					else
 					{
@@ -357,11 +344,8 @@
 						if (i.isBrushed && showBrush>0.0) return brushColor;
 						else
 						return float4(i.color.x-dt*0.75,i.color.y-dt*0.75,i.color.z-dt*0.75,i.color.w);
-					}// float4(input.color.x-dt*0.25,input.color.y-dt*0.25,input.color.z-dt*0.25,1.0);
+					}
 					else
-					//if(dx * dx + dy * dy <= 0.21f)
-					//return float4(0.0, 0.0, 0.0, 1.0);
-					//else
 					{
 					discard;	
 					return float4(0.1, 0.1, 0.1, 1.0);

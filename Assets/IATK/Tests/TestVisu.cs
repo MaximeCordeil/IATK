@@ -88,7 +88,7 @@ public class TestVisu : MonoBehaviour
         vb.setDataDimension(csvds["X"].Data, ViewBuilder.VIEW_DIMENSION.X).
         setDataDimension(csvds["y"].Data, ViewBuilder.VIEW_DIMENSION.Z).
         setSize(csvds["X"].Data).
-        createIndicesLinkedTopology(csvds["vol"].Data).
+        createIndicesConnectedLineTopology(csvds["vol"].Data).
         setDataDimension(csvds["modec"].Data.Select(x=>x).ToArray(), ViewBuilder.VIEW_DIMENSION.Y);
 
         //Enumerable.Repeat(1f, dataSource[0].Data.Length).ToArray()

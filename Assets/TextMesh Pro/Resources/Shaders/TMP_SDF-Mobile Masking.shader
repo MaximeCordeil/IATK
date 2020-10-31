@@ -3,7 +3,7 @@
 // - No Glow Option
 // - Softness is applied on both side of the outline
 
-Shader "TextMeshPro/Mobile/Distance Field Overlay" {
+Shader "TextMeshPro/Mobile/Distance Field - Masking" {
 
 Properties {
 	_FaceColor			("Face Color", Color) = (1,1,1,1)
@@ -34,7 +34,10 @@ Properties {
 	_ScaleX				("Scale X", float) = 1
 	_ScaleY				("Scale Y", float) = 1
 	_PerspectiveFilter	("Perspective Correction", Range(0, 1)) = 0.875
+<<<<<<< HEAD:Assets/Plugins/TextMesh Pro/Resources/Shaders/TMP_SDF-Mobile Masking.shader
 	_Sharpness			("Sharpness", Range(-1,1)) = 0
+=======
+>>>>>>> feature/2018BM:Assets/TextMesh Pro/Resources/Shaders/TMP_SDF-Mobile Masking.shader
 
 	_VertexOffsetX		("Vertex OffsetX", float) = 0
 	_VertexOffsetY		("Vertex OffsetY", float) = 0
@@ -42,6 +45,11 @@ Properties {
 	_ClipRect			("Clip Rect", vector) = (-32767, -32767, 32767, 32767)
 	_MaskSoftnessX		("Mask SoftnessX", float) = 0
 	_MaskSoftnessY		("Mask SoftnessY", float) = 0
+	_MaskTex			("Mask Texture", 2D) = "white" {}
+	_MaskInverse		("Inverse", float) = 0
+	_MaskEdgeColor		("Edge Color", Color) = (1,1,1,1)
+	_MaskEdgeSoftness	("Edge Softness", Range(0, 1)) = 0.01
+	_MaskWipeControl	("Wipe Position", Range(0, 1)) = 0.5
 	
 	_StencilComp		("Stencil Comparison", Float) = 8
 	_Stencil			("Stencil ID", Float) = 0
@@ -53,9 +61,9 @@ Properties {
 }
 
 SubShader {
-	Tags
-  {
-		"Queue"="Overlay"
+	Tags 
+	{
+		"Queue"="Transparent"
 		"IgnoreProjector"="True"
 		"RenderType"="Transparent"
 	}
@@ -74,7 +82,7 @@ SubShader {
 	ZWrite Off
 	Lighting Off
 	Fog { Mode Off }
-	ZTest Always
+	ZTest [unity_GUIZTestMode]
 	Blend One OneMinusSrcAlpha
 	ColorMask [_ColorMask]
 
@@ -88,12 +96,12 @@ SubShader {
 		#pragma multi_compile __ UNITY_UI_CLIP_RECT
 		#pragma multi_compile __ UNITY_UI_ALPHACLIP
 
+
 		#include "UnityCG.cginc"
 		#include "UnityUI.cginc"
 		#include "TMPro_Properties.cginc"
 
 		struct vertex_t {
-			UNITY_VERTEX_INPUT_INSTANCE_ID
 			float4	vertex			: POSITION;
 			float3	normal			: NORMAL;
 			fixed4	color			: COLOR;
@@ -102,8 +110,6 @@ SubShader {
 		};
 
 		struct pixel_t {
-			UNITY_VERTEX_INPUT_INSTANCE_ID
-			UNITY_VERTEX_OUTPUT_STEREO
 			float4	vertex			: SV_POSITION;
 			fixed4	faceColor		: COLOR;
 			fixed4	outlineColor	: COLOR1;
@@ -116,16 +122,13 @@ SubShader {
 		#endif
 		};
 
+		float _MaskWipeControl;
+		float _MaskEdgeSoftness;
+		fixed4 _MaskEdgeColor;
+		bool _MaskInverse;
 
 		pixel_t VertShader(vertex_t input)
 		{
-			pixel_t output;
-
-			UNITY_INITIALIZE_OUTPUT(pixel_t, output);
-			UNITY_SETUP_INSTANCE_ID(input);
-			UNITY_TRANSFER_INSTANCE_ID(input, output);
-			UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
-			
 			float bold = step(input.texcoord1.y, 0);
 
 			float4 vert = input.vertex;
@@ -137,7 +140,11 @@ SubShader {
 			pixelSize /= float2(_ScaleX, _ScaleY) * abs(mul((float2x2)UNITY_MATRIX_P, _ScreenParams.xy));
 			
 			float scale = rsqrt(dot(pixelSize, pixelSize));
+<<<<<<< HEAD:Assets/Plugins/TextMesh Pro/Resources/Shaders/TMP_SDF-Mobile Masking.shader
 			scale *= abs(input.texcoord1.y) * _GradientScale * (_Sharpness + 1);
+=======
+			scale *= abs(input.texcoord1.y) * _GradientScale * 1.5;
+>>>>>>> feature/2018BM:Assets/TextMesh Pro/Resources/Shaders/TMP_SDF-Mobile Masking.shader
 			if(UNITY_MATRIX_P[3][3] == 0) scale = lerp(abs(scale) * (1 - _PerspectiveFilter), scale, abs(dot(UnityObjectToWorldNormal(input.normal.xyz), normalize(WorldSpaceViewDir(vert)))));
 
 			float weight = lerp(_WeightNormal, _WeightBold, bold) / 4.0;
@@ -150,9 +157,9 @@ SubShader {
 			float outline = _OutlineWidth * _ScaleRatioA * 0.5 * scale;
 
 			float opacity = input.color.a;
-		#if (UNDERLAY_ON | UNDERLAY_INNER)
-				opacity = 1.0;
-		#endif
+					#if (UNDERLAY_ON | UNDERLAY_INNER)
+					opacity = 1.0;
+					#endif
 
 			fixed4 faceColor = fixed4(input.color.rgb, opacity) * _FaceColor;
 			faceColor.rgb *= faceColor.a;
@@ -163,6 +170,7 @@ SubShader {
 			outlineColor = lerp(faceColor, outlineColor, sqrt(min(1.0, (outline * 2))));
 
 		#if (UNDERLAY_ON | UNDERLAY_INNER)
+
 			layerScale /= 1 + ((_UnderlaySoftness * _ScaleRatioC) * layerScale);
 			float layerBias = (.5 - weight) * layerScale - .5 - ((_UnderlayDilate * _ScaleRatioC) * .5 * layerScale);
 
@@ -175,17 +183,19 @@ SubShader {
 			float4 clampedRect = clamp(_ClipRect, -2e10, 2e10);
 			float2 maskUV = (vert.xy - clampedRect.xy) / (clampedRect.zw - clampedRect.xy);
 
-			// Populate structure for pixel shader
-			output.vertex = vPosition;
-			output.faceColor = faceColor;
-			output.outlineColor = outlineColor;
-			output.texcoord0 = float4(input.texcoord0.x, input.texcoord0.y, maskUV.x, maskUV.y);
-			output.param = half4(scale, bias - outline, bias + outline, bias);
-			output.mask = half4(vert.xy * 2 - clampedRect.xy - clampedRect.zw, 0.25 / (0.25 * half2(_MaskSoftnessX, _MaskSoftnessY) + pixelSize.xy));
-			#if (UNDERLAY_ON || UNDERLAY_INNER)
-			output.texcoord1 = float4(input.texcoord0 + layerOffset, input.color.a, 0);
-			output.underlayParam = half2(layerScale, layerBias);
+			// Structure for pixel shader
+			pixel_t output = {
+				vPosition,
+				faceColor,
+				outlineColor,
+				float4(input.texcoord0.x, input.texcoord0.y, maskUV.x, maskUV.y),
+				half4(scale, bias - outline, bias + outline, bias),
+				half4(vert.xy * 2 - clampedRect.xy - clampedRect.zw, 0.25 / (0.25 * half2(_MaskSoftnessX, _MaskSoftnessY) + pixelSize.xy)),
+			#if (UNDERLAY_ON | UNDERLAY_INNER)
+				float4(input.texcoord0 + layerOffset, input.color.a, 0),
+				half2(layerScale, layerBias),
 			#endif
+			};
 
 			return output;
 		}
@@ -194,8 +204,6 @@ SubShader {
 		// PIXEL SHADER
 		fixed4 PixShader(pixel_t input) : SV_Target
 		{
-			UNITY_SETUP_INSTANCE_ID(input);
-			
 			half d = tex2D(_MainTex, input.texcoord0.xy).a * input.param.x;
 			half4 c = input.faceColor * saturate(d - input.param.w);
 
@@ -216,10 +224,16 @@ SubShader {
 		#endif
 
 		// Alternative implementation to UnityGet2DClipping with support for softness.
-		#if UNITY_UI_CLIP_RECT
+		#if UNITY_UI_CLIP_RECT	
 			half2 m = saturate((_ClipRect.zw - _ClipRect.xy - abs(input.mask.xy)) * input.mask.zw);
 			c *= m.x * m.y;
 		#endif
+
+		float a = abs(_MaskInverse - tex2D(_MaskTex, input.texcoord0.zw).a);
+		float t = a + (1 - _MaskWipeControl) * _MaskEdgeSoftness - _MaskWipeControl;
+		a = saturate(t / _MaskEdgeSoftness);
+		c.rgb = lerp(_MaskEdgeColor.rgb*c.a, c.rgb, a);
+		c *= a;
 
 		#if (UNDERLAY_ON | UNDERLAY_INNER)
 			c *= input.texcoord1.z;

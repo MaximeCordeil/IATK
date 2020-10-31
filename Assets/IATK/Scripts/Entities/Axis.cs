@@ -82,7 +82,7 @@ public class Axis : MonoBehaviour {
 
     private void GenerateAxisLabels()
     {
-        labelDelegate = new BasicAxisLabelDelegate(AttributeFilter, visualisationReference.dataSource);
+        labelDelegate = new BasicAxisLabelDelegate(AttributeFilter, visualisationReference.dataSource, Length);
 
         List<GameObject> children = new List<GameObject>();
         foreach (Transform child in axisValueLabels.transform)
@@ -113,7 +113,10 @@ public class Axis : MonoBehaviour {
 
     private void UpdateAxisLabels()
     {
-        labelDelegate = new BasicAxisLabelDelegate(AttributeFilter, visualisationReference.dataSource);
+        labelDelegate = new BasicAxisLabelDelegate(AttributeFilter, visualisationReference.dataSource, Length);
+
+        if (labelDelegate.NumberOfLabels() != axisLabels.Count)
+            GenerateAxisLabels();
 
         for (int i = 0; i < axisLabels.Count; ++i)
         {
@@ -150,18 +153,22 @@ public class Axis : MonoBehaviour {
         switch (direction)
         {
             case 1:
+                transform.localEulerAngles = new Vector3(0, 0, -90);
+                SetXPos(axisValueLabels.transform, 1);
+                foreach (TextMeshPro tmp in axisValueLabels.transform.GetComponentsInChildren<TextMeshPro>(true))
                 {
-                    transform.localEulerAngles = new Vector3(0, 0, -90);
-                    SetXPos(axisValueLabels.transform, 1);
-                    foreach (TextMeshPro tmp in axisValueLabels.transform.GetComponentsInChildren<TextMeshPro>(true))
-                    {
-                        tmp.alignment = TextAlignmentOptions.MidlineLeft;
-                    }
-                    SetXPos(label.transform, 1);
-                    label.alignment = TextAlignmentOptions.Top;                    
+                    tmp.alignment = TextAlignmentOptions.MidlineLeft;
                 }
+                SetXPos(label.transform, 1);
+                label.alignment = TextAlignmentOptions.Top;
                 break;
             case 2:
+                transform.localEulerAngles = new Vector3(0, 0, 0);
+                SetXPos(minNormaliserObject, -0.054f);
+                SetXPos(maxNormaliserObject, -0.054f);
+                minNormaliserObject.localEulerAngles = new Vector3(90, 90, 0);
+                maxNormaliserObject.localEulerAngles = new Vector3(90, 90, 0);
+                break;
             default:
                 SetXPos(minNormaliserObject, -0.054f);
                 SetXPos(maxNormaliserObject, -0.054f);
@@ -173,6 +180,13 @@ public class Axis : MonoBehaviour {
 
     public void UpdateLength()
     {
+        UpdateLength(Length);
+    }
+
+    public void UpdateLength(float length)
+    {
+        Length = length;
+
         transform.Find("axis_mesh").localScale = new Vector3(0.05f, Length, 0.05f);
         transform.Find("Cone").localPosition = new Vector3(0, Length, 0);
 
@@ -252,7 +266,7 @@ public class Axis : MonoBehaviour {
         MinNormaliser = Mathf.Clamp(val, 0, 1);
 
         Vector3 p = minNormaliserObject.transform.localPosition;
-        p.y = val;;// * Length;
+        p.y = MinNormaliser * Length;
         minNormaliserObject.transform.localPosition = p;
 
         UpdateTicks();
@@ -263,7 +277,7 @@ public class Axis : MonoBehaviour {
         MaxNormaliser = Mathf.Clamp(val, 0, 1);
 
         Vector3 p = maxNormaliserObject.transform.localPosition;
-        p.y = val;// * Length;
+        p.y = MaxNormaliser * Length;
         maxNormaliserObject.transform.localPosition = p;
 
         UpdateTicks();
@@ -322,15 +336,33 @@ public class Axis : MonoBehaviour {
         }
     }
 
+    public void Update()
+    {
+        //check if the transforms of the normalisers have been moved
+        if (minNormaliserObject.hasChanged)
+        {       //raise event
+            visualisationReference.updateViewProperties(AbstractVisualisation.PropertyType.AttributeFiltering);
+            minNormaliserObject.hasChanged = false;
+        }
+            if (maxNormaliserObject.hasChanged)
+        {
+            //raise event
+            visualisationReference.updateViewProperties(AbstractVisualisation.PropertyType.DimensionChangeFiltering);
+            maxNormaliserObject.hasChanged = false;
+        }
+    }
+
     class BasicAxisLabelDelegate : AxisLabelDelegate
     {
         public AttributeFilter attributeFilter;
         public DataSource dataSource;
+        public float axisLength;
 
-        public BasicAxisLabelDelegate(AttributeFilter attributeFilter, DataSource dataSource)
+        public BasicAxisLabelDelegate(AttributeFilter attributeFilter, DataSource dataSource, float axisLength)
         {
             this.attributeFilter = attributeFilter;
             this.dataSource = dataSource;
+            this.axisLength = axisLength;
         }
         
         bool IsDiscreet()
@@ -347,49 +379,45 @@ public class Axis : MonoBehaviour {
         {
             if (IsDiscreet())
             {
-                CSVDataSource csvdatasoure = (CSVDataSource)dataSource;
-                return csvdatasoure.TextualDimensionsListReverse[attributeFilter.Attribute].Count;
+                // If the axis is normalised at all, then hide the labels
+                if (attributeFilter.minScale > 0.001f || attributeFilter.maxScale < 0.999f)
+                {
+                    return 0;
+                }
+
+                CSVDataSource csvDataSource = (CSVDataSource)dataSource;
+                int numValues = csvDataSource.TextualDimensionsListReverse[attributeFilter.Attribute].Count;
+
+                // If the number of distinct values this dimension has can comfortably fit on the axis, show them all
+                if (numValues < (Mathf.CeilToInt(axisLength / 0.1f)))
+                {
+                    return numValues;
+                }
+
+                return 2;
             }
             else
             {
-                return 4;
+                return Mathf.CeilToInt(axisLength / 0.1f);
             }
         }
 
         public override float LabelPosition(int labelIndex)
         {
-            if (IsDiscreet())
-            {
-                float n = labelIndex / (float)(NumberOfLabels());            
-                float v = (n - attributeFilter.minScale) / (attributeFilter.maxScale - attributeFilter.minScale);
-                return v;                    
-            }
-            else
-            {
-                return labelIndex / (float)(NumberOfLabels() - 1);
-            }
+            return (labelIndex / (float)(NumberOfLabels() - 1));
         }
 
         public override string LabelText(int labelIndex)
         {
-            if (IsDiscreet())
+            object v = dataSource.getOriginalValue(Mathf.Lerp(attributeFilter.minScale, attributeFilter.maxScale, labelIndex / (NumberOfLabels() - 1f)), attributeFilter.Attribute);
+
+            if (v is float)
             {
-                CSVDataSource csvdatasoure = (CSVDataSource)dataSource;
-                return csvdatasoure.TextualDimensionsListReverse[attributeFilter.Attribute].Keys.ToList()[labelIndex];
+                return ((float)v).ToString("0.00");
             }
             else
             {
-                object v = dataSource.getOriginalValue(Mathf.Lerp(attributeFilter.minScale, attributeFilter.maxScale, labelIndex / 3.0f), attributeFilter.Attribute);
-                string s = "";
-                if (v is Single)
-                {
-                    s = ((Single)v).ToString("0.00");
-                }
-                else
-                {
-                    s = v.ToString();
-                }
-                return s;                
+                return v.ToString();
             }
         }
 

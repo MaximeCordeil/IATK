@@ -132,25 +132,27 @@
 				float isFiltered = v.uv_MainTex.z;
 
 				//lookup the texture to see if the vertex is brushed...
-				float2 indexUV = float2((v.normal.x % _DataWidth) / _DataWidth, ((v.normal.x / _DataWidth) / _DataHeight));
+				float2 indexUV = float2((idx % _DataWidth) / _DataWidth, ((idx / _DataWidth) / _DataHeight));
 				float4 brushValue = tex2Dlod(_BrushedTexture, float4(indexUV, 0.0, 0.0));
-
 				o.isBrushed = brushValue.r;// > 0.001;
 				
+				float zBrush = 0;
+				if (o.isBrushed > 0.0) zBrush = -0.1;
+
 				float4 normalisedPosition = float4(
 					normaliseValue(v.vertex.x, _MinNormX, _MaxNormX, 0, 1),
 					normaliseValue(v.vertex.y, _MinNormY, _MaxNormY, 0, 1),
-					normaliseValue(v.vertex.z, _MinNormZ, _MaxNormZ, 0, 1), 1.0);
+					normaliseValue(v.vertex.z + zBrush, _MinNormZ, _MaxNormZ, 0, 1), 1.0);
 
 				float4 vert = UnityObjectToClipPos(normalisedPosition);
-
-				//TODO: handle filtering of PCPs axes
-
+				
 				o.vertex = vert;
-				//o.normal = v.normal;
 				o.normal = float3(idx,size,isFiltered);
 
 				o.color =  v.color;
+				//debug test
+				//o.color.x = idx;
+
 				if(isFiltered) 
 				{
 					o.color.w = 0;
@@ -233,11 +235,14 @@
 			fixed4 frag (g2f i) : SV_Target
 			{
 				if (i.isBrushed > 0.0 && showBrush > 0.0)
-				return brushColor;
+				{
+					if (brushColor.w < 0.01) discard;
+					return brushColor;
+				}
 				else
 				if(i.color.w>0)
 				return i.color;	
-				else {discard; return 	i.color;	
+				else {discard; return i.color;	
 		}
 			}
 			ENDCG

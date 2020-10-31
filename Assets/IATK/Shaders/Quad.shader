@@ -30,6 +30,8 @@ Shader "IATK/Quads"
 		_MaxNormZ("_MaxNormZ",Range(0, 1)) = 1.0
 		_MySrcMode("_SrcMode", Float) = 5
 		_MyDstMode("_DstMode", Float) = 10
+		_Tween("_Tween", Range(0, 1)) = 1
+		_TweenSize("_TweenSize", Range(0, 1)) = 1
 	}
     
 	SubShader 
@@ -94,6 +96,7 @@ Shader "IATK/Quads"
           		    float4 position : POSITION;
             		float4 color: COLOR;
 					float3 normal:	NORMAL;
+					float4 uv_MainTex : TEXCOORD0; // index, vertex size, filtered, prev size
         		};
 				
 				struct GS_INPUT
@@ -162,6 +165,12 @@ Shader "IATK/Quads"
 				float _DataWidth;
 				float _DataHeight;
 
+				float _Tween;
+				float _TweenSize;
+
+				//precision filtering
+				float epsilon = -0.00001;
+
 				//float[] brushedIndexes;
 				//*********************************
 				// helper functions
@@ -181,49 +190,44 @@ Shader "IATK/Quads"
 				GS_INPUT VS_Main(VS_INPUT v)
 				{
 					GS_INPUT output = (GS_INPUT)0;
-					
+
+					float idx = v.uv_MainTex.x % _DataWidth;
+					float isFiltered = v.uv_MainTex.z;
+
 					//lookup the texture to see if the vertex is brushed...
-					float2 indexUV = float2((v.normal.x % _DataWidth) / _DataWidth, ((v.normal.x / _DataWidth) / _DataHeight));
+					float2 indexUV = float2((idx % _DataWidth) / _DataWidth, ((idx / _DataWidth) / _DataHeight));
 					float4 brushValue = tex2Dlod(_BrushedTexture, float4(indexUV, 0.0, 0.0));
 
 					output.isBrushed = brushValue.r;
 
+					float size = lerp(v.uv_MainTex.w, v.uv_MainTex.y, _TweenSize);
+					float3 pos = lerp(v.normal, v.position, _Tween);
+
 					float4 normalisedPosition = float4(
-					normaliseValue(v.position.x,_MinNormX, _MaxNormX, 0,1),
-					normaliseValue(v.position.y,_MinNormY, _MaxNormY, 0,1),
-					normaliseValue(v.position.z,_MinNormZ, _MaxNormZ, 0,1), v.position.w);
+						normaliseValue(pos.x, _MinNormX, _MaxNormX, 0, 1),
+						normaliseValue(pos.y, _MinNormY, _MaxNormY, 0, 1),
+						normaliseValue(pos.z, _MinNormZ, _MaxNormZ, 0, 1), v.position.w);
 
 					output.pos = normalisedPosition;
-
-					//the normal buffer carries the index of each vertex
+					output.normal = float3(idx, size, isFiltered);
 					output.tex0 = float2(0, 0);
-
 					output.color = v.color;
 
-				
-					//filtering
-					if(
-					 normalisedPosition.x < _MinX ||
-					 normalisedPosition.x > _MaxX || 
-					 normalisedPosition.y < _MinY || 
-					 normalisedPosition.y > _MaxY || 
-					 normalisedPosition.z < _MinZ || 
-					 normalisedPosition.z > _MaxZ 	
-					 //||
+					//precision filtering
+					float epsilon = -0.00001;
 
-					 //normalisedPosition.x < _MinNormX ||
-					 //normalisedPosition.x > _MaxNormX || 
-					 //normalisedPosition.y < _MinNormY || 
-					 //normalisedPosition.y > _MaxNormY || 
-					 //normalisedPosition.z < _MinNormZ || 
-					 //normalisedPosition.z > _MaxNormZ			 
-					 )
+					//filtering
+					if (
+						normalisedPosition.x < (_MinX + epsilon) ||
+						normalisedPosition.x >(_MaxX - epsilon) ||
+						normalisedPosition.y < (_MinY + epsilon) ||
+						normalisedPosition.y >(_MaxY - epsilon) ||
+						normalisedPosition.z < (_MinZ + epsilon) ||
+						normalisedPosition.z >(_MaxZ - epsilon) || isFiltered
+						)
 					{
 						output.color.w = 0;
 					}
-					output.normal = v.normal;
-
-					_VP = UNITY_MATRIX_MVP;
 
 					return output;
 				}
@@ -240,7 +244,7 @@ Shader "IATK/Quads"
 					float3 up = UNITY_MATRIX_IT_MV[1].xyz;
 					float3 right =  -UNITY_MATRIX_IT_MV[0].xyz;
 
-					float dist = length(ObjSpaceViewDir(p[0].pos));
+					float dist = 1;// length(ObjSpaceViewDir(p[0].pos));
 
 					float sizeFactor = normaliseValue(p[0].normal.y, 0.0, 1.0, _MinSize, _MaxSize);
 										
@@ -302,7 +306,6 @@ Shader "IATK/Quads"
 				}
 				if (input.isBrushed && showBrush>0.0) return brushColor;
 				else return float4(input.color.x - dt*0.15,input.color.y - dt*0.15,input.color.z - dt*0.15,input.color.w);
-
 				}
 
 				

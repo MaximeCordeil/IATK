@@ -31,7 +31,6 @@ Shader "IATK/OutlineDots"
 		_MaxNormZ("_MaxNormZ",Range(0, 1)) = 1.0
 		_MySrcMode("_SrcMode", Float) = 5
 		_MyDstMode("_DstMode", Float) = 10
-
 		_Tween("_Tween", Range(0, 1)) = 1
 		_TweenSize("_TweenSize", Range(0, 1)) = 1
 
@@ -69,6 +68,7 @@ Shader "IATK/OutlineDots"
             		float4 color: COLOR;
 					float3 normal: NORMAL;
 					float4 uv_MainTex : TEXCOORD0; // index, vertex size, filtered, prev size
+					float4 uv_Maintex2 : TEXCOORD1;
         		};
 				
 				struct GS_INPUT

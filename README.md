@@ -6,6 +6,7 @@ IATK is an ongoing and open project! We setup a roadmap with features that we wo
 <br/>
 <br/>
 
+<<<<<<< HEAD
 ## Publication
 
 IATK was published at IEEE VR 2019 - Please use following reference:
@@ -18,6 +19,10 @@ IATK was published at IEEE VR 2019 - Please use following reference:
   year={2019},
   organization={IEEE}
 }
+=======
+# Dependencies
+IATK requires the [MapBox Unity Plugin](https://www.mapbox.com/)
+>>>>>>> feature/2018BM
 
 ## Tutorial
 A video tutorial of IATK [can be found here](https://vimeo.com/320646218)
@@ -28,7 +33,7 @@ The actual tutorial starts at 01:12
 Required downloads:
 
 - this repository
-- [Unity 2017](https://unity3d.com/get-unity/download?thank-you=update&download_nid=49126&os=Win)
+- [Unity 2018](https://unity3d.com/get-unity/)
 - [Virtual reality toolkit VRTK](https://github.com/thestonefox/VRTK)
 
 ***!!! IATK works on Windows machines -  Mac users please [install bootcamp](https://support.apple.com/en-au/HT201468) !!!***
