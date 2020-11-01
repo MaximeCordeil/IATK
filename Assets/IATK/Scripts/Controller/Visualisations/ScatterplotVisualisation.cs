@@ -37,16 +37,18 @@ namespace IATK
                 axies.Add(CreationConfiguration.Axis.Z, visualisationReference.zDimension.Attribute);
             }
 
+            // Create the configuration object
             if (creationConfiguration == null)
                 creationConfiguration = new CreationConfiguration(visualisationReference.geometry, axies);
             else
             {
-                creationConfiguration.Geometry = visualisationReference.geometry;
                 creationConfiguration.Axies = axies;
+                creationConfiguration.Geometry = visualisationReference.geometry;
                 creationConfiguration.LinkingDimension = visualisationReference.linkingDimension;
                 creationConfiguration.Size = visualisationReference.size;
                 creationConfiguration.MinSize = visualisationReference.minSize;
                 creationConfiguration.MaxSize = visualisationReference.maxSize;
+                creationConfiguration.colour = visualisationReference.colour;
             }
 
             View view = CreateSimpleVisualisation(creationConfiguration);
@@ -276,6 +278,11 @@ namespace IATK
                             viewList[i].SetMinNormZ(visualisationReference.zDimension.minScale);
                             viewList[i].SetMaxNormZ(visualisationReference.zDimension.maxScale);
                         }
+                        
+                        // TODO: Move visualsiation size from Scaling to its own PropertyType
+                        creationConfiguration.VisualisationWidth = visualisationReference.width;
+                        creationConfiguration.VisualisationHeight = visualisationReference.height;
+                        creationConfiguration.VisualisationDepth = visualisationReference.depth;
                         break;
 
                     case AbstractVisualisation.PropertyType.DimensionFiltering:
@@ -451,7 +458,6 @@ namespace IATK
                             visualisationReference.depth
                         );
                     }
-
                     break;
                 default:
                     break;

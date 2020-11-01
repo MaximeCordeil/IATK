@@ -21,7 +21,7 @@ namespace IATK {
         public float[] parallelCoordinatesDimensionsMinScale;
         public float[] parallelCoordinatesDimensionsMaxScale;
 
-        public AbstractVisualisation.GeometryType Geometry;                     // The type of geometry to create
+        public AbstractVisualisation.GeometryType Geometry;             // The type of geometry to create
         public CreationConfiguration.Axis[] AxiesKeys;                  // The desired axies
         public string[] AxiesValues;                                    // The desired axies
 
@@ -33,6 +33,10 @@ namespace IATK {
         public float Size;                                              // The Size factor
         public float MinSize;                                           // The Minimum Size range
         public float MaxSize;                                           // The Maximum Size range
+        
+        public float VisualisationWidth;                                // The width of the visualisation
+        public float VisualisationHeight;                               // The height of the visualisation
+        public float VisualisationDepth;                                // The depth of the visualisation
 
         public SerializableCreationConfiguration()
         {
@@ -61,6 +65,7 @@ namespace IATK {
                     parallelCoordinatesDimensionsMaxScale[i] = cf.parallelCoordinatesDimensions[i].maxScale;
                 }
             }
+            
             Geometry = cf.Geometry;
             AxiesKeys = cf.Axies.Keys.ToArray();
             AxiesValues = cf.Axies.Values.ToArray();
@@ -76,6 +81,10 @@ namespace IATK {
             MinSize = cf.MinSize;
             MaxSize = cf.MaxSize;
 
+            VisualisationWidth = cf.VisualisationWidth;
+            VisualisationHeight = cf.VisualisationHeight;
+            VisualisationDepth = cf.VisualisationDepth;
+            
             File.WriteAllText(serializedObjectPath, JsonUtility.ToJson(this));
         }
 
@@ -124,8 +133,10 @@ namespace IATK {
             cf.MinSize = scc.MinSize;
             cf.MaxSize = scc.MaxSize;
 
+            cf.VisualisationWidth = scc.VisualisationWidth;
+            cf.VisualisationHeight = scc.VisualisationHeight;
+            cf.VisualisationDepth = scc.VisualisationDepth;
         }
-
     }
 
     public class CreationConfiguration
@@ -150,7 +161,9 @@ namespace IATK {
         public float Size = 0.3f;                                       // The Size factor
         public float MinSize = 0.01f;                                   // The Minimum Size range
         public float MaxSize = 1.0f;                                    // The Maximum Size range
-
+        public float VisualisationWidth = 1f;                           // The width of the visualisation
+        public float VisualisationHeight = 1f;                          // The height of the visualisation
+        public float VisualisationDepth = 1f;                           // The depth of the visualisation  
 
         //avoid erasing properties
         public bool disableWriting = false;

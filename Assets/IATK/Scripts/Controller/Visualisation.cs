@@ -402,8 +402,15 @@ namespace IATK
 
                         updateViewProperties(AbstractVisualisation.PropertyType.Size);
                         updateViewProperties(AbstractVisualisation.PropertyType.Colour);
+                        
+                        width = theVisualizationObject.creationConfiguration.VisualisationWidth;
+                        height = theVisualizationObject.creationConfiguration.VisualisationHeight;
+                        depth = theVisualizationObject.creationConfiguration.VisualisationDepth;
+                        
+                        updateViewProperties(AbstractVisualisation.PropertyType.Scaling);
 
                         break;
+                        
                     case AbstractVisualisation.VisualisationTypes.SCATTERPLOT_MATRIX:
 
                         linkingDimension = string.IsNullOrEmpty(theVisualizationObject.creationConfiguration.LinkingDimension) ? "Undefined" : theVisualizationObject.creationConfiguration.LinkingDimension;
@@ -428,8 +435,14 @@ namespace IATK
                         updateViewProperties(AbstractVisualisation.PropertyType.Size);
                         updateViewProperties(AbstractVisualisation.PropertyType.Colour);
 
-
+                        width = theVisualizationObject.creationConfiguration.VisualisationWidth;
+                        height = theVisualizationObject.creationConfiguration.VisualisationHeight;
+                        depth = theVisualizationObject.creationConfiguration.VisualisationDepth;
+                        
+                        updateViewProperties(AbstractVisualisation.PropertyType.Scaling);
+                        
                         break;
+                        
                     case AbstractVisualisation.VisualisationTypes.PARALLEL_COORDINATES:
                         parallelCoordinatesDimensions = theVisualizationObject.creationConfiguration.parallelCoordinatesDimensions;
                         updateViewProperties(AbstractVisualisation.PropertyType.DimensionChange);
@@ -451,9 +464,17 @@ namespace IATK
                         updateViewProperties(AbstractVisualisation.PropertyType.Size);
                         updateViewProperties(AbstractVisualisation.PropertyType.Colour);
 
+                        width = theVisualizationObject.creationConfiguration.VisualisationWidth;
+                        height = theVisualizationObject.creationConfiguration.VisualisationHeight;
+                        depth = theVisualizationObject.creationConfiguration.VisualisationDepth;
+                        
+                        updateViewProperties(AbstractVisualisation.PropertyType.Scaling);
+                        
                         break;
+                        
                     case AbstractVisualisation.VisualisationTypes.GRAPH_LAYOUT:
                         break;
+                        
                     default:
                         break;
                 }
