@@ -272,12 +272,20 @@ public class BrushingAndLinking : MonoBehaviour {
                 view.BigMesh.SharedMaterial.SetTexture("_BrushedTexture", brushedIndicesTexture);
                 view.BigMesh.SharedMaterial.SetFloat("_DataWidth", texSize);
                 view.BigMesh.SharedMaterial.SetFloat("_DataHeight", texSize);
-                view.BigMesh.SharedMaterial.SetFloat("showBrush", Convert.ToSingle(showBrush));
-                view.BigMesh.SharedMaterial.SetColor("brushColor", brushColor);
+                view.BigMesh.SharedMaterial.SetFloat("_ShowBrush", Convert.ToSingle(showBrush));
+                view.BigMesh.SharedMaterial.SetColor("_BrushColor", brushColor);
             }
            
-
             hasFreeBrushReset = true;
+        }
+        
+        foreach (var linkingVis in brushedLinkingVisualisations)
+        {
+            linkingVis.View.BigMesh.SharedMaterial.SetTexture("_BrushedTexture", brushedIndicesTexture);
+            linkingVis.View.BigMesh.SharedMaterial.SetFloat("_DataWidth", texSize);
+            linkingVis.View.BigMesh.SharedMaterial.SetFloat("_DataHeight", texSize);
+            linkingVis.View.BigMesh.SharedMaterial.SetFloat("_ShowBrush", Convert.ToSingle(showBrush));
+            linkingVis.View.BigMesh.SharedMaterial.SetColor("_BrushColor", brushColor);
         }
     }
 
