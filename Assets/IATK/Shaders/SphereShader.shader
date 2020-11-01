@@ -236,8 +236,8 @@ Shader "IATK/SphereShader"
 					float3 right = -UNITY_MATRIX_IT_MV[0].xyz;
 					
 					float dist = 1;
-					float sizeFactor = normaliseValue(p[0].normal.y, 0.0, 1.0, _MinSize, _MaxSize);
-					float halfS = 0.025f * (_Size + (dist * sizeFactor));
+					float sizeFactor = normaliseValue(p[0].normal.y, 0.0, 1.0, MinSize, MaxSize);
+					float halfS = 0.025f * (Size + (dist * sizeFactor));
 
 					float4 v[4];
 					v[0] = float4(p[0].pos + halfS * right - halfS * up, 1.0f);
