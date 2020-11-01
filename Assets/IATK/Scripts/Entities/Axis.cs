@@ -70,7 +70,6 @@ namespace IATK
 
         private Visualisation visualisationReference;
         private DataSource dataSource;
-        private List<GameObject> axisTickLabels = new List<GameObject>();
 
         #endregion
 
@@ -194,6 +193,7 @@ namespace IATK
         /// </summary>
         public void UpdateAxisTickLabels()
         {
+            List<GameObject> axisTickLabels = GetAxisTickLabels();
             int currentNumberOfLabels = axisTickLabels.Count;
             int targetNumberOfLabels = CalculateNumAxisTickLabels();
             
@@ -204,12 +204,12 @@ namespace IATK
                 // Create new labels
                 for (int i = 0; i < targetNumberOfLabels; i++)
                 {
-                    var go = Instantiate(axisTickLabelPrefab, axisTickLabelHolder.transform);
-                    axisTickLabels.Add(go);
+                    Instantiate(axisTickLabelPrefab, axisTickLabelHolder.transform);
                 }
             }
             
             // Update label positions and text
+            axisTickLabels = GetAxisTickLabels();
             for (int i = 0; i < targetNumberOfLabels; i++)
             {
                 GameObject label = axisTickLabels[i];
@@ -229,30 +229,14 @@ namespace IATK
         /// </summary>
         public void DestroyAxisTickLabels()
         {
-            foreach (Transform t in axisTickLabelHolder.transform)
-            {
-                if (t.gameObject.name.Contains("Clone"))
-                {
-                    axisTickLabels.Remove(t.gameObject);
-                    
-                    #if !UNITY_EDITOR
-                    Destroy(t.gameObject);
-                    #else
-                    DestroyImmediate(t.gameObject);
-                    #endif
-                }
-            }
-            
-            foreach (GameObject go in axisTickLabels)
+            foreach (GameObject label in GetAxisTickLabels())
             {
                 #if !UNITY_EDITOR
-                Destroy(go.gameObject);
+                Destroy(label);
                 #else
-                DestroyImmediate(go.gameObject);
+                DestroyImmediate(label);
                 #endif
             }
-            
-            axisTickLabels.Clear();
         }
         
         public void SetMinFilter(float val)
@@ -288,6 +272,19 @@ namespace IATK
         }
         
         #region Private helper functions
+        
+        private List<GameObject> GetAxisTickLabels()
+        {
+            List<GameObject> labels = new List<GameObject>();
+            foreach (Transform t in axisTickLabelHolder.transform)
+            {
+                if (t.gameObject.name.Contains("Clone"))
+                {
+                    labels.Add(t.gameObject);
+                }
+            }
+            return labels;
+        }
         
         private int CalculateNumAxisTickLabels()
         {
