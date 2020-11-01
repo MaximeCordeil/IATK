@@ -215,6 +215,7 @@ namespace IATK
                     mt = new Material(Shader.Find("IATK/OutlineDots"));
                     mt.mainTexture = Resources.Load("circle-outline-basic") as Texture2D;
                     mt.renderQueue = 3000;
+                    mt.enableInstancing = true;
                     return builder.updateView().
                        apply(gameObject, mt);
 
@@ -225,6 +226,7 @@ namespace IATK
                         builder.createIndicesGraphTopology(csvds.GraphEdges);
                         mt = new Material(Shader.Find("IATK/LinesShader"));
                         mt.renderQueue = 3000;
+                        mt.enableInstancing = true;
                         return builder.updateView().
                         apply(gameObject, mt);
                     }
@@ -234,6 +236,7 @@ namespace IATK
                         builder.createIndicesConnectedLineTopology(visualisationReference.dataSource[visualisationReference.linkingDimension].Data);
                         mt = new Material(Shader.Find("IATK/LinesShader"));
                         mt.renderQueue = 3000;
+                        mt.enableInstancing = true;
                         return builder.updateView().
                         apply(gameObject, mt);
                     }
@@ -247,6 +250,7 @@ namespace IATK
                     builder.createIndicesPointTopology();
                     mt = new Material(Shader.Find("IATK/Quads"));
                     mt.renderQueue = 3000;
+                    mt.enableInstancing = true;
                     return builder.updateView().
                        apply(gameObject, mt);
 
@@ -257,6 +261,7 @@ namespace IATK
                         builder.createIndicesGraphTopology(csvds.GraphEdges);
                         mt = new Material(Shader.Find("IATK/LineAndDotsShader"));
                         mt.renderQueue = 3000;
+                        mt.enableInstancing = true;
                         return builder.updateView().
                         apply(gameObject, mt);
                     }
@@ -265,6 +270,7 @@ namespace IATK
                         builder.createIndicesConnectedLineTopology(visualisationReference.dataSource[visualisationReference.linkingDimension].Data);
                         mt = new Material(Shader.Find("IATK/LineAndDotsShader"));
                         mt.renderQueue = 3000;
+                        mt.enableInstancing = true;
                         return builder.updateView().
                         apply(gameObject, mt);
                     }
@@ -278,6 +284,7 @@ namespace IATK
                     builder.createIndicesPointTopology(); // createIndicesLinkedTopology(dataSource[linkingDimension].Data);
                     mt = new Material(Shader.Find("IATK/CubeShader"));
                     mt.renderQueue = 3000;
+                    mt.enableInstancing = true;
                     return builder.updateView().
                     apply(gameObject, mt);
 
@@ -285,7 +292,7 @@ namespace IATK
                     builder.createIndicesPointTopology(); // createIndicesLinkedTopology(dataSource[linkingDimension].Data);
                     mt = new Material(Shader.Find("IATK/BarShader"));
                     mt.renderQueue = 3000;
-
+                    mt.enableInstancing = true;
                     return builder.updateView().
                     apply(gameObject, mt);
 
@@ -294,6 +301,7 @@ namespace IATK
                     mt = new Material(Shader.Find("IATK/SphereShader"));
                     mt.mainTexture = Resources.Load("sphere-texture") as Texture2D;
                     mt.renderQueue = 3000;
+                    mt.enableInstancing = true;
                     return builder.updateView().
                     apply(gameObject, mt);
 

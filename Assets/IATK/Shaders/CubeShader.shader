@@ -1,8 +1,3 @@
-// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
-
-// Upgrade NOTE: replaced '_Object2World' with 'unity_ObjectToWorld'
-// Upgrade NOTE: replaced '_World2Object' with 'unity_WorldToObject'
-
 Shader "IATK/CubeShader" 
 {
 	Properties 
@@ -33,33 +28,29 @@ Shader "IATK/CubeShader"
 	SubShader 
 	{
 		Pass
-		{
-			
-			LOD 400
-
-			Tags
-			{
-			"LightMode" = "ForwardBase"
-			"Queue" = "Transparent"
-			"IgnoreProjector" = "True"
-			"RenderType" = "Transparent"
-			}
-						
+		{	
+			AlphaTest Greater 0
 			Blend[_MySrcMode][_MyDstMode]
-			//Blend One One
 			ColorMaterial AmbientAndDiffuse
+            Cull Off
 			Lighting Off
+			LOD 400
 			ZWrite On
 			ZTest [unity_GUIZTestMode]
-            Cull Off
-			AlphaTest Greater 0
+			Tags
+			{
+				"LightMode" = "ForwardBase"
+				"Queue" = "Transparent"
+				"IgnoreProjector" = "True"
+				"RenderType" = "Transparent"
+			}
 			
-		
 			CGPROGRAM
 				#pragma target 5.0
 				#pragma vertex VS_Main
 				#pragma fragment FS_Main
 				#pragma geometry GS_Main
+				#pragma multi_compile_instancing
 				#include "UnityCG.cginc" 
 				#include "UnityLightingCommon.cginc" // for _LightColor0
 
@@ -72,6 +63,8 @@ Shader "IATK/CubeShader"
             		float4 color: COLOR;
 					float3 normal: NORMAL;
 					float4 uv_MainTex : TEXCOORD0; // index, vertex size, filtered, prev size
+					
+                    UNITY_VERTEX_INPUT_INSTANCE_ID
         		};
 
 				struct v2g
@@ -80,6 +73,9 @@ Shader "IATK/CubeShader"
 					float4 color : COLOR;
 					float3 normal : NORMAL;
 					float  isBrushed : FLOAT;
+					
+					UNITY_VERTEX_INPUT_INSTANCE_ID 
+					UNITY_VERTEX_OUTPUT_STEREO
 				};
 
 				struct g2f
@@ -88,126 +84,160 @@ Shader "IATK/CubeShader"
 					float4 color : COLOR;
 					float2 tex0	: TEXCOORD0;
 					float  isBrushed : FLOAT;
+					
+                    UNITY_VERTEX_OUTPUT_STEREO
 				};
 
-
+				struct f_output
+				{
+					float4 color : COLOR;
+					float depth : SV_Depth;
+				};
+				
 				// **************************************************************
-				// Vars															*
+				// Variables													*
 				// **************************************************************
 
-				float myXArray[3];
-				int LengthArray;
-
-				float _Size;
-			float _MinSize;
-			float _MaxSize;
-			
-			sampler2D _BrushedTexture;
-
-			float showBrush;
-			float4 brushColor;
-
-			//Sampler2D _MainTexSampler;
-
-			//SamplerState sampler_MainTex;
-
-			float _DataWidth;
-			float _DataHeight;
-
-			//*******************
-			// RANGE FILTERING
-			//*******************
-
-			float _MinX;
-			float _MaxX;
-			float _MinY;
-			float _MaxY;
-			float _MinZ;
-			float _MaxZ;
-
-			// ********************
-			// Normalisation ranges
-			// ********************
-
-			float _MinNormX;
-			float _MaxNormX;
-			float _MinNormY;
-			float _MaxNormY;
-			float _MinNormZ;
-			float _MaxNormZ;
-			
-			float _Tween;
-			float _TweenSize;
-
-			float4x4 _VP;
-			Texture2D _SpriteTex;
-			SamplerState sampler_SpriteTex;
+				UNITY_INSTANCING_BUFFER_START(Props)
+					UNITY_DEFINE_INSTANCED_PROP(float, _Size)
+                    UNITY_DEFINE_INSTANCED_PROP(float, _MinSize)
+                    UNITY_DEFINE_INSTANCED_PROP(float, _MaxSize)
+				
+                    UNITY_DEFINE_INSTANCED_PROP(float, _MinX)
+                    UNITY_DEFINE_INSTANCED_PROP(float, _MaxX)
+                    UNITY_DEFINE_INSTANCED_PROP(float, _MinY)
+                    UNITY_DEFINE_INSTANCED_PROP(float, _MaxY)
+                    UNITY_DEFINE_INSTANCED_PROP(float, _MinZ)
+                    UNITY_DEFINE_INSTANCED_PROP(float, _MaxZ)
+				
+                    UNITY_DEFINE_INSTANCED_PROP(float, _MinNormX)
+                    UNITY_DEFINE_INSTANCED_PROP(float, _MaxNormX)
+                    UNITY_DEFINE_INSTANCED_PROP(float, _MinNormY)
+                    UNITY_DEFINE_INSTANCED_PROP(float, _MaxNormY)
+                    UNITY_DEFINE_INSTANCED_PROP(float, _MinNormZ)
+                    UNITY_DEFINE_INSTANCED_PROP(float, _MaxNormZ)
+					
+                    UNITY_DEFINE_INSTANCED_PROP(float, _ShowBrush)
+                    UNITY_DEFINE_INSTANCED_PROP(float4, _BrushColor)
+					
+                    UNITY_DEFINE_INSTANCED_PROP(float, _Tween)
+                    UNITY_DEFINE_INSTANCED_PROP(float, _TweenSize)
+				UNITY_INSTANCING_BUFFER_END(Props)
+				
+				float _DataWidth;
+				float _DataHeight;
+				float4x4 _VP;
+				Texture2D _SpriteTex;
+				SamplerState sampler_SpriteTex;
+				sampler2D _BrushedTexture;
 
 				//*********************************
-				// helper functions
+				// Helper functions
 				//*********************************
 
 				float normaliseValue(float value, float i0, float i1, float j0, float j1)
 				{
-				float L = (j0 - j1) / (i0 - i1);
-				return (j0 - (L * i0) + (L * value));
+					float L = (j0 - j1) / (i0 - i1);
+					return (j0 - (L * i0) + (L * value));
 				}
 
+				// **************************************************************
+				// Shader Programs												*
+				// **************************************************************
+				
 				// Vertex Shader ------------------------------------------------
 				v2g VS_Main(VS_INPUT v)
 				{
 					v2g o;
+					
+                    UNITY_SETUP_INSTANCE_ID(v);
+                    UNITY_INITIALIZE_OUTPUT(v2g, o);
+					UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
+					UNITY_TRANSFER_INSTANCE_ID(v, o);
+
+					// Accessed instanced variables
+					float Tween = UNITY_ACCESS_INSTANCED_PROP(Props, _Tween);
+					float TweenSize = UNITY_ACCESS_INSTANCED_PROP(Props, _TweenSize);
+                    float MinNormX = UNITY_ACCESS_INSTANCED_PROP(Props, _MinNormX);
+                    float MaxNormX = UNITY_ACCESS_INSTANCED_PROP(Props, _MaxNormX);
+                    float MinNormY = UNITY_ACCESS_INSTANCED_PROP(Props, _MinNormY);
+                    float MaxNormY = UNITY_ACCESS_INSTANCED_PROP(Props, _MaxNormY);
+                    float MinNormZ = UNITY_ACCESS_INSTANCED_PROP(Props, _MinNormZ);
+                    float MaxNormZ = UNITY_ACCESS_INSTANCED_PROP(Props, _MaxNormZ);
+					float MinX = UNITY_ACCESS_INSTANCED_PROP(Props, _MinX);
+                    float MaxX = UNITY_ACCESS_INSTANCED_PROP(Props, _MaxX);
+                    float MinY = UNITY_ACCESS_INSTANCED_PROP(Props, _MinY);
+                    float MaxY = UNITY_ACCESS_INSTANCED_PROP(Props, _MaxY);
+                    float MinZ = UNITY_ACCESS_INSTANCED_PROP(Props, _MinZ);
+                    float MaxZ = UNITY_ACCESS_INSTANCED_PROP(Props, _MaxZ);
 
 					float idx = v.uv_MainTex.x;
 					float isFiltered = v.uv_MainTex.z;
 
-					//lookup the texture to see if the vertex is brushed...
+                    // Check if vertex is brushed by looking up the texture
 					float2 indexUV = float2((idx % _DataWidth) / _DataWidth, ((idx / _DataWidth) / _DataHeight));
 					float4 brushValue = tex2Dlod(_BrushedTexture, float4(indexUV, 0.0, 0.0));
-
 					o.isBrushed = brushValue.r;
+				
+                    // Lerp position and size values for animations
+					float3 pos = lerp(v.normal, v.position, Tween);
+					float size = lerp(v.uv_MainTex.w, v.uv_MainTex.y, TweenSize);
 
-					float size = lerp(v.uv_MainTex.w, v.uv_MainTex.y, _TweenSize);
-					float3 pos = lerp(v.normal, v.position, _Tween);
-
+                    // Normalise values for min and max slider scaling
 					float4 normalisedPosition = float4(
-						normaliseValue(pos.x, _MinNormX, _MaxNormX, 0, 1),
-						normaliseValue(pos.y, _MinNormY, _MaxNormY, 0, 1),
-						normaliseValue(pos.z, _MinNormZ, _MaxNormZ, 0, 1), 1.0);
+						normaliseValue(pos.x, MinNormX, MaxNormX, 0, 1),
+						normaliseValue(pos.y, MinNormY, MaxNormY, 0, 1),
+						normaliseValue(pos.z, MinNormZ, MaxNormZ, 0, 1),
+						1.0);
 
-					float4 vert = (normalisedPosition);
-
-					o.vertex = vert;
+					o.vertex = normalisedPosition;
 					o.normal = float3(idx, size, isFiltered);
 					o.color =  v.color;
 
-					//precision filtering
-					float epsilon = -0.00001;
-
-					//filtering
-					if (
-						normalisedPosition.x < (_MinX + epsilon) ||
-						normalisedPosition.x >(_MaxX - epsilon) ||
-						normalisedPosition.y < (_MinY + epsilon) ||
-						normalisedPosition.y >(_MaxY - epsilon) ||
-						normalisedPosition.z < (_MinZ + epsilon) ||
-						normalisedPosition.z >(_MaxZ - epsilon) || isFiltered
-						)
+                    // Filtering min and max ranges
+					float epsilon = -0.00001; 
+					if(normalisedPosition.x < (MinX + epsilon) ||
+					   normalisedPosition.x > (MaxX - epsilon) || 
+					   normalisedPosition.y < (MinY + epsilon) || 
+					   normalisedPosition.y > (MaxY - epsilon) || 
+					   normalisedPosition.z < (MinZ + epsilon) || 
+					   normalisedPosition.z > (MaxZ - epsilon) ||
+					   isFiltered)
 					{
 						o.color.w = 0;
 					}
 
 					return o;
 				}
-
-
-				void emitCube (float3 position, float4 color, float size, float isBrushed,  inout TriangleStream<g2f> triStream)
+				
+				// Geometry Shader -----------------------------------------------------
+				[maxvertexcount(48)]
+				void GS_Main(point v2g p[1], inout TriangleStream<g2f> triStream)
 				{
-					float xsize = size / (unity_ObjectToWorld[0].x / unity_ObjectToWorld[2].z);
-					float ysize = size / (unity_ObjectToWorld[1].y / unity_ObjectToWorld[2].z);
-					float zsize = size;// / (unity_ObjectToWorld[2].z / unity_ObjectToWorld[1].y);
+					g2f o;
+					
+					UNITY_INITIALIZE_OUTPUT(g2f, o);
+					UNITY_SETUP_INSTANCE_ID(p[0]);
+					UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(p[0]);
 
+					// Access instanced variables
+                    float Size = UNITY_ACCESS_INSTANCED_PROP(Props, _Size);
+                    float MinSize = UNITY_ACCESS_INSTANCED_PROP(Props, _MinSize);
+                    float MaxSize = UNITY_ACCESS_INSTANCED_PROP(Props, _MaxSize);
+					
+					float sizeFactor = normaliseValue(p[0].normal.y, 0.0, 1.0, MinSize, MaxSize);
+					float halfS = 0.025f * (Size + (sizeFactor));
+					float isBrushed = p[0].isBrushed;
 
+					o.isBrushed = isBrushed;
+					
+					// Emit cube
+					float3 position = p[0].vertex;
+					float4 color = p[0].color;
+					float xsize = halfS / (unity_ObjectToWorld[0].x / unity_ObjectToWorld[2].z);
+					float ysize = halfS / (unity_ObjectToWorld[1].y / unity_ObjectToWorld[2].z);
+					float zsize = halfS;// / (unity_ObjectToWorld[2].z / unity_ObjectToWorld[1].y);
+					
 					float3 NEU = float3(xsize, ysize, zsize);
 					float3 NED = float3(xsize, -ysize, zsize);
 					float3 NWU = float3(-xsize, ysize, zsize);
@@ -236,38 +266,35 @@ Shader "IATK/CubeShader"
 
 					float4x4 vp = UNITY_MATRIX_MVP;
 					
-					g2f pIn;
-					
-					// FACE 1
-
-					pIn.isBrushed = isBrushed;
-					pIn.color = color;
-					
 					// FACE 1
 					half nl;
 					half3 worldNormal;
 
 					worldNormal = UnityObjectToWorldNormal(nN);
 					nl = max(0, dot(worldNormal, _WorldSpaceLightPos0.xyz));
-					pIn.color = float4(_LightColor0.rgb * nl, color.a);
-					pIn.color.rgb += ShadeSH9(half4(worldNormal, 1));
-					pIn.color.rgb *= color.rgb;
+					o.color = float4(_LightColor0.rgb * nl, color.a);
+					o.color.rgb += ShadeSH9(half4(worldNormal, 1));
+					o.color.rgb *= color.rgb;
 
-					pIn.vertex = UnityObjectToClipPos(pNWU);
-					pIn.tex0 = float2(0.0f, 1.0f);
-					triStream.Append(pIn);
+					o.vertex = UnityObjectToClipPos(pNWU);
+					o.tex0 = float2(0.0f, 1.0f);
+					UNITY_TRANSFER_VERTEX_OUTPUT_STEREO(p[0], o);
+					triStream.Append(o);
 
-					pIn.vertex = UnityObjectToClipPos(pNEU);
-					pIn.tex0 = float2(1.0f, 1.0f);
-					triStream.Append(pIn);
+					o.vertex = UnityObjectToClipPos(pNEU);
+					o.tex0 = float2(1.0f, 1.0f);
+					UNITY_TRANSFER_VERTEX_OUTPUT_STEREO(p[0], o);
+					triStream.Append(o);
 
-					pIn.vertex =  UnityObjectToClipPos(pNWD);
-					pIn.tex0 = float2(0.0f, 0.0f);
-					triStream.Append(pIn);
+					o.vertex =  UnityObjectToClipPos(pNWD);
+					o.tex0 = float2(0.0f, 0.0f);
+					UNITY_TRANSFER_VERTEX_OUTPUT_STEREO(p[0], o);
+					triStream.Append(o);
 
-					pIn.vertex =  UnityObjectToClipPos( pNED);
-					pIn.tex0 = float2(1.0f, 0.0f);
-					triStream.Append(pIn);
+					o.vertex =  UnityObjectToClipPos( pNED);
+					o.tex0 = float2(1.0f, 0.0f);
+					UNITY_TRANSFER_VERTEX_OUTPUT_STEREO(p[0], o);
+					triStream.Append(o);
 					
 					triStream.RestartStrip();
 
@@ -275,26 +302,29 @@ Shader "IATK/CubeShader"
 
 					worldNormal = UnityObjectToWorldNormal(nW);
 					nl = max(0, dot(worldNormal, _WorldSpaceLightPos0.xyz));
-					pIn.color = float4(_LightColor0.rgb * nl, color.a);
-					pIn.color.rgb += ShadeSH9(half4(worldNormal, 1));
-					pIn.color.rgb *= color.rgb;
+					o.color = float4(_LightColor0.rgb * nl, color.a);
+					o.color.rgb += ShadeSH9(half4(worldNormal, 1));
+					o.color.rgb *= color.rgb;
 
+					o.vertex = UnityObjectToClipPos( pNED);
+					o.tex0 = float2(1.0f, 0.0f);
+					UNITY_TRANSFER_VERTEX_OUTPUT_STEREO(p[0], o);
+					triStream.Append(o);
 
-					pIn.vertex = UnityObjectToClipPos( pNED);
-					pIn.tex0 = float2(1.0f, 0.0f);
-					triStream.Append(pIn);
+					o.vertex = UnityObjectToClipPos(pNEU);
+					o.tex0 = float2(1.0f, 1.0f);
+					UNITY_TRANSFER_VERTEX_OUTPUT_STEREO(p[0], o);
+					triStream.Append(o);
 
-					pIn.vertex = UnityObjectToClipPos(pNEU);
-					pIn.tex0 = float2(1.0f, 1.0f);
-					triStream.Append(pIn);
+					o.vertex =  UnityObjectToClipPos(pSED);
+					o.tex0 = float2(0.0f, 0.0f);
+					UNITY_TRANSFER_VERTEX_OUTPUT_STEREO(p[0], o);
+					triStream.Append(o);
 
-					pIn.vertex =  UnityObjectToClipPos(pSED);
-					pIn.tex0 = float2(0.0f, 0.0f);
-					triStream.Append(pIn);
-
-					pIn.vertex =  UnityObjectToClipPos(pSEU);
-					pIn.tex0 = float2(0.0f, 1.0f);
-					triStream.Append(pIn);
+					o.vertex =  UnityObjectToClipPos(pSEU);
+					o.tex0 = float2(0.0f, 1.0f);
+					UNITY_TRANSFER_VERTEX_OUTPUT_STEREO(p[0], o);
+					triStream.Append(o);
 					
 					triStream.RestartStrip();
 
@@ -302,146 +332,155 @@ Shader "IATK/CubeShader"
 					
 					worldNormal = UnityObjectToWorldNormal(nU);
 					nl = max(0, dot(worldNormal, _WorldSpaceLightPos0.xyz));
-					pIn.color = float4(_LightColor0.rgb * nl, color.a);
-					pIn.color.rgb += ShadeSH9(half4(worldNormal, 1));
-					pIn.color.rgb *= color.rgb;
+					o.color = float4(_LightColor0.rgb * nl, color.a);
+					o.color.rgb += ShadeSH9(half4(worldNormal, 1));
+					o.color.rgb *= color.rgb;
 
+					o.vertex = UnityObjectToClipPos(pNWU);
+					o.tex0 = float2(1.0f, 0.0f);
+					UNITY_TRANSFER_VERTEX_OUTPUT_STEREO(p[0], o);
+					triStream.Append(o);
 
+					o.vertex = UnityObjectToClipPos(pNEU);
+					o.tex0 = float2(1.0f, 1.0f);
+					UNITY_TRANSFER_VERTEX_OUTPUT_STEREO(p[0], o);
+					triStream.Append(o);
 
-					pIn.vertex = UnityObjectToClipPos(pNWU);
-					pIn.tex0 = float2(1.0f, 0.0f);
-					triStream.Append(pIn);
+					o.vertex =  UnityObjectToClipPos( pSWU);
+					o.tex0 = float2(0.0f, 0.0f);
+					UNITY_TRANSFER_VERTEX_OUTPUT_STEREO(p[0], o);
+					triStream.Append(o);
 
-					pIn.vertex = UnityObjectToClipPos(pNEU);
-					pIn.tex0 = float2(1.0f, 1.0f);
-					triStream.Append(pIn);
-
-					pIn.vertex =  UnityObjectToClipPos( pSWU);
-					pIn.tex0 = float2(0.0f, 0.0f);
-					triStream.Append(pIn);
-
-					pIn.vertex =  UnityObjectToClipPos(pSEU);
-					pIn.tex0 = float2(0.0f, 1.0f);
-					triStream.Append(pIn);
+					o.vertex =  UnityObjectToClipPos(pSEU);
+					o.tex0 = float2(0.0f, 1.0f);
+					UNITY_TRANSFER_VERTEX_OUTPUT_STEREO(p[0], o);
+					triStream.Append(o);
 					
 					triStream.RestartStrip();
 
 					// FACE 4
 					worldNormal = UnityObjectToWorldNormal(nS);
 					nl = max(0, dot(worldNormal, _WorldSpaceLightPos0.xyz));
-					pIn.color = float4(_LightColor0.rgb * nl, color.a);
-					pIn.color.rgb += ShadeSH9(half4(worldNormal, 1));
-					pIn.color.rgb *= color.rgb;
+					o.color = float4(_LightColor0.rgb * nl, color.a);
+					o.color.rgb += ShadeSH9(half4(worldNormal, 1));
+					o.color.rgb *= color.rgb;
 
+					o.vertex = UnityObjectToClipPos(pSWU);
+					o.tex0 = float2(0.0f, 1.0f);
+					UNITY_TRANSFER_VERTEX_OUTPUT_STEREO(p[0], o);
+					triStream.Append(o);
 
-					pIn.vertex = UnityObjectToClipPos(pSWU);
-					pIn.tex0 = float2(0.0f, 1.0f);
-					triStream.Append(pIn);
+					o.vertex = UnityObjectToClipPos( pSEU);
+					o.tex0 = float2(1.0f, 1.0f);
+					UNITY_TRANSFER_VERTEX_OUTPUT_STEREO(p[0], o);
+					triStream.Append(o);
 
-					pIn.vertex = UnityObjectToClipPos( pSEU);
-					pIn.tex0 = float2(1.0f, 1.0f);
-					triStream.Append(pIn);
+					o.vertex =  UnityObjectToClipPos(pSWD);
+					o.tex0 = float2(0.0f, 0.0f);
+					UNITY_TRANSFER_VERTEX_OUTPUT_STEREO(p[0], o);
+					triStream.Append(o);
 
-					pIn.vertex =  UnityObjectToClipPos(pSWD);
-					pIn.tex0 = float2(0.0f, 0.0f);
-					triStream.Append(pIn);
-
-					pIn.vertex =  UnityObjectToClipPos(pSED);
-					pIn.tex0 = float2(1.0f, 0.0f);
-					triStream.Append(pIn);
+					o.vertex =  UnityObjectToClipPos(pSED);
+					o.tex0 = float2(1.0f, 0.0f);
+					UNITY_TRANSFER_VERTEX_OUTPUT_STEREO(p[0], o);
+					triStream.Append(o);
 					
 					triStream.RestartStrip();
 					
 					// FACE 5
 					worldNormal = UnityObjectToWorldNormal(nD);
 					nl = max(0, dot(worldNormal, _WorldSpaceLightPos0.xyz));
-					pIn.color = float4(_LightColor0.rgb * nl, color.a);
-					pIn.color.rgb += ShadeSH9(half4(worldNormal, 1));
-					pIn.color.rgb *= color.rgb;
+					o.color = float4(_LightColor0.rgb * nl, color.a);
+					o.color.rgb += ShadeSH9(half4(worldNormal, 1));
+					o.color.rgb *= color.rgb;
 
+					o.vertex = UnityObjectToClipPos(pNWD);
+					o.tex0 = float2(1.0f, 0.0f);
+					UNITY_TRANSFER_VERTEX_OUTPUT_STEREO(p[0], o);
+					triStream.Append(o);
 
-					pIn.vertex = UnityObjectToClipPos(pNWD);
-					pIn.tex0 = float2(1.0f, 0.0f);
-					triStream.Append(pIn);
+					o.vertex = UnityObjectToClipPos(pNED);
+					o.tex0 = float2(1.0f, 1.0f);
+					UNITY_TRANSFER_VERTEX_OUTPUT_STEREO(p[0], o);
+					triStream.Append(o);
 
-					pIn.vertex = UnityObjectToClipPos(pNED);
-					pIn.tex0 = float2(1.0f, 1.0f);
-					triStream.Append(pIn);
+					o.vertex =  UnityObjectToClipPos(pSWD);
+					o.tex0 = float2(0.0f, 0.0f);
+					UNITY_TRANSFER_VERTEX_OUTPUT_STEREO(p[0], o);
+					triStream.Append(o);
 
-					pIn.vertex =  UnityObjectToClipPos(pSWD);
-					pIn.tex0 = float2(0.0f, 0.0f);
-					triStream.Append(pIn);
-
-					pIn.vertex =  UnityObjectToClipPos(pSED);
-					pIn.tex0 = float2(0.0f, 1.0f);
-					triStream.Append(pIn);
+					o.vertex =  UnityObjectToClipPos(pSED);
+					o.tex0 = float2(0.0f, 1.0f);
+					UNITY_TRANSFER_VERTEX_OUTPUT_STEREO(p[0], o);
+					triStream.Append(o);
 					
 					triStream.RestartStrip();
 
 					// FACE 6
 					worldNormal = UnityObjectToWorldNormal(nE);
 					nl = max(0, dot(worldNormal, _WorldSpaceLightPos0.xyz));
-					pIn.color = float4(_LightColor0.rgb * nl, color.a);
-					pIn.color.rgb += ShadeSH9(half4(worldNormal, 1));
-					pIn.color.rgb *= color.rgb;
+					o.color = float4(_LightColor0.rgb * nl, color.a);
+					o.color.rgb += ShadeSH9(half4(worldNormal, 1));
+					o.color.rgb *= color.rgb;
 
-					pIn.vertex = UnityObjectToClipPos(pNWD);
-					pIn.tex0 = float2(1.0f, 0.0f);
-					triStream.Append(pIn);
+					o.vertex = UnityObjectToClipPos(pNWD);
+					o.tex0 = float2(1.0f, 0.0f);
+					UNITY_TRANSFER_VERTEX_OUTPUT_STEREO(p[0], o);
+					triStream.Append(o);
 
-					pIn.vertex = UnityObjectToClipPos(pNWU);
-					pIn.tex0 = float2(1.0f, 1.0f);
-					triStream.Append(pIn);
+					o.vertex = UnityObjectToClipPos(pNWU);
+					o.tex0 = float2(1.0f, 1.0f);
+					UNITY_TRANSFER_VERTEX_OUTPUT_STEREO(p[0], o);
+					triStream.Append(o);
 
-					pIn.vertex =  UnityObjectToClipPos( pSWD);
-					pIn.tex0 = float2(0.0f, 0.0f);
-					triStream.Append(pIn);
+					o.vertex =  UnityObjectToClipPos( pSWD);
+					o.tex0 = float2(0.0f, 0.0f);
+					UNITY_TRANSFER_VERTEX_OUTPUT_STEREO(p[0], o);
+					triStream.Append(o);
 
-					pIn.vertex =  UnityObjectToClipPos(pSWU);
-					pIn.tex0 = float2(0.0f, 1.0f);
-					triStream.Append(pIn);
+					o.vertex =  UnityObjectToClipPos(pSWU);
+					o.tex0 = float2(0.0f, 1.0f);
+					UNITY_TRANSFER_VERTEX_OUTPUT_STEREO(p[0], o);
+					triStream.Append(o);
 					
 					triStream.RestartStrip();
 				}
-
-				// Geometry Shader -----------------------------------------------------
-				[maxvertexcount(48)]
-				void GS_Main(point v2g p[1], inout TriangleStream<g2f> triStream)
-				{
-					float ensize = 1.0;// p[0].col.x;
-
-					float sizeFactor = normaliseValue(p[0].normal.y, 0.0, 1.0, _MinSize, _MaxSize);
-
-					float halfS = 0.025f * (_Size + (sizeFactor));
-					float isBrushed = p[0].isBrushed;
-
-			
-					emitCube(p[0].vertex, p[0].color, halfS, isBrushed, triStream);
-				}
-
+				
 				// Fragment Shader -----------------------------------------------
-				float4 FS_Main(g2f input) : COLOR
+				f_output FS_Main(g2f input) : COLOR
 				{
-					if(input.color.w == 0)
+					f_output o;
+					
+					UNITY_INITIALIZE_OUTPUT(f_output, o);
+					UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
+					
+					// Access instanced variables
+					float4 BrushColor = UNITY_ACCESS_INSTANCED_PROP(Props, _BrushColor);
+					float ShowBrush = UNITY_ACCESS_INSTANCED_PROP(Props, _ShowBrush);
+					
+					if (input.color.w == 0)
 					{
 						discard;
-						return float4(0.0, 0.0, 0.0, 0.0);
+						o.color = float4(0.0, 0.0, 0.0, 0.0);
+						o.depth = 0;
+						return o;
 					}
 					else
 					{
 						float dx = input.tex0.x;
 						float dy = input.tex0.y;
 
-						if(dx > 0.99 || dx < 0.01 || dy <0.01  || dy>0.99 ) return float4(0.0, 0.0, 0.0, input.color.w);
-			
-						float dt = (dx -0.5) * (dx-0.5) + (dy-0.5) * (dy-0.5);
-						if (input.isBrushed > 0.0 && showBrush > 0.0)
-							return brushColor;
+						if (dx > 0.99 || dx < 0.01 || dy < 0.01  || dy > 0.99 )
+							o.color = float4(0.0, 0.0, 0.0, input.color.w);
+						else if (input.isBrushed > 0.0 && ShowBrush > 0.0)
+							o.color = BrushColor;
 						else
-							return input.color;
+							o.color = input.color;
+						
+						o.depth = input.vertex.z;
+						return o;
+					}
 				}
-			
-			}
 			ENDCG
 		}
 	}

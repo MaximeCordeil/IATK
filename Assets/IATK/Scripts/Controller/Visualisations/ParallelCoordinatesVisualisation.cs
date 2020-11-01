@@ -142,6 +142,7 @@ namespace IATK
 
                 Material mt = new Material(Shader.Find("IATK/PCPShader"));
                 mt.renderQueue = 3000;
+                mt.enableInstancing = true;
                 View v = viewParallel.
                     createIndicesPointTopology(parallelCoordinatesIndices.ToArray()).
                     updateView().apply(gameObject, mt);

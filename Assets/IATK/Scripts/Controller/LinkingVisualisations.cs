@@ -55,9 +55,10 @@ namespace IATK
         {
             Visualisation.OnUpdateViewAction += Visualisation_OnUpdateViewAction;
 
-            linkerMaterial = new Material(Shader.Find("Staxestk/Linked-Views-Material"))
+            linkerMaterial = new Material(Shader.Find("IATK/Linked-Views-Material"))
             {
-                renderQueue = 3000
+                renderQueue = 3000,
+                enableInstancing = true
             };
 
             if(visualisationSource != null && visualisationTarget !=null) LinkVisualisations();
