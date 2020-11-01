@@ -259,12 +259,14 @@ namespace IATK
                     case AbstractVisualisation.PropertyType.LinkingDimension:
                         creationConfiguration.LinkingDimension = visualisationReference.linkingDimension;
                         
-                        CreateVisualisation(); // needs to recreate the visualsiation because the mesh properties have changed 
+                        CreateVisualisation(); // needs to recreate the visualsiation because the mesh properties have changed
+                        rescaleViews();
                         break;
 
                     case AbstractVisualisation.PropertyType.GeometryType:
                         creationConfiguration.Geometry = visualisationReference.geometry;
                         CreateVisualisation(); // needs to recreate the visualsiation because the mesh properties have changed 
+                        rescaleViews();
                         break;
 
                     case AbstractVisualisation.PropertyType.Scaling:
@@ -449,15 +451,8 @@ namespace IATK
                         BindMinMaxAxisValues(axis, visualisationReference.zDimension);
                         axis.UpdateLength(visualisationReference.depth);
                     }
-
-                    foreach (View view in viewList)
-                    {
-                        view.transform.localScale = new Vector3(
-                            visualisationReference.width,
-                            visualisationReference.height,
-                            visualisationReference.depth
-                        );
-                    }
+                    
+                    rescaleViews();
                     break;
                 default:
                     break;
@@ -478,6 +473,21 @@ namespace IATK
                 retVal = axes;
 
             return retVal;
+        }
+        
+        /// <summary>
+        /// Rescales the views in this scatterplot to the width, height, and depth values in the visualisationReference
+        /// </summary>
+        protected void rescaleViews()
+        {
+            foreach (View view in viewList)
+            {
+                view.transform.localScale = new Vector3(
+                    visualisationReference.width,
+                    visualisationReference.height,
+                    visualisationReference.depth
+                );
+            }
         }
 
         public override void SaveConfiguration(){}
