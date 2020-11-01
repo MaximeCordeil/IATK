@@ -6,7 +6,6 @@ IATK is an ongoing and open project! We setup a roadmap with features that we wo
 <br/>
 <br/>
 
-<<<<<<< HEAD
 ## Publication
 
 IATK was published at IEEE VR 2019 - Please use following reference:
@@ -19,10 +18,9 @@ IATK was published at IEEE VR 2019 - Please use following reference:
   year={2019},
   organization={IEEE}
 }
-=======
+
 # Dependencies
 IATK requires the [MapBox Unity Plugin](https://www.mapbox.com/)
->>>>>>> feature/2018BM
 
 ## Tutorial
 A video tutorial of IATK [can be found here](https://vimeo.com/320646218)
