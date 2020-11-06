@@ -116,6 +116,9 @@ Shader "IATK/Linked-Views-Material"
                     UNITY_DEFINE_INSTANCED_PROP(float4, _BrushColor)
 					
                     UNITY_DEFINE_INSTANCED_PROP(float, _Alpha)
+					
+                    UNITY_DEFINE_INSTANCED_PROP(float4x4, _ScaleMatrix1)
+                    UNITY_DEFINE_INSTANCED_PROP(float4x4, _ScaleMatrix2)
 				UNITY_INSTANCING_BUFFER_END(Props)
 				
 				float _DataWidth;
@@ -163,6 +166,8 @@ Shader "IATK/Linked-Views-Material"
                     float MaxNormY2 = UNITY_ACCESS_INSTANCED_PROP(Props, _MaxNormY2);
                     float MinNormZ2 = UNITY_ACCESS_INSTANCED_PROP(Props, _MinNormZ2);
                     float MaxNormZ2 = UNITY_ACCESS_INSTANCED_PROP(Props, _MaxNormZ2);
+                    float4x4 ScaleMatrix1 = UNITY_ACCESS_INSTANCED_PROP(Props, _ScaleMatrix1);
+                    float4x4 ScaleMatrix2 = UNITY_ACCESS_INSTANCED_PROP(Props, _ScaleMatrix2);
 										
                     // Check if vertex is brushed by looking up the texture
 					float2 indexUV = float2((v.normal.x % _DataWidth) / _DataWidth, ((v.normal.x / _DataWidth) / _DataHeight));
@@ -175,11 +180,13 @@ Shader "IATK/Linked-Views-Material"
 					float4 pos;
 					if (v.normal.z == 0.0)
 					{
+								
 						pos = float4(normaliseValue(v.position.x, MinNormX1, MaxNormX1, 0, 1),
 									 normaliseValue(v.position.y, MinNormY1, MaxNormY1, 0, 1),
 									 normaliseValue(v.position.z, MinNormZ1, MaxNormZ1, 0, 1),
 									 v.position.w);
 
+						// Check if vertex is filtered
 						if (v.position.x < MinXFilter1 ||
 							v.position.x > MaxXFilter1 ||
 							v.position.y < MinYFilter1 ||
@@ -196,6 +203,10 @@ Shader "IATK/Linked-Views-Material"
 							o.filtered = true;	
 						else
 							o.filtered = false;
+						
+						// Scale vertex based on input matrix
+						pos = mul(ScaleMatrix1, pos);
+							
 					}
 					else if (v.normal.z == 1.0)
 					{
@@ -204,6 +215,7 @@ Shader "IATK/Linked-Views-Material"
 									 normaliseValue(v.position.z, MinNormZ2,  MaxNormZ2, 0, 1),
 									 v.position.w);
 
+						// Check if vertex is filtered
 						if (v.position.x < MinXFilter2 ||
 							v.position.x > MaxXFilter2 ||
 							v.position.y < MinYFilter2 ||
@@ -219,6 +231,9 @@ Shader "IATK/Linked-Views-Material"
 							o.filtered = true;
 						else
 							o.filtered = false;
+							
+						// Scale vertex based on input matrix
+						pos = mul(ScaleMatrix2, pos);
 					}
 
 					o.vertex = mul(UNITY_MATRIX_VP, ObjectToWorldDistort3d(pos, v.normal.z > 0));

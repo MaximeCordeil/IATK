@@ -163,6 +163,9 @@ namespace IATK
                 //set alpha
                 linkerMaterial.SetFloat("_Alpha", linkTransparency);
 
+                // Set scaling matrices based on visualisation size
+                linkerMaterial.SetMatrix("_ScaleMatrix1", Matrix4x4.TRS(Vector3.zero, Quaternion.identity, new Vector3(visualisationSource.width, visualisationSource.height, visualisationSource.depth)));
+                linkerMaterial.SetMatrix("_ScaleMatrix2", Matrix4x4.TRS(Vector3.zero, Quaternion.identity, new Vector3(visualisationTarget.width, visualisationTarget.height, visualisationTarget.depth)));
             }
             toggleShow = showLinks;
         }
