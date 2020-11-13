@@ -162,8 +162,8 @@
 					o.isBrushed = brushValue.r;
 							
                     // Lerp position and size values for animations
-					float3 pos = lerp(v.normal, v.vertex, _Tween);
-					float size = lerp(v.uv_MainTex.w, v.uv_MainTex.y, _TweenSize);
+					float3 pos = lerp(v.normal, v.vertex, Tween);
+					float size = lerp(v.uv_MainTex.w, v.uv_MainTex.y, TweenSize);
 
                     // Normalise values for min and max slider scaling
 					float4 normalisedPosition = float4(
@@ -202,6 +202,11 @@
 					UNITY_SETUP_INSTANCE_ID(points[0]);
 					UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(points[0]);
 					
+					// Access instanced variables
+                    float Size = UNITY_ACCESS_INSTANCED_PROP(Props, _Size);
+                    float MinSize = UNITY_ACCESS_INSTANCED_PROP(Props, _MinSize);
+                    float MaxSize = UNITY_ACCESS_INSTANCED_PROP(Props, _MaxSize);
+
 					// Handle brushing line topoolgy
 					if (points[0].color.w == 0) points[1].color.w = 0;
 					if (points[1].color.w == 0) points[0].color.w = 0;
@@ -224,7 +229,7 @@
 
 					float3 unit_z = normalize(float3(0, 0, -1));
 					float3 normal = normalize(cross(unit_z, dir) * ratio);
-					float width = _Size * normaliseValue(points[0].normal.y, 0.0, 1.0, _MinSize, _MaxSize);
+					float width = Size * normaliseValue(points[0].normal.y, 0.0, 1.0, MinSize, MaxSize);
 
 					g2f v[4];
 
