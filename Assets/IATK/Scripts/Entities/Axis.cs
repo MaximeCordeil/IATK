@@ -62,7 +62,9 @@ namespace IATK
         [HideInInspector]
         public int SourceIndex = -1;
         [HideInInspector]
-        public int MyDirection = 0;
+        public int AxisDirection = 0;
+        
+        private bool isPositiveLength = false;
 
         #endregion
 
@@ -109,12 +111,12 @@ namespace IATK
         }
 
         /// <summary>
-        /// Sets the direction (dimension) that this axis represents.
+        /// Sets the direction (dimension) that this axis represents
         /// </summary>
         /// <param name="direction">X=1, Y=2, Z=3</param>
         public void SetDirection(int direction)
         {
-            MyDirection = direction;
+            AxisDirection = direction;
             switch (direction)
             {
                 case 1:
@@ -166,8 +168,7 @@ namespace IATK
                     break;
             }
         }
-
-        
+              
         /// <summary>
         /// Updates the length of this axis.
         /// </summary>
@@ -178,6 +179,7 @@ namespace IATK
             
             axisRod.localScale = new Vector3(axisRod.localScale.x, Length, axisRod.localScale.z);
             axisTip.localPosition = new Vector3(axisTip.localPosition.x, Length, axisTip.localPosition.z);
+            axisTip.localEulerAngles = new Vector3(length >= 0 ? 0 : 180, -45, 0);
 
             SetMinFilter(AttributeFilter.minFilter);
             SetMaxFilter(AttributeFilter.maxFilter);
