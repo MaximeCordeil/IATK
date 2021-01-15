@@ -52,7 +52,7 @@ StructuredBuffer<float> filteredIndicesBuffer;
 RWStructuredBuffer<int> brushedIndicesBuffer;
 
 // Brush Circle
-bool brush2DInCircle(float3 center, float radius, float4 testPoint)
+bool Brush2DInCircle(float3 center, float radius, float4 testPoint)
 {
 	float4 projectedCenter = mul(W_Matrix, float4(center, 1.0));
 
@@ -60,7 +60,7 @@ bool brush2DInCircle(float3 center, float radius, float4 testPoint)
 }
 
 // Brush Sphere
-bool brushSphere(float3 center, float radius, float3 testPoint)
+bool BrushSphere(float3 center, float radius, float3 testPoint)
 {
 	float3 displacementToCenter = testPoint - center;
 	float radiusSqr = radius * radius;
@@ -69,14 +69,14 @@ bool brushSphere(float3 center, float radius, float3 testPoint)
 	return intersects;
 }
 
-bool brushCube(float3 TFL, float3 BBR, float3 testPoint)
+bool BrushCube(float3 TFL, float3 BBR, float3 testPoint)
 {
 	return (testPoint.x >= TFL.x && testPoint.x <= BBR.x
 		&&  testPoint.y <= TFL.y && testPoint.y >= BBR.y
 		&&  testPoint.z >= TFL.z && testPoint.z <= BBR.z);
 }
 
-bool brushSquare(float3 tl, float3 tr, float3 bl, float3 br, float4 testPoint)
+bool BrushSquare(float3 tl, float3 tr, float3 bl, float3 br, float4 testPoint)
 {
 	float4 tlp = mul(W_Matrix, float4(tl, 1.0));
 	float4 trp = mul(W_Matrix, float4(tr, 1.0));
@@ -94,24 +94,26 @@ bool Brush(int brushType, float3 filteredPosition)
 	{
 		// Brush sphere
 		case 0:
-			return brushSphere(float3(pointer1.x, pointer1.y, pointer1.z), RadiusSphere, filteredPosition);
-		
+			return BrushSphere(float3(pointer1.x, pointer1.y, pointer1.z), RadiusSphere, filteredPosition);
+
 		// Brush cube
 		case 1:
-			float3 TL = float3(pointer1.x, pointer1.y, pointer1.z);
-			float3 BR = float3(pointer2.x, pointer2.y, pointer2.z);
-			if (TL.x > BR.x || TL.y < BR.y || TL.z > BR.z)
-			{
-				TL = BR;
-				BR = float3(pointer1.x, pointer1.y, pointer1.z);
-			}
+			float3 TFL;
+			float3 BBR;
 
-			return brushCube(TL, BR, filteredPosition);
-			
+			TFL.x = min(pointer1.x, pointer2.x);
+			BBR.x = max(pointer1.x, pointer2.x);
+			TFL.y = max(pointer1.y, pointer2.y);
+			BBR.y = min(pointer1.y, pointer2.y);
+			TFL.z = min(pointer1.z, pointer2.z);
+			BBR.z = max(pointer1.z, pointer2.z);
+
+			return BrushCube(TFL, BBR, filteredPosition);
+
 		// Brush square
 		// case 2:
-			// retun brushSquare(pointer1x, pointer1y,pointer2x,pointer2y,filteredPosition);
-		
+			// retun BrushSquare(pointer1x, pointer1y,pointer2x,pointer2y,filteredPosition);
+
 		default:
 			return false;
 	}
@@ -141,7 +143,7 @@ bool IsBetweenRanges(float value, float lower, float upper)
 	}
 }
 
-float normaliseValue(float value, float i0, float i1, float j0, float j1)
+float NormaliseValue(float value, float i0, float i1, float j0, float j1)
 {
 	float L = (j0 - j1) / (i0 - i1);
 	return (j0 - (L * i0) + (L * value));
@@ -151,24 +153,24 @@ float normaliseValue(float value, float i0, float i1, float j0, float j1)
 void CSMain(uint3 id : SV_DispatchThreadID)
 {
 	int idx = id.x + id.y * _size;
-	
+
 	// Ignore indices that are filtered
 	if (!filteredIndicesBuffer[idx])
 	{
 		float3 filteredPosition = float3(
-			normaliseValue(dataBuffer[idx].x, _MinNormX, _MaxNormX, 0, width),
-			normaliseValue(dataBuffer[idx].y, _MinNormY, _MaxNormY, 0, height),
-			normaliseValue(dataBuffer[idx].z, _MinNormZ, _MaxNormZ, 0, depth));
-		
+			NormaliseValue(dataBuffer[idx].x, _MinNormX, _MaxNormX, 0, width),
+			NormaliseValue(dataBuffer[idx].y, _MinNormY, _MaxNormY, 0, height),
+			NormaliseValue(dataBuffer[idx].z, _MinNormZ, _MaxNormZ, 0, depth));
+
 		if (IsBetweenRanges(filteredPosition.x, _MinX, _MaxX * width) &&
 			IsBetweenRanges(filteredPosition.y, _MinY, _MaxY * height) &&
 			IsBetweenRanges(filteredPosition.z, _MinZ, _MaxZ * depth)
-		) 
+		)
 		{
 			if (Brush(BrushMode, filteredPosition))
 			{
 				switch (SelectionMode) {
-					// Free selection	
+					// Free selection
 					case 0:
 					// Additive selection
 					case 1:
