@@ -3,13 +3,14 @@
 //20210430, initial working version
 
 using IATK;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace IATKExt
+namespace IATK
 {
-    public class RealTimeDataSource : DataSource
+    public class RealtimeDataSource : DataSource
     {
         private int dimensionSizeLimit = 100;
         private int dataCount;
@@ -49,10 +50,10 @@ namespace IATKExt
             var dd = new DimensionData(dimensionName, newIndex, metaData);
             dd.setData(dataArray, textualDimensionsList);
             dimensionData.Add(dd);
-
-            dataCount += dimensionSizeLimit;
+            //dataCount += dimensionSizeLimit;
+            dataCount = dimensionSizeLimit;
+            Debug.Log("AddDimension => " + dd.Identifier + ", " + dd.Index);
         }
-
 
         //This important for extern bindinds which might not support
         //operator overloading or runtime reflection resolution
@@ -71,9 +72,9 @@ namespace IATKExt
 
         private int GetNextIndexForDimensionAndInc(int index)
         {
+            return 0;
             if (index < lastIndices.Count)
             {
-                return 0;
                 var ret = lastIndices[index];
                 lastIndices[index] = (lastIndices[index] + 1) % dimensionSizeLimit;
                 return ret;
@@ -83,23 +84,62 @@ namespace IATKExt
 
         //This important for extern bindinds which might not support
         //operator overloading or runtime reflection resolution
-        public void AddDataByStr(string dimensionName, float val)
+        public bool AddDataByStr(string dimensionName, float val)
         {
-            var dd = this[dimensionName];
-            if (dd != null)
+            var dirty = false;
+            try
             {
-                var index = dd.Index;
-                var nextIndex = GetNextIndexForDimensionAndInc(index);
-                if (nextIndex >= 0)
+                var dd = this[dimensionName];
+                if (dd != null)
                 {
-                    for (var i = dimensionSizeLimit - 1; i >= 1; i--)
-                    {
-                        dd.Data[i] = dd.Data[i - 1];
-                    }
+                    var index = dd.Index;
 
-                    dd.Data[nextIndex] = normaliseValue(val, dd.MetaData.minValue, dd.MetaData.maxValue, 0f, 1f);
+                    var nextIndex = GetNextIndexForDimensionAndInc(index);
+                    Debug.Log("AddDataByStr => " + dimensionName + ", " + index + ", " + val + ", " + nextIndex);
+
+                    if (nextIndex >= 0)
+                    {
+                        for (var i = dimensionSizeLimit - 1; i >= 1; i--)
+                        {
+                            dd.Data[i] = dd.Data[i - 1];
+                        }
+
+                        var minV = dd.MetaData.minValue;
+                        var maxV = dd.MetaData.minValue;
+                        if (dd.MetaData.minValue > val)
+                        {
+                            minV = val;
+                            dirty = true;
+                            Debug.Log("XXXXXXXXXXXXXXXXXXXXXXXXX => new min = " + minV);
+                        }
+
+                        if (dd.MetaData.maxValue < val)
+                        {
+                            maxV = val;
+                            dirty = true;
+                            Debug.Log("XXXXXXXXXXXXXXXXXXXXXXXXX => new max = " + maxV);
+                        }
+
+                        if (dirty)
+                        {
+                            var metaData = new DimensionData.Metadata();
+                            metaData.minValue = minV;
+                            metaData.maxValue = maxV;
+                            metaData.type = DataType.Float; //maybe make that adjustable
+                            dd.setMetadata(metaData);
+                        }
+
+                        if (dd.Data.Length > nextIndex && nextIndex >= 0)
+                        {
+                            dd.Data[nextIndex] = normaliseValue(val, dd.MetaData.minValue, dd.MetaData.maxValue, 0f, 1f);
+                        }
+                    }
                 }
+            }catch(Exception e)
+            {
+                Debug.Log("XXXXXXXXXXXXXXXXXXXXXXXXX ERROR => " + e);
             }
+            return dirty;
         }
 
         public override DimensionData this[int index]

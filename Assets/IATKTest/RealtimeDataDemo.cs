@@ -7,9 +7,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace IATKExt
+namespace IATKTest
 {
-    public class IATKRuntime : MonoBehaviour
+    public class RealtimeDataDemo : MonoBehaviour
     {
         // Start is called before the first frame update
         int n;
@@ -22,7 +22,7 @@ namespace IATKExt
         ViewBuilder vb;
         GameObject visGo = null;
         Visualisation vis = null;
-        RealTimeDataSource rtds = null;
+        RealtimeDataSource rtds = null;
 
         bool isVisReady = false;
 
@@ -42,7 +42,7 @@ namespace IATKExt
         {
             //create DataSource
             var rtdsGo = new GameObject("TestRTDS");
-            rtds = rtdsGo.AddComponent<RealTimeDataSource>();
+            rtds = rtdsGo.AddComponent<RealtimeDataSource>();
 
             //Add Dimension
             rtds.AddDimension("DimA", 0, 100);
