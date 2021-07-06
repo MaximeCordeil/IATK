@@ -20,9 +20,11 @@ namespace IATK
         private List<int> lastIndices = new List<int>();
 
         //do we need that
+        
         private Dictionary<string, Dictionary<int, string>> textualDimensionsList =
             new Dictionary<string, Dictionary<int, string>>();
-
+        private Dictionary<string, Dictionary<string, int>> textualDimensionsListReverse = 
+            new Dictionary<string, Dictionary<string, int>>();
 
         private float[] GetDefaultArray()
         {
@@ -32,6 +34,31 @@ namespace IATK
                 dataArray[i] = 0;
             }
             return dataArray;
+        }
+
+        public void AddStringDimension(string dimensionName)
+        {
+            if (!textualDimensionsList.ContainsKey(dimensionName))
+            {
+                textualDimensionsList.Add(dimensionName, new Dictionary<int, string>());
+                textualDimensionsListReverse.Add(dimensionName, new Dictionary<string, int>());
+                
+                var metaData = new DimensionData.Metadata();
+                metaData.type = DataType.String; //maybe make that adjustable
+                metaData.minValue = 0;
+                metaData.maxValue = dimensionSizeLimit;
+                int newIndex = dimensionData.Count;
+
+                var dataArray = GetDefaultArray();
+                dimenstionDataArrays.Add(dataArray);
+                lastIndices.Add(0);
+
+                var dd = new DimensionData(dimensionName, newIndex, metaData);
+                dd.setData(dataArray, textualDimensionsList);
+                dimensionData.Add(dd);
+                dataCount = dimensionSizeLimit;
+                Debug.Log("AddDimension => " + dd.Identifier + ", " + dd.Index);
+            }
         }
 
         public void AddDimension(string dimensionName, float minVal, float maxVal)
@@ -46,6 +73,13 @@ namespace IATK
             metaData.maxValue = maxVal;
             metaData.type = DataType.Float; //maybe make that adjustable
             int newIndex = dimensionData.Count;
+
+            //for testing
+            if (!textualDimensionsList.ContainsKey(dimensionName))
+            {
+                textualDimensionsList.Add(dimensionName, new Dictionary<int, string>());
+                textualDimensionsListReverse.Add(dimensionName, new Dictionary<string, int>());
+            }
 
             var dd = new DimensionData(dimensionName, newIndex, metaData);
             dd.setData(dataArray, textualDimensionsList);
@@ -93,12 +127,10 @@ namespace IATK
                 if (dd != null)
                 {
                     var index = dd.Index;
-
                     var nextIndex = GetNextIndexForDimensionAndInc(index);
-                    Debug.Log("AddDataByStr => " + dimensionName + ", " + index + ", " + val + ", " + nextIndex);
-
                     if (nextIndex >= 0)
                     {
+                        //data shift
                         for (var i = dimensionSizeLimit - 1; i >= 1; i--)
                         {
                             dd.Data[i] = dd.Data[i - 1];
@@ -110,14 +142,12 @@ namespace IATK
                         {
                             minV = val;
                             dirty = true;
-                            Debug.Log("XXXXXXXXXXXXXXXXXXXXXXXXX => new min = " + minV);
                         }
 
                         if (dd.MetaData.maxValue < val)
                         {
                             maxV = val;
                             dirty = true;
-                            Debug.Log("XXXXXXXXXXXXXXXXXXXXXXXXX => new max = " + maxV);
                         }
 
                         if (dirty)
@@ -135,11 +165,33 @@ namespace IATK
                         }
                     }
                 }
-            }catch(Exception e)
+            }
+            catch (Exception e)
             {
-                Debug.Log("XXXXXXXXXXXXXXXXXXXXXXXXX ERROR => " + e);
+                Debug.Log("AddDataByStr ERROR => " + e);
             }
             return dirty;
+        }
+
+        
+        public void AddStrDataByStr(string dimensionName, string val)
+        {
+            var dd = this[dimensionName];
+            if (dd != null)
+            {
+                var N = textualDimensionsList[dimensionName].Count;
+
+                if (!textualDimensionsList[dimensionName].ContainsKey(N))
+                {
+                    textualDimensionsList[dimensionName].Add(N, val);
+                }
+                if (!textualDimensionsListReverse.ContainsKey(val))
+                {
+                    textualDimensionsListReverse[dimensionName].Add(val, N);
+                }
+                var idx = (N) % dimensionSizeLimit;
+                dd.Data[idx] = idx;
+            }
         }
 
         public override DimensionData this[int index]
@@ -192,6 +244,13 @@ namespace IATK
         {
             DimensionData.Metadata meta = this[identifier].MetaData;
             float normValue = normaliseValue(normalisedValue, 0f, 1f, meta.minValue, meta.maxValue);
+
+            if (meta.type == DataType.String)
+            {
+                normValue = normaliseValue(valueClosestTo(this[identifier].Data, normalisedValue), 0f, 1f, meta.minValue, meta.maxValue);
+                return textualDimensionsList[this[identifier].Identifier][(int)normValue];  // textualDimensions[(int)normValue];
+            }
+
             return normValue;
         }
 
@@ -199,7 +258,30 @@ namespace IATK
         {
             DimensionData.Metadata meta = this[identifier].MetaData;
             float normValue = normaliseValue(normalisedValue, 0f, 1f, meta.minValue, meta.maxValue);
+
+            if (meta.type == DataType.String)
+            {
+                normValue = normaliseValue(valueClosestTo(this[identifier].Data, normalisedValue), 0f, 1f, meta.minValue, meta.maxValue);
+                return textualDimensionsList[this[identifier].Identifier][(int)normValue];  // textualDimensions[(int)normValue];
+            }
+
             return normValue;
+        }
+
+        //from CSVDAtasource
+        public float valueClosestTo(float[] collection, float target)
+        {
+            float closest_value = collection[0];
+            float subtract_result = Math.Abs(closest_value - target);
+            for (int i = 1; i < collection.Length; i++)
+            {
+                if (Math.Abs(collection[i] - target) < subtract_result)
+                {
+                    subtract_result = Math.Abs(collection[i] - target);
+                    closest_value = collection[i];
+                }
+            }
+            return closest_value;
         }
 
         //from CSVDataSource
@@ -234,12 +316,18 @@ namespace IATK
             DataSourceManager.register(this);
             if (!IsLoaded)
                 load();
+
+            //default init for realtime data
+            AddStringDimension("names");
+            AddStrDataByStr("names", "id");
         }
+
+
 
         // Start is called before the first frame update
         void Start()
         {
-
+            
         }
 
         // Update is called once per frame
