@@ -55,6 +55,7 @@ ehthumbs.db
 /[Ll]ibrary/
 sysinfo.txt
 *.stackdump
+UserSettings/
  
 # ============================================= #
 # Visual Studio / MonoDevelop / Rider generated #
@@ -86,4 +87,4 @@ ehthumbs.db
 # SerializedFields #
 # ================ #
 Assets/SerializedFields/
-Assets/StreamingAssets
+Assets/StreamingAssets/
