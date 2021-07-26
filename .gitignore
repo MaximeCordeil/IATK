@@ -45,7 +45,7 @@ sysinfo.txt
 .Trashes
 ehthumbs.db
 [Tt]humbs.db
-=======
+
 # =============== #
 # Unity generated #
 # =============== #
@@ -81,4 +81,9 @@ sysinfo.txt
 ehthumbs.db
 [Tt]humbs.db
 [Dd]esktop.ini
+
+# ================ #
+# SerializedFields #
+# ================ #
 Assets/SerializedFields/
+Assets/StreamingAssets/SerializedFields/
