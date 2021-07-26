@@ -18,6 +18,8 @@ sysinfo.txt
 /Assets/OvrAvatar/
 /Assets/Plugins/
 /Assets/MetaSDK/
+/Assets/Mapbox/
+/Assets/Mapbox.meta
 
 # ============================================= #
 # Visual Studio / MonoDevelop / Rider generated #
