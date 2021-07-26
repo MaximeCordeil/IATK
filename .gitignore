@@ -59,6 +59,7 @@ UserSettings/
 AssetImportWorker*
 shadercompiler-AssetImportWorker*
 shadercompiler-UnityShaderCompiler*
+/Logs/ApiUpdaterCheck.txt
  
 # ============================================= #
 # Visual Studio / MonoDevelop / Rider generated #
@@ -89,6 +90,6 @@ ehthumbs.db
 # ================= #
 # Serialized Fields #
 # ================= #
-Assets/SerializedFields/
-Assets/StreamingAssets/
-Assets/StreamingAssets.meta
+/Assets/SerializedFields/
+/Assets/StreamingAssets/
+/Assets/StreamingAssets.meta
