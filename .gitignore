@@ -56,6 +56,9 @@ ehthumbs.db
 sysinfo.txt
 *.stackdump
 UserSettings/
+AssetImportWorker*
+shadercompiler-AssetImportWorker*
+shadercompiler-UnityShaderCompiler*
  
 # ============================================= #
 # Visual Studio / MonoDevelop / Rider generated #
@@ -83,8 +86,9 @@ ehthumbs.db
 [Tt]humbs.db
 [Dd]esktop.ini
 
-# ================ #
-# SerializedFields #
-# ================ #
+# ================= #
+# Serialized Fields #
+# ================= #
 Assets/SerializedFields/
 Assets/StreamingAssets/
+Assets/StreamingAssets.meta
