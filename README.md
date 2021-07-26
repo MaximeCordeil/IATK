@@ -33,9 +33,9 @@ The actual tutorial starts at 01:12
 
 ***IATK works on Windows machines -  Mac users please [install bootcamp](https://support.apple.com/en-au/HT201468)***
 
-Setup a VR scene with the Oculus Rift in Unity: https://www.youtube.com/watch?v=psPVNddjgGw&t
+Setup a VR scene with the Oculus Rift in Unity: https://www.youtube.com/watch?v=psPVNddjgGw
 
-Setup a VR scene with the HTC Vive in Unity: https://www.youtube.com/watch?v=tyFV9oBReqg&list=RDtyFV9oBReqg&start_radio=1
+Setup a VR scene with the HTC Vive in Unity: https://www.youtube.com/watch?v=tyFV9oBReqg
 
 Our repository contains sample datasets. Come with your CSV data to the tutorial if you want to give it a go!
 
