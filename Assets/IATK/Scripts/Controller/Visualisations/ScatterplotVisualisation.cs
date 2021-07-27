@@ -147,7 +147,7 @@ namespace IATK
                         }
                         else
                         {
-                            if (viewList[0] != null && visualisationReference?.dataSource[visualisationReference?.xDimension.Attribute]?.Data != null)
+                            if (viewList[0] != null && visualisationReference?.dataSource[visualisationReference?.xDimension?.Attribute]?.Data != null)
                             {
                                 viewList[0].UpdateXPositions(visualisationReference.dataSource[visualisationReference.xDimension.Attribute].Data);
                             }

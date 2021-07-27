@@ -170,8 +170,13 @@ namespace IATK
 
         private string ConfigurationFileName()
         {
+#if UNITY_UWP || UNITY_WSA || UNITY_WSA_10_0
+            string PathName = Application.persistentDataPath + Path.DirectorySeparatorChar + serializedObjectPath;
+            return PathName + Path.DirectorySeparatorChar + visualisationReference.uid + ".json";
+#else
             string PathName = Application.streamingAssetsPath + Path.DirectorySeparatorChar + serializedObjectPath;
             return PathName + Path.DirectorySeparatorChar + visualisationReference.uid + ".json";
+#endif
         }
 
         /// <summary>
