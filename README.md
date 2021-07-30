@@ -1,4 +1,4 @@
-# IATK 1.0 (Mala): Immersive Analytics Toolkit 
+# IATK 1.0 (Mala): Immersive Analytics Toolkit
 <img align="left" width="390" alt="2dscatterplot" src=https://user-images.githubusercontent.com/11532065/46409367-9bd0c500-c758-11e8-9485-c92d532d97b8.jpg> **IATK: Immersive Analytics Toolkit** is a Unity project to help you build **high quality**, **interactive** and **scalable** **data visualisations** in **Immersive Environments (Virtual/Augmented Reality)**. Use the *Visualisation* script to create data visualisations interactively in the editor, press play and view and interact with your data in V/AR. Write simple code to use the *IATK* core graphics components to make your own interactive visualisations programitcally.
 <!-- With IATK, load CSV/TSV files and write simple code using the library to create immersive data visualisations.
 %IATK provides a *Visualisation* script to help you create and design visualizations within the Unity editor -->
@@ -51,39 +51,39 @@ IATK has a number of predefined, controlable data visualisation templates that a
 
 Create a **Visualisation** object (right click in the hierarchy, IATK/Visualisation). Drag and drop a **Data Source** object in the *Data Source* field of the Visualisation object. You are now ready to design a data visualisation with the following templates:
 
-- Simple visualisation: 
+- Simple visualisation:
   * 2D/3D scatterplots
-  
+
  <img height="200" alt="2dscatterplot" src=https://user-images.githubusercontent.com/11532065/46408763-8eb2d680-c756-11e8-813f-e3114a63215d.png> <img height="200" alt="3dscatterplot" src=https://user-images.githubusercontent.com/11532065/46408760-89ee2280-c756-11e8-9fa2-add36ce6bdda.png>
- 
+
   * 2D/3D barcharts
-  
+
  <img height="200" alt="2dbarchart" src=https://user-images.githubusercontent.com/11532065/46408758-89ee2280-c756-11e8-8d18-b1a6a5997276.png> <img height="200" alt="3dbarchart" src=https://user-images.githubusercontent.com/11532065/46408759-89ee2280-c756-11e8-99e6-8ea0339d1b7d.png>
- 
+
   * 2D/3D trails/trajectories (use linkning field to bind a *linking attribute*)
-  
-  <img height="200" alt="3dsparklines" src=  https://user-images.githubusercontent.com/11532065/46444864-4677d080-c7b7-11e8-9b54-9f7191841c51.JPG > <img height="200" alt="3dsparklines" src=https://user-images.githubusercontent.com/11532065/46444863-45df3a00-c7b7-11e8-88ef-b88cad461efa.JPG> <img height="200"  alt="3dsparklines" src=https://user-images.githubusercontent.com/11532065/46444862-45df3a00-c7b7-11e8-8168-4c3d81047730.JPG> 
-  
+
+  <img height="200" alt="3dsparklines" src=  https://user-images.githubusercontent.com/11532065/46444864-4677d080-c7b7-11e8-9b54-9f7191841c51.JPG > <img height="200" alt="3dsparklines" src=https://user-images.githubusercontent.com/11532065/46444863-45df3a00-c7b7-11e8-88ef-b88cad461efa.JPG> <img height="200"  alt="3dsparklines" src=https://user-images.githubusercontent.com/11532065/46444862-45df3a00-c7b7-11e8-8168-4c3d81047730.JPG>
+
   * 2D/3D Connnected dots (use linking field to bind a *linking attribute*)
-  
+
   <img height="200" alt="3dsparklines" src=  https://user-images.githubusercontent.com/11532065/46441718-b9c71580-c7aa-11e8-8c80-3b0d1122f078.JPG > <img height="200" alt="3dsparklines" src=https://user-images.githubusercontent.com/11532065/46408616-0a605380-c756-11e8-93d9-e0ec49b3b2a7.png>
-  
+
 - Parallel Coordinates Plots (PCPs):
 
-<img alt="parallelcoord" src=https://user-images.githubusercontent.com/11532065/46409268-43012c80-c758-11e8-9484-3fc9a7ecd783.JPG> 
+<img alt="parallelcoord" src=https://user-images.githubusercontent.com/11532065/46409268-43012c80-c758-11e8-9484-3fc9a7ecd783.JPG>
 
 - Scatterplot Matrix
   - 2D Scatterplot Matrix
-  
+
   <img height="200" alt="3dsplom" src=https://user-images.githubusercontent.com/11532065/46442039-bda76780-c7ab-11e8-829a-3becf85efcf4.JPG>
-  
+
   - 3D Scatterplot Matrix
-  
+
   <img height="200" alt="3dsplom" src=https://user-images.githubusercontent.com/11532065/46408791-a9854b00-c756-11e8-8c05-21ce94e2f463.png> <img height="200" alt="3dsplomcloseup" src=https://user-images.githubusercontent.com/11532065/46442262-5b029b80-c7ac-11e8-8abc-beeda5040efa.JPG> <img height="200" alt="3dsplomcloseup" src=https://user-images.githubusercontent.com/11532065/46408792-aa1de180-c756-11e8-9fb8-5f92e5b0fa9e.png>
 
 ### Visualisation designer in the Unity Editor
 
-<!--<p align="center"> 
+<!--<p align="center">
 </p> -->
 
 <img align="left" width="280" alt="3dsparklines" src=  https://user-images.githubusercontent.com/11532065/46445150-acb12300-c7b8-11e8-98b1-22cd2f1eba65.png>  The visualisation component allows the design of the visualisation inside the Unity Editor. Visual variables can be attached to data dimension attributes.
@@ -99,12 +99,12 @@ Create a **Visualisation** object (right click in the hierarchy, IATK/Visualisat
 
 ### Linked Visualisations
 
-<img width="280" alt="3dsparklines" src=  https://user-images.githubusercontent.com/11532065/46444861-4546a380-c7b7-11e8-99a6-3e90300cac71.JPG> <img width="280" alt="3dsparklines" src= https://user-images.githubusercontent.com/11532065/46445099-7e334800-c7b8-11e8-962d-747c236c1fe4.JPG> 
+<img width="280" alt="3dsparklines" src=  https://user-images.githubusercontent.com/11532065/46444861-4546a380-c7b7-11e8-99a6-3e90300cac71.JPG> <img width="280" alt="3dsparklines" src= https://user-images.githubusercontent.com/11532065/46445099-7e334800-c7b8-11e8-962d-747c236c1fe4.JPG>
 
 Create visual links between two visualisations (right click IATK>LinkedVisualisation). Drag and drop two visualisations objects (source,target) into the *Linked Visualisation* component. Set the ShowLinks (true/false) variable to show/hide the links between the 2 visualisations.
 
 ### Brushing and Linking
-<img align = "left" width="280" alt="brushinglinking" src="https://user-images.githubusercontent.com/11532065/46593142-3e03fa80-cb15-11e8-8fe0-bc56d62c10af.PNG"> It is easy to setup brushing and linking visualisations with IATK. First create a *BrushingAndLinking* object (right click in hierarchy, IATK>Brushing And Linking). 
+<img align = "left" width="280" alt="brushinglinking" src="https://user-images.githubusercontent.com/11532065/46593142-3e03fa80-cb15-11e8-8fe0-bc56d62c10af.PNG"> It is easy to setup brushing and linking visualisations with IATK. First create a *BrushingAndLinking* object (right click in hierarchy, IATK>Brushing And Linking).
 You now have to drag and drop a *Visualisation* object that will act as the brush controller: the Brushing Visualisation. Then drag and drop how many visualisations you wish to link to this brushing visualisation in the Brushed Visualisations list. You can also attach a *Linked Visualisation* object to show highlights of the brushed data. The visual elements brushed (by attaching *Transforms* into Input1 and Input2) in the Brushing Visualisation will be highlighted in the Brushed Visualisations and the Brushed Linked Visualisations.
 
 <!--Define a Brushing visualisation and a list of Brushed visualisation. Define the input shape and the color of the brush. -->
@@ -145,7 +145,7 @@ Once you have built a View object with the Viewbuilder, you can change the view 
 ### Graphics toolkit
 The toolkit contains facilities to create high quality graphics dsigned for data visualisation in Virtual and Augmented Reality. The IATK core graphics tools include:
 
-- a **BigMesh** script that allows the creation of visualisations 
+- a **BigMesh** script that allows the creation of visualisations
 - several **shaders** to render a lot of data rapidly and efficiently, and custom graphics for data visualisations (thick lines, dots/spheres, cubes/bars)
 - a selection tool (brushing) that enables the selection of data accross several data visualizations.
 
@@ -161,8 +161,8 @@ ViewBuilder vb = new ViewBuilder (MeshTopology.Points, "Uber pick up point visua
                      setDataDimension(csvds["Lon"].Data, ViewBuilder.VIEW_DIMENSION.Z).
                      setSize(csvds["Base"].Data).
                      setColors(csvds["Time"].Data.Select(x => g.Evaluate(x)).ToArray());
-                     
-// use the IATKUtil class to get the corresponding Material mt 
+
+// use the IATKUtil class to get the corresponding Material mt
 Material mt = IATKUtil.GetMaterialFromTopology(AbstractVisualisation.GeometryType.Points);
 mt.SetFloat("_MinSize", 0.01f);
 mt.SetFloat("_MaxSize", 0.05f);
@@ -170,10 +170,144 @@ mt.SetFloat("_MaxSize", 0.05f);
 // create a view builder with the point topology
 View view = vb.updateView().apply(gameObject, mt);
 ```
+## IATK Replicator
+The `Replicator` adds functionality to replicate a visualization either within the same application or to any other target. Depending on the distribution channel uni- and bidirectional connections are realizeable in either *1:1*, *1:n* or *m:n* setups. The core of the replication functionality is the `Replicator` class, which enables to produce and consume replications.
+
+![Realtime DataSource showcase 1](iatkrunner/iatkreplicator.jpg)
+Here we see to users using a Hololens each and consuming visualizations. The left one is in control of the repliques, whereas the right one receives the updates. ***Blue*** showns the prime visualization with its controls (MRTK). ***Green*** shows a local replique which behaves the same as remote repliques do. ***Yellow*** shows a replique consume by different user running on a different device running a different application with an active `Replicator`.
+
+### Initialization
+The `Replicator` class has to be added to a GameObject and its hooks have to be setuo.
+
+### Callback hooks
+To enable replication for visualizations, we have to propagate functions hooks which are then internally passed on to the visualization.
+
+  - `Publish` is called whenever a vis is called with `string id` and `string payload`. It should implement the distribtution method e.g. send over network.
+  - `PublishDatasource` is called whenever a datasource is changed or updated (e.g. dimension is added) with `string id` and `string payload`. It should implement the distribtution method e.g. send over network.
+  - `GetStreamData` is called when new data is received over the distribution channel (e.g. network). The first parameter takes the `string id` and the second is the internal data-parsing function of the replicator which can either be directly executed or passed on as callback.
+  - `NewVisSpawnNotification` is called whenever a replique is spawned with the parameter `string gameObjectName`.
+
+
+```csharp
+public Func<string, string, string> Publish = null;
+public Func<string, string, string> PublishDatasource = null;
+public Func<string, Func<string, string, string>, string> GetStreamData = null;
+public Func<string, string> NewVisSpawnNotification = null;
+```
+For a closer look please check `Replicator.cs` and `ReplicatorTest.cs`.
+
+***Hook implementation examples from `ReplicatorTest.cs`:***
+```csharp
+public string PublishImple(string id, string payload)
+{
+    string topic = "rr/vis/replication/" + id + "/view";
+    Vizario.MQTTManager.Publish(topic, payload);
+    return topic;
+}
+```
+```csharp
+public string PublishDatasourceImple(string id, string payload)
+{
+    string topic = "rr/vis/replication/" + id + "/ds";
+    Vizario.MQTTManager.Publish(topic, payload);
+    return topic;
+}
+```
+```csharp
+public string GetStreamData(string uri, Func<string, string, string> OnNewData)
+{
+    Vizario.MQTTManager.Subscribe(uri);
+    Vizario.MQTTManager.RegisterCallbackTopicCs(OnNewData, uri);
+    return "";
+}
+```
+```csharp
+public string GetStreamData(string uri, Func<string, string, string> OnNewData)
+{
+    Vizario.MQTTManager.Subscribe(uri);
+    Vizario.MQTTManager.RegisterCallbackTopicCs(OnNewData, uri);
+    return "";
+}
+```
+```csharp
+public string SpawnNot(string goName) {
+    var go = GameObject.Find(goName);
+    go.transform.parent = Camera.main.transform;        
+    return "";
+}
+```
+
+### Replicating a visualizations
+If everything is setup, a visualization can be replicated by adding it to the replicator. Once done, it is published over the distribution channel and consumed on any other `Replicator` connected to the channel (it can also be the same Replicator to create a synced copy of vis within the same application). This will sync the vis but not its data, which allows to perform style transfer, but the use with independent data. On the other hand, we can also sync Datasource with its dimensions by adding it with its visualization id to the replicator. (***NOTE: currently this only works for RealtimeDataSources with streaming data from external sources, where only the address of the streaming source has to be shared***)
+
+***Adding a visualization example:***
+```csharp
+public void StartReplication()
+{
+    if (vis == null)
+    {
+        return;
+    }
+
+    if (vis.uid.Length > 0 && repl != null)
+    {
+        repl.AddVisToReplicate(vis.uid, vis, false);
+        repl.AddDataSourceDef(vis.uid, "telemetry/inffeld16/2nd/id2068/littleserver/RJ45/#", "", "bandwidth_Mbps");
+        repl.AddDataSourceDef(vis.uid, "telemetry/inffeld16/2nd/id2068/bigserver/RJ45/#", "", "inbound_Mbps");
+    }
+}
+```
+
+***Receiving and consuming replication:***
+```csharp
+public void ListenForReplicationUpdates()
+{
+    string t = "rr/vis/replication/#";
+    Vizario.MQTTManager.Subscribe(t);
+    Vizario.MQTTManager.RegisterCallbackTopicCs(
+        (string topic, string payload) =>
+        {
+            Debug.Log("ListenForReplicationUpdates => topic:" + topic + ", payload:" + payload);
+
+            string uid = null;
+            var parts = topic.Split('/');
+            var plType = parts[parts.Length - 1];
+
+            if (parts.Length > 1)
+            {
+                uid = parts[parts.Length - 2];
+            }
+
+            Debug.Log("ListenForReplicationUpdates plType=" + plType + ", uid=" + uid);
+
+            if (plType == "view" && uid != null && uid.Length > 0)
+            {
+                //create vis replication from payload
+                Debug.Log("ListenForReplicationUpdates updating repliques ...");
+                repl.UpdateRepliques(uid, payload);
+            }
+
+            if (plType == "ds" && uid != null && uid.Length > 0)
+            {
+                //create datasource from payload connected to a vis
+                Debug.Log("ListenForReplicationUpdates updating repliques ...");
+                repl.UpdateDatasource(uid, payload);
+            }
+            return topic;
+        }, t);
+}
+```
+
+### Open tasks and issues
+- add support for other data datasources (e.g. `CSVDatasource`)
+- buggy bidirectional sync might cause and change-apply update loop
+- `Replicator::SyncVis` might have some bug when applying change vis parameters to a replique.
+- Snyc of location information e.g. placement at the same postion when colocated.
+
 ## Known issues
 IATK is a prototype for research and there are known issues that we will fix in the near future.
 
-- unrecognised symbols in data source can break the scripts 
+- unrecognised symbols in data source can break the scripts
 - scatterplot matrices can be slow due to the amount of points to display (if you have a very large dataset and a lot of dimension, scatetrplot matrices will be slow)
 
 ## Roadmap
