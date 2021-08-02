@@ -174,10 +174,10 @@ View view = vb.updateView().apply(gameObject, mt);
 The `Replicator` adds functionality to replicate a visualization either within the same application or to any other target. Depending on the distribution channel uni- and bidirectional connections are realizeable in either *1:1*, *1:n* or *m:n* setups. The core of the replication functionality is the `Replicator` class, which enables to produce and consume replications.
 
 ![Realtime DataSource showcase 1](iatkrunner/iatkreplicator.jpg)
-Here we see to users using a Hololens each and consuming visualizations. The left one is in control of the repliques, whereas the right one receives the updates. ***Blue*** showns the prime visualization with its controls (MRTK). ***Green*** shows a local replique which behaves the same as remote repliques do. ***Yellow*** shows a replique consume by different user running on a different device running a different application with an active `Replicator`.
+Here we see to users using a Hololens each and consuming visualizations. The left one is in control of the replicas, whereas the right one receives the updates. ***Blue*** showns the prime visualization with its controls (MRTK). ***Green*** shows a local replica which behaves the same as remote replicas do. ***Yellow*** shows a replica consume by different user running on a different device running a different application with an active `Replicator`.
 
 ### Initialization
-The `Replicator` class has to be added to a GameObject and its hooks have to be setuo.
+The `Replicator` class has to be added to a GameObject and its hooks have to be setup.
 
 ### Callback hooks
 To enable replication for visualizations, we have to propagate functions hooks which are then internally passed on to the visualization.
@@ -185,7 +185,7 @@ To enable replication for visualizations, we have to propagate functions hooks w
   - `Publish` is called whenever a vis is called with `string id` and `string payload`. It should implement the distribtution method e.g. send over network.
   - `PublishDatasource` is called whenever a datasource is changed or updated (e.g. dimension is added) with `string id` and `string payload`. It should implement the distribtution method e.g. send over network.
   - `GetStreamData` is called when new data is received over the distribution channel (e.g. network). The first parameter takes the `string id` and the second is the internal data-parsing function of the replicator which can either be directly executed or passed on as callback.
-  - `NewVisSpawnNotification` is called whenever a replique is spawned with the parameter `string gameObjectName`.
+  - `NewVisSpawnNotification` is called whenever a replica is spawned with the parameter `string gameObjectName`.
 
 
 ```csharp
@@ -283,14 +283,14 @@ public void ListenForReplicationUpdates()
             if (plType == "view" && uid != null && uid.Length > 0)
             {
                 //create vis replication from payload
-                Debug.Log("ListenForReplicationUpdates updating repliques ...");
-                repl.UpdateRepliques(uid, payload);
+                Debug.Log("ListenForReplicationUpdates updating replicas ...");
+                repl.UpdateReplicas(uid, payload);
             }
 
             if (plType == "ds" && uid != null && uid.Length > 0)
             {
                 //create datasource from payload connected to a vis
-                Debug.Log("ListenForReplicationUpdates updating repliques ...");
+                Debug.Log("ListenForReplicationUpdates updating replicas ...");
                 repl.UpdateDatasource(uid, payload);
             }
             return topic;
@@ -301,7 +301,7 @@ public void ListenForReplicationUpdates()
 ### Open tasks and issues
 - add support for other data datasources (e.g. `CSVDatasource`)
 - buggy bidirectional sync might cause and change-apply update loop
-- `Replicator::SyncVis` might have some bug when applying change vis parameters to a replique.
+- `Replicator::SyncVis` might have some bug when applying change vis parameters to a replica.
 - Snyc of location information e.g. placement at the same postion when colocated.
 
 ## Known issues

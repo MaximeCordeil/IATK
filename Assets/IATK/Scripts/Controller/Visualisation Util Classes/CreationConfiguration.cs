@@ -84,13 +84,27 @@ namespace IATK {
             VisualisationWidth = cf.VisualisationWidth;
             VisualisationHeight = cf.VisualisationHeight;
             VisualisationDepth = cf.VisualisationDepth;
-            
-            File.WriteAllText(serializedObjectPath, JsonUtility.ToJson(this));
+
+            //added for replication hook
+            this.UID = cf.uid;
+            if (cf.ReplicationNotification != null) {
+                cf.ReplicationNotification?.Invoke(cf.uid, JsonUtility.ToJson(this));
+            }
+
+            if (serializedObjectPath.Length > 0)
+            {
+                File.WriteAllText(serializedObjectPath, JsonUtility.ToJson(this));
+            }
         }
 
         public void DeSerialize(string serializedObjectPath, CreationConfiguration cf)
         {
-            SerializableCreationConfiguration scc = JsonUtility.FromJson<SerializableCreationConfiguration>(File.ReadAllText(serializedObjectPath));
+            string json = File.ReadAllText(serializedObjectPath);
+            DeSerializeJson(json, cf);
+        }
+        public void DeSerializeJson(string json, CreationConfiguration cf)
+        {
+            SerializableCreationConfiguration scc = JsonUtility.FromJson<SerializableCreationConfiguration>(json);
 
             cf.VisualisationType = (AbstractVisualisation.VisualisationTypes)System.Enum.Parse(typeof(AbstractVisualisation.VisualisationTypes), scc.VisualisationType);
 
@@ -147,6 +161,16 @@ namespace IATK {
             Y,
             Z
         }
+        
+        //added report to replication function
+        public Func<string, string, string> ReplicationNotification = null;
+        public string uid;
+
+        public void SetReplicationCallback(string uid, Func<string, string, string> fct)
+        {
+            this.uid = uid;
+            ReplicationNotification = fct;
+        }
 
         public AbstractVisualisation.VisualisationTypes VisualisationType { get; set; }       // The type of the visualisation
 
@@ -193,10 +217,14 @@ namespace IATK {
         /// <param name="pathObjectToSerialize"></param>
         public void Deserialize(string pathObjectToSerialize)
         {
-
             SerializableCreationConfiguration scc = new SerializableCreationConfiguration();
-
             scc.DeSerialize(pathObjectToSerialize, this);
+        }
+
+        public void DeserializeJson(string json)
+        {
+            SerializableCreationConfiguration scc = new SerializableCreationConfiguration();
+            scc.DeSerializeJson(json, this);
         }
 
         /// <summary>

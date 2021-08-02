@@ -216,6 +216,11 @@ namespace IATK
         public void updateView(AbstractVisualisation.PropertyType propertyType)
         {
             theVisualizationObject.CreateVisualisation();// UpdateVisualisation(propertyType);
+
+            //replicator: populate update
+            if (theVisualizationObject.creationConfiguration?.ReplicationNotification != null) {
+                theVisualizationObject.creationConfiguration?.ReplicationNotification(uid, "");
+            }
         }
         
         /// <summary>

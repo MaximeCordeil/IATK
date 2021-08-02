@@ -322,6 +322,14 @@ namespace IATK
             AddStrDataByStr("names", "id");
         }
 
+        public void AddDefaultIdDimension()
+        {
+            AddDimension("id", 0, 100);
+            for(var i = 0; i < dimensionSizeLimit; i++)
+            {
+                AddDataByStr("id", i);
+            }
+        }
 
 
         // Start is called before the first frame update
