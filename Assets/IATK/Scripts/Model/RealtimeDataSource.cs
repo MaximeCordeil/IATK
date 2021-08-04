@@ -187,26 +187,35 @@ namespace IATK
         /// <returns>True if successfully set, false otherwise</returns>
         public bool SetData(string dimensionName, string val)
         {
-            var dd = this[dimensionName];
-            if (dd == null || dd.MetaData.type != DataType.String) return false;
-
-            // TODO: Find a better solution than shifting the data,
-            //       perhapse have a var for the current item being replaced that loops around
-            //data shift
-            for (var i = dimensionSizeLimit - 1; i >= 1; i--)
+            try
             {
-                dd.Data[i] = dd.Data[i - 1];
-            }
+                var dd = this[dimensionName];
+                if (dd == null || dd.MetaData.type != DataType.String) return false;
 
-            if (!textualDimensionsListReverse[dimensionName].ContainsKey(val))
+                // TODO: Find a better solution than shifting the data,
+                //       perhapse have a var for the current item being replaced that loops around
+                //data shift
+                for (var i = dimensionSizeLimit - 1; i >= 1; i--)
+                {
+                    dd.Data[i] = dd.Data[i - 1];
+                }
+
+                if (!textualDimensionsListReverse[dimensionName].ContainsKey(val))
+                {
+                    int N = textualDimensionsList[dimensionName].Count;
+                    textualDimensionsList[dimensionName].Add(N, val);
+                    textualDimensionsListReverse[dimensionName].Add(val, N);
+                }
+
+                int idx = textualDimensionsListReverse[dimensionName][val];
+                dd.Data[idx] = idx;
+
+                return true;
+            }
+            catch (Exception e)
             {
-                int N = textualDimensionsList[dimensionName].Count;
-                textualDimensionsList[dimensionName].Add(N, val);
-                textualDimensionsListReverse[dimensionName].Add(val, N);
+                Debug.Log("SetData ERROR => " + e);
             }
-
-            int idx = textualDimensionsListReverse[dimensionName][val];
-            dd.Data[idx] = idx;
 
             return false;
         }
