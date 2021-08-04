@@ -45,18 +45,18 @@ namespace IATKTest
             rtds = rtdsGo.AddComponent<RealtimeDataSource>();
 
             //Add Dimension
-            rtds.AddDimension("DimA", 0, 100);
-            rtds.AddDimension("DimB", 0, 100);
-            rtds.AddDimension("DimC", 0, 100);
-            rtds.AddDimension("DimD", 0, 100);
+            rtds.AddDimension("xDim", 0, 100);
+            rtds.AddDimension("yDim", 0, 100);
+            rtds.AddDimension("zDim", 0, 100);
+            rtds.AddDimension("size", 0, 100);
 
-            rtds.AddDataByStr("DimA", 75f);
-            rtds.AddDataByStr("DimA", 50f);
-            rtds.AddDataByStr("DimA", 25f);
+            rtds.AddDataByStr("xDim", 75f);
+            rtds.AddDataByStr("xDim", 50f);
+            rtds.AddDataByStr("xDim", 25f);
 
-            rtds.AddDataByStr("DimB", 25f);
-            rtds.AddDataByStr("DimB", 20f);
-            rtds.AddDataByStr("DimB", 25f);
+            rtds.AddDataByStr("yDim", 25f);
+            rtds.AddDataByStr("yDim", 20f);
+            rtds.AddDataByStr("yDim", 25f);
 
             StartCoroutine(SimulPoints());
 
@@ -81,23 +81,23 @@ namespace IATKTest
                 }
 
                 vis.dataSource = rtds;
-                vis.xDimension = "DimA";
-                vis.yDimension = "DimB";
-                vis.zDimension = "DimC";
-                vis.sizeDimension = "DimD";
+                vis.xDimension = "xDim";
+                vis.yDimension = "yDim";
+                vis.zDimension = "zDim";
+                vis.sizeDimension = "size";
                 vis.CreateVisualisation(AbstractVisualisation.VisualisationTypes.SCATTERPLOT);
 
 
                 AbstractVisualisation abstractVisualisation = vis.theVisualizationObject;
 
                 // Axis
-                abstractVisualisation.visualisationReference.xDimension.Attribute = "DimA";
+                abstractVisualisation.visualisationReference.xDimension.Attribute = "xDim";
                 abstractVisualisation.UpdateVisualisation(AbstractVisualisation.PropertyType.X);
-                abstractVisualisation.visualisationReference.yDimension.Attribute = "DimB";
+                abstractVisualisation.visualisationReference.yDimension.Attribute = "yDim";
                 abstractVisualisation.UpdateVisualisation(AbstractVisualisation.PropertyType.Y);
-                abstractVisualisation.visualisationReference.zDimension.Attribute = "DimC";
+                abstractVisualisation.visualisationReference.zDimension.Attribute = "zDim";
                 abstractVisualisation.UpdateVisualisation(AbstractVisualisation.PropertyType.Z);
-                abstractVisualisation.visualisationReference.sizeDimension = "DimD";
+                abstractVisualisation.visualisationReference.sizeDimension = "size";
                 abstractVisualisation.UpdateVisualisation(AbstractVisualisation.PropertyType.OriginDimension);
 
                 vis.geometry = AbstractVisualisation.GeometryType.Bars;
@@ -119,10 +119,10 @@ namespace IATKTest
                 {
                     if (rtds)
                     {
-                        rtds.AddDataByStr("DimA", UnityEngine.Random.value * 100f);
-                        rtds.AddDataByStr("DimB", UnityEngine.Random.value * 100f);
-                        rtds.AddDataByStr("DimC", UnityEngine.Random.value * 100f);
-                        rtds.AddDataByStr("DimD", UnityEngine.Random.value * 100f);
+                        rtds.AddDataByStr("xDim", UnityEngine.Random.value * 100f);
+                        rtds.AddDataByStr("yDim", UnityEngine.Random.value * 100f);
+                        rtds.AddDataByStr("zDim", UnityEngine.Random.value * 100f);
+                        rtds.AddDataByStr("size", UnityEngine.Random.value * 100f);
                         if (isVisReady && vis != null)
                         {
 
