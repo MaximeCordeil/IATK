@@ -11,6 +11,7 @@ namespace IATK
     public class RealtimeDataSource : DataSource
     {
         private int dimensionSizeLimit = 100;
+        private bool isQuitting;
         private int dataCount;
 
         private List<DimensionData> dimensionData = new List<DimensionData>();
@@ -307,29 +308,36 @@ namespace IATK
             throw new System.NotImplementedException();
         }
 
-        private void Awake()
+        /// <summary>
+        /// Awake this instance.
+        /// </summary>
+        void Awake()
         {
             DataSourceManager.register(this);
+
             if (!IsLoaded)
                 load();
 
-            //default init for realtime data
-            AddStringDimension("names");
-            AddStrDataByStr("names", "id");
         }
 
-
-
-        // Start is called before the first frame update
-        void Start()
+        /// <summary>
+        /// Raises the destroy event.
+        /// </summary>
+        void OnDestroy()
         {
-            
+            if (!isQuitting)
+            {
+                DataSourceManager.unregister(this);
+            }
         }
 
-        // Update is called once per frame
-        void Update()
+        /// <summary>
+        /// Raises the application quit event.
+        /// </summary>
+        void OnApplicationQuit()
         {
-
+            isQuitting = true;
         }
+
     }
 }
