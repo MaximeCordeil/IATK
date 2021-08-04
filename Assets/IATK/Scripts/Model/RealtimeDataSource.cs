@@ -137,33 +137,6 @@ namespace IATK
                         dd.Data[i] = dd.Data[i - 1];
                     }
 
-                    // Question: This section is used to alter the min an max values if they do not fit,
-                    //  this kinda goes against the point of having a min and max value?
-                    // Question: Can we remove it?
-
-                    // var minV = dd.MetaData.minValue;
-                    // var maxV = dd.MetaData.minValue;
-                    // if (dd.MetaData.minValue > val)
-                    // {
-                    //     minV = val;
-                    //     dirty = true;
-                    // }
-
-                    // if (dd.MetaData.maxValue < val)
-                    // {
-                    //     maxV = val;
-                    //     dirty = true;
-                    // }
-
-                    // if (dirty)
-                    // {
-                    //     var metaData = new DimensionData.Metadata();
-                    //     metaData.minValue = minV;
-                    //     metaData.maxValue = maxV;
-                    //     metaData.type = DataType.Float; //maybe make that adjustable
-                    //     dd.setMetadata(metaData);
-                    // }
-
                     if (dd.MetaData.minValue <= val && dd.MetaData.maxValue >= val && dd.Data.Length > 0)
                     {
                         dd.Data[0] = normaliseValue(val, dd.MetaData.minValue, dd.MetaData.maxValue, 0f, 1f);
@@ -321,7 +294,7 @@ namespace IATK
 
         public override void load()
         {
-            //will be filled at runtime
+            // Do not need to load data at launch as the data will be loaded in at runtime
         }
 
         public override void loadHeader()
