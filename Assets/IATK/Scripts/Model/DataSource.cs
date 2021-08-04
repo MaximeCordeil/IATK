@@ -177,6 +177,13 @@ namespace IATK
         public abstract int getNumberOfCategories(string identifier);
 
         /// <summary>
+        /// Returns the number of unique values for a data dimensions
+        /// </summary>
+        /// <param name="identifier">Identifier/Name of the dimension</param>
+        /// <returns>The count of unique values in that dimension</returns>
+        public abstract int getNumberOfValuesInDimension(string identifier);
+
+        /// <summary>
         /// Load the header information for the data
         /// Available here so can be called in editor
         /// Post: The Identifier and Metadata.type values will be available for each dimension

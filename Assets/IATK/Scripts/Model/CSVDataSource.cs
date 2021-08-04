@@ -26,12 +26,6 @@ namespace IATK
         private Dictionary<string, Dictionary<int, string>> textualDimensionsList = new Dictionary<string, Dictionary<int, string>>();
         private Dictionary<string, Dictionary<string, int>> textualDimensionsListReverse = new Dictionary<string, Dictionary<string, int>>();
 
-        public Dictionary<string, Dictionary<string, int>> TextualDimensionsListReverse
-        {
-            get { return textualDimensionsListReverse; }
-            set { textualDimensionsListReverse = value; }
-        }
-
         public Dictionary<int, List<int>> GraphEdges = new Dictionary<int, List<int>>();
 
         private bool isQuitting;
@@ -732,6 +726,11 @@ namespace IATK
         //    }
         //    return values.Count;
         //}
+    
+        public override int getNumberOfValuesInDimension(string identifier)
+        {
+            return textualDimensionsList[identifier].Count;
+        }
     }
 
 }   // Namespace

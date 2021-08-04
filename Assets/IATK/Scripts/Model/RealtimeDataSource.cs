@@ -10,15 +10,16 @@ namespace IATK
 {
     public class RealtimeDataSource : DataSource
     {
+        /* 
+        The max amount of data that can be displayed at a single time,
+        will loop back around (replacing older data) when it goes over this limit
+        */ 
         private int dimensionSizeLimit = 100;
         private bool isQuitting;
         private int dataCount;
 
         private List<DimensionData> dimensionData = new List<DimensionData>();
-        private List<float[]> dimenstionDataArrays = new List<float[]>();
         private List<int> lastIndices = new List<int>();
-
-        //do we need that
         
         private Dictionary<string, Dictionary<int, string>> textualDimensionsList = new Dictionary<string, Dictionary<int, string>>();
         private Dictionary<string, Dictionary<string, int>> textualDimensionsListReverse = new Dictionary<string, Dictionary<string, int>>();
@@ -33,169 +34,196 @@ namespace IATK
             return dataArray;
         }
 
-        public void AddStringDimension(string dimensionName)
+        /// <summary>
+        /// Creates a dimension that can later have data set to it
+        /// </summary>
+        /// <param name="dimensionName">Sets the dimension name, used to identify the dimension (Must be unique).</param>
+        /// <param name="type">The data type of the dimension</param>
+        /// <returns>True if successfully added, false otherwise</returns>
+        public bool AddDimension(string dimensionName, DataType type = DataType.String)
         {
-            if (!textualDimensionsList.ContainsKey(dimensionName))
-            {
-                textualDimensionsList.Add(dimensionName, new Dictionary<int, string>());
-                textualDimensionsListReverse.Add(dimensionName, new Dictionary<string, int>());
-                
-                var metaData = new DimensionData.Metadata();
-                metaData.type = DataType.String; //maybe make that adjustable
-                metaData.minValue = 0;
-                metaData.maxValue = dimensionSizeLimit;
-                int newIndex = dimensionData.Count;
-
-                var dataArray = GetDefaultArray();
-                dimenstionDataArrays.Add(dataArray);
-                lastIndices.Add(0);
-
-                var dd = new DimensionData(dimensionName, newIndex, metaData);
-                dd.setData(dataArray, textualDimensionsList);
-                dimensionData.Add(dd);
-                dataCount = dimensionSizeLimit;
-                Debug.Log("AddDimension => " + dd.Identifier + ", " + dd.Index);
-            }
+            return AddDimension(dimensionName, 0, dimensionSizeLimit, type);
         }
 
-        public void AddDimension(string dimensionName, float minVal, float maxVal)
+        /// <summary>
+        /// Creates a dimension that can later have data set to it
+        /// </summary>
+        /// <param name="dimensionName">Sets the dimension name, used to identify the dimension (Must be unique).</param>
+        /// <param name="minVal">The minimum value the dimension can hold</param>
+        /// <param name="maxVal">The maximum value the dimension can hold</param>
+        /// <param name="type">The data type of the dimension</param>
+        /// <returns>True if successfully added, false otherwise</returns>
+        public bool AddDimension(string dimensionName, float minVal, float maxVal, DataType type = DataType.Float)
         {
-            var dataArray = GetDefaultArray();
-            dimenstionDataArrays.Add(dataArray);
+            // Don't add the dimension if it already exists
+            if (textualDimensionsList.ContainsKey(dimensionName)) return false;
+
             lastIndices.Add(0);
 
-            //what are categories?
             var metaData = new DimensionData.Metadata();
             metaData.minValue = minVal;
             metaData.maxValue = maxVal;
-            metaData.type = DataType.Float; //maybe make that adjustable
-            int newIndex = dimensionData.Count;
+            metaData.type = type;
 
-            //for testing
-            if (!textualDimensionsList.ContainsKey(dimensionName))
-            {
-                textualDimensionsList.Add(dimensionName, new Dictionary<int, string>());
-                textualDimensionsListReverse.Add(dimensionName, new Dictionary<string, int>());
-            }
+            int index = dimensionData.Count;
 
-            var dd = new DimensionData(dimensionName, newIndex, metaData);
-            dd.setData(dataArray, textualDimensionsList);
+            textualDimensionsList.Add(dimensionName, new Dictionary<int, string>());
+            textualDimensionsListReverse.Add(dimensionName, new Dictionary<string, int>());
+
+            var dd = new DimensionData(dimensionName, index, metaData);
+            dd.setData(GetDefaultArray(), textualDimensionsList);
             dimensionData.Add(dd);
-            //dataCount += dimensionSizeLimit;
+
             dataCount = dimensionSizeLimit;
+            
             Debug.Log("AddDimension => " + dd.Identifier + ", " + dd.Index);
+
+            return true;
         }
 
-        //This important for extern bindinds which might not support
-        //operator overloading or runtime reflection resolution
-        public void AddDataByIdnx(int index, float val)
+        /// <summary>
+        /// Sets a data value by index
+        /// </summary>
+        /// <param name="index">Index of dimension</param>
+        /// <param name="val">Value to set the dimension</param>
+        /// <returns>True if successfully set, false otherwise</returns>
+        public bool SetData(int index, float val)
         {
             if (index < dimensionData.Count)
             {
-                var nextIndex = GetNextIndexForDimensionAndInc(index);
-                if (nextIndex >= 0)
+                var dd = this[index];
+
+                if(dd.MetaData.type != DataType.Float) return false;
+
+                // TODO: Find a better solution than shifting the data,
+                //       perhapse have a var for the current item being replaced that loops around
+                //data shift
+                for (var i = dimensionSizeLimit - 1; i >= 1; i--)
                 {
-                    var dd = dimensionData[index];
-                    dd.Data[nextIndex] = normaliseValue(val, dd.MetaData.minValue, dd.MetaData.maxValue, 0f, 1f);
+                    dd.Data[i] = dd.Data[i - 1];
+                }
+
+                if (dd.MetaData.minValue <= val && dd.MetaData.maxValue >= val
+                    && dd.Data.Length > 0 && dd.MetaData.type == DataType.Float)
+                {
+                    dd.Data[0] = normaliseValue(val, dd.MetaData.minValue, dd.MetaData.maxValue, 0f, 1f);
+
+                    return true;
                 }
             }
+
+            return false;
         }
 
-        private int GetNextIndexForDimensionAndInc(int index)
+        /// <summary>
+        /// Sets a data value by dimension name (identifier)
+        /// </summary>
+        /// <param name="index">Name of dimension</param>
+        /// <param name="val">Value to set the dimension</param>
+        /// <returns>True if successfully set, false otherwise</returns>
+        public bool SetData(string dimensionName, float val)
         {
-            return 0;
-            if (index < lastIndices.Count)
-            {
-                var ret = lastIndices[index];
-                lastIndices[index] = (lastIndices[index] + 1) % dimensionSizeLimit;
-                return ret;
-            }
-            return -1;
-        }
-
-        //This important for extern bindinds which might not support
-        //operator overloading or runtime reflection resolution
-        public bool AddDataByStr(string dimensionName, float val)
-        {
-            var dirty = false;
             try
             {
                 var dd = this[dimensionName];
-                if (dd != null)
+                if (dd != null && dd.MetaData.type == DataType.Float)
                 {
-                    var index = dd.Index;
-                    var nextIndex = GetNextIndexForDimensionAndInc(index);
-                    if (nextIndex >= 0)
+                    // TODO: Find a better solution than shifting the data,
+                    //       perhapse have a var for the current item being replaced that loops around
+                    //data shift
+                    for (var i = dimensionSizeLimit - 1; i >= 1; i--)
                     {
-                        //data shift
-                        for (var i = dimensionSizeLimit - 1; i >= 1; i--)
-                        {
-                            dd.Data[i] = dd.Data[i - 1];
-                        }
+                        dd.Data[i] = dd.Data[i - 1];
+                    }
 
-                        var minV = dd.MetaData.minValue;
-                        var maxV = dd.MetaData.minValue;
-                        if (dd.MetaData.minValue > val)
-                        {
-                            minV = val;
-                            dirty = true;
-                        }
+                    // Question: This section is used to alter the min an max values if they do not fit,
+                    //  this kinda goes against the point of having a min and max value?
+                    // Question: Can we remove it?
 
-                        if (dd.MetaData.maxValue < val)
-                        {
-                            maxV = val;
-                            dirty = true;
-                        }
+                    // var minV = dd.MetaData.minValue;
+                    // var maxV = dd.MetaData.minValue;
+                    // if (dd.MetaData.minValue > val)
+                    // {
+                    //     minV = val;
+                    //     dirty = true;
+                    // }
 
-                        if (dirty)
-                        {
-                            var metaData = new DimensionData.Metadata();
-                            metaData.minValue = minV;
-                            metaData.maxValue = maxV;
-                            metaData.type = DataType.Float; //maybe make that adjustable
-                            dd.setMetadata(metaData);
-                        }
+                    // if (dd.MetaData.maxValue < val)
+                    // {
+                    //     maxV = val;
+                    //     dirty = true;
+                    // }
 
-                        if (dd.Data.Length > nextIndex && nextIndex >= 0)
-                        {
-                            dd.Data[nextIndex] = normaliseValue(val, dd.MetaData.minValue, dd.MetaData.maxValue, 0f, 1f);
-                        }
+                    // if (dirty)
+                    // {
+                    //     var metaData = new DimensionData.Metadata();
+                    //     metaData.minValue = minV;
+                    //     metaData.maxValue = maxV;
+                    //     metaData.type = DataType.Float; //maybe make that adjustable
+                    //     dd.setMetadata(metaData);
+                    // }
+
+                    if (dd.MetaData.minValue <= val && dd.MetaData.maxValue >= val && dd.Data.Length > 0)
+                    {
+                        dd.Data[0] = normaliseValue(val, dd.MetaData.minValue, dd.MetaData.maxValue, 0f, 1f);
+
+                        return true;
                     }
                 }
             }
             catch (Exception e)
             {
-                Debug.Log("AddDataByStr ERROR => " + e);
+                Debug.Log("SetData ERROR => " + e);
             }
-            return dirty;
+
+            return false;
         }
 
-        
-        public void AddStrDataByStr(string dimensionName, string val)
+        /// <summary>
+        /// Sets a data value by dimension name (identifier)
+        /// </summary>
+        /// <param name="index">Name of dimension</param>
+        /// <param name="val">Value to set the dimension</param>
+        /// <returns>True if successfully set, false otherwise</returns>
+        public bool SetData(string dimensionName, string val)
         {
             var dd = this[dimensionName];
-            if (dd != null)
-            {
-                var N = textualDimensionsList[dimensionName].Count;
+            if (dd == null || dd.MetaData.type != DataType.String) return false;
 
-                if (!textualDimensionsList[dimensionName].ContainsKey(N))
-                {
-                    textualDimensionsList[dimensionName].Add(N, val);
-                }
-                if (!textualDimensionsListReverse.ContainsKey(val))
-                {
-                    textualDimensionsListReverse[dimensionName].Add(val, N);
-                }
-                var idx = (N) % dimensionSizeLimit;
-                dd.Data[idx] = idx;
+            // TODO: Find a better solution than shifting the data,
+            //       perhapse have a var for the current item being replaced that loops around
+            //data shift
+            for (var i = dimensionSizeLimit - 1; i >= 1; i--)
+            {
+                dd.Data[i] = dd.Data[i - 1];
             }
+
+            if (!textualDimensionsListReverse[dimensionName].ContainsKey(val))
+            {
+                int N = textualDimensionsList[dimensionName].Count;
+                textualDimensionsList[dimensionName].Add(N, val);
+                textualDimensionsListReverse[dimensionName].Add(val, N);
+            }
+
+            int idx = textualDimensionsListReverse[dimensionName][val];
+            dd.Data[idx] = idx;
+
+            return false;
         }
 
+        /// <summary>
+        /// Gets the dimension data at the specified index.
+        /// </summary>
+        /// <param name="index">Index of dimension</param>
         public override DimensionData this[int index]
         {
             get { return dimensionData[index]; }
         }
 
+        /// <summary>
+        /// Gets the dimension data with the specified identifier.
+        /// </summary>
+        /// <param name="identifier">Identifier.</param>
         public override DimensionData this[string identifier]
         {
             get
@@ -244,8 +272,7 @@ namespace IATK
 
             if (meta.type == DataType.String)
             {
-                normValue = normaliseValue(valueClosestTo(this[identifier].Data, normalisedValue), 0f, 1f, meta.minValue, meta.maxValue);
-                return textualDimensionsList[this[identifier].Identifier][(int)normValue];  // textualDimensions[(int)normValue];
+                return textualDimensionsList[this[identifier].Identifier][(int)normalisedValue];
             }
 
             return normValue;
@@ -258,14 +285,13 @@ namespace IATK
 
             if (meta.type == DataType.String)
             {
-                normValue = normaliseValue(valueClosestTo(this[identifier].Data, normalisedValue), 0f, 1f, meta.minValue, meta.maxValue);
-                return textualDimensionsList[this[identifier].Identifier][(int)normValue];  // textualDimensions[(int)normValue];
+                return textualDimensionsList[this[identifier].Identifier][(int)normalisedValue];
             }
 
             return normValue;
         }
 
-        //from CSVDAtasource
+        //from CSVDataSource
         public float valueClosestTo(float[] collection, float target)
         {
             float closest_value = collection[0];
@@ -337,6 +363,11 @@ namespace IATK
         void OnApplicationQuit()
         {
             isQuitting = true;
+        }
+
+        public override int getNumberOfValuesInDimension(string identifier)
+        {
+            return textualDimensionsList[identifier].Count;
         }
 
     }
