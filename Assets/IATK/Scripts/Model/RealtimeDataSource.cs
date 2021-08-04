@@ -2,9 +2,7 @@
 //Philipp Fleck, ICG @ TuGraz, philipp.fleck@icg.tugraz.at
 //20210430, initial working version
 
-using IATK;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -21,10 +19,8 @@ namespace IATK
 
         //do we need that
         
-        private Dictionary<string, Dictionary<int, string>> textualDimensionsList =
-            new Dictionary<string, Dictionary<int, string>>();
-        private Dictionary<string, Dictionary<string, int>> textualDimensionsListReverse = 
-            new Dictionary<string, Dictionary<string, int>>();
+        private Dictionary<string, Dictionary<int, string>> textualDimensionsList = new Dictionary<string, Dictionary<int, string>>();
+        private Dictionary<string, Dictionary<string, int>> textualDimensionsListReverse = new Dictionary<string, Dictionary<string, int>>();
 
         private float[] GetDefaultArray()
         {

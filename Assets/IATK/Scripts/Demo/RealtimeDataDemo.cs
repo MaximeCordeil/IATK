@@ -27,14 +27,6 @@ namespace IATKTest
             rtds.AddDimension("zDim", 0, 100);
             rtds.AddDimension("sizeDim", 0, 100);
 
-            rtds.AddDataByStr("xDim", 75f);
-            rtds.AddDataByStr("xDim", 50f);
-            rtds.AddDataByStr("xDim", 25f);
-
-            rtds.AddDataByStr("yDim", 25f);
-            rtds.AddDataByStr("yDim", 20f);
-            rtds.AddDataByStr("yDim", 25f);
-
             //Add source to visualisation
             Visualisation vis = CreateVisFromSource(rtds);
 
