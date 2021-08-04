@@ -75,6 +75,11 @@ namespace IATKTest
 
         IEnumerator SimulateDataPoints(RealtimeDataSource rtds, Visualisation vis)
         {
+            rtds.SetData("stringDim", "One");
+            rtds.SetData("stringDim", "Two");
+            rtds.SetData("stringDim", "Three");
+            rtds.SetData("stringDim", "Four");
+
             Debug.Log("SimulateDataPoints...");
             while (true)
             {
@@ -86,8 +91,22 @@ namespace IATKTest
                         rtds.SetData("yDim", UnityEngine.Random.value * 100f);
                         rtds.SetData("zDim", UnityEngine.Random.value * 100f);
                         rtds.SetData("sizeDim", UnityEngine.Random.value * 100f);
+                        // rtds.SetData("stringDim", UnityEngine.Random.value > 0.5f ? "Yes" : "No");
 
-                        rtds.SetData("stringDim", UnityEngine.Random.value > 0.5f ? "Yes" : "No");
+                        switch (UnityEngine.Random.Range(1, 5)){
+                            case 1:
+                                rtds.SetData("stringDim", "One");
+                                break;
+                            case 2:
+                                rtds.SetData("stringDim", "Two");
+                                break;
+                            case 3:
+                                rtds.SetData("stringDim", "Three");
+                                break;
+                            case 4:
+                                rtds.SetData("stringDim", "Four");
+                                break;
+                        }
 
                         vis.updateView(0);
                     }

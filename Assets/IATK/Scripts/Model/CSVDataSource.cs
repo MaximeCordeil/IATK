@@ -726,11 +726,6 @@ namespace IATK
         //    }
         //    return values.Count;
         //}
-    
-        public override int getNumberOfValuesInDimension(string identifier)
-        {
-            return textualDimensionsList[identifier].Count;
-        }
     }
 
 }   // Namespace

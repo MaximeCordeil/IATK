@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 namespace IATK
 {
@@ -210,6 +211,10 @@ namespace IATK
                 int idx = textualDimensionsListReverse[dimensionName][val];
                 dd.Data[idx] = idx;
 
+                // Debug.Log("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-");
+                // Debug.Log("idx: " + idx);
+                // Debug.Log("dimensionName: " + dimensionName);
+
                 return true;
             }
             catch (Exception e)
@@ -248,7 +253,7 @@ namespace IATK
             }
         }
 
-        //can always be loaded since we fill it at runtime
+        // Can always be loaded since we fill it at runtime
         public override bool IsLoaded
         {
             get { return true; }
@@ -266,12 +271,12 @@ namespace IATK
 
         public override int getNumberOfCategories(int identifier)
         {
-            throw new System.NotImplementedException();
+            return textualDimensionsList[this[identifier].Identifier].Count;
         }
 
         public override int getNumberOfCategories(string identifier)
         {
-            throw new System.NotImplementedException();
+            return textualDimensionsList[this[identifier].Identifier].Count;
         }
 
         public override object getOriginalValue(float normalisedValue, string identifier)
@@ -281,7 +286,11 @@ namespace IATK
 
             if (meta.type == DataType.String)
             {
-                return textualDimensionsList[this[identifier].Identifier][(int)normalisedValue];
+                var keys = textualDimensionsList[identifier].Select(x => x.Key);
+                normValue = normaliseValue(normalisedValue, 0f, 1f, keys.Min(), keys.Max());
+                string value = textualDimensionsList[identifier][(int)normValue];
+
+                return value;
             }
 
             return normValue;
@@ -294,27 +303,16 @@ namespace IATK
 
             if (meta.type == DataType.String)
             {
-                return textualDimensionsList[this[identifier].Identifier][(int)normalisedValue];
+                var keys = textualDimensionsList[this[identifier].Identifier].Select(x => x.Key);
+                normValue = normaliseValue(normalisedValue, 0f, 1f, keys.Min(), keys.Max());
+                string value = textualDimensionsList[this[identifier].Identifier][(int)normValue];
+
+                return value;
             }
 
             return normValue;
         }
 
-        //from CSVDataSource
-        public float valueClosestTo(float[] collection, float target)
-        {
-            float closest_value = collection[0];
-            float subtract_result = Math.Abs(closest_value - target);
-            for (int i = 1; i < collection.Length; i++)
-            {
-                if (Math.Abs(collection[i] - target) < subtract_result)
-                {
-                    subtract_result = Math.Abs(collection[i] - target);
-                    closest_value = collection[i];
-                }
-            }
-            return closest_value;
-        }
 
         //from CSVDataSource
         float normaliseValue(float value, float i0, float i1, float j0, float j1)
@@ -373,11 +371,5 @@ namespace IATK
         {
             isQuitting = true;
         }
-
-        public override int getNumberOfValuesInDimension(string identifier)
-        {
-            return textualDimensionsList[identifier].Count;
-        }
-
     }
 }

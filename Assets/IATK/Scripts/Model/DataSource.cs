@@ -163,25 +163,18 @@ namespace IATK
 
 
         /// <summary>
-        /// Returns the number of categories for a data dimensions
+        /// Returns the number of categories (unique values) for a data dimensions
         /// </summary>
-        /// <param name="identifier"></param>
-        /// <returns></returns>
+        /// <param name="identifier">Identifier (Id) of the dimension</param>
+        /// <returns>The count of unique values in that dimension</returns>
         public abstract int getNumberOfCategories(int identifier);
 
         /// <summary>
-        /// Returns the number of categories for a data dimensions
+        /// Returns the number of categories (unique values) for a data dimensions
         /// </summary>
-        /// <param name="identifier"></param>
-        /// <returns></returns>
-        public abstract int getNumberOfCategories(string identifier);
-
-        /// <summary>
-        /// Returns the number of unique values for a data dimensions
-        /// </summary>
-        /// <param name="identifier">Identifier/Name of the dimension</param>
+        /// <param name="identifier">Identifier (Name) of the dimension</param>
         /// <returns>The count of unique values in that dimension</returns>
-        public abstract int getNumberOfValuesInDimension(string identifier);
+        public abstract int getNumberOfCategories(string identifier);
 
         /// <summary>
         /// Load the header information for the data
