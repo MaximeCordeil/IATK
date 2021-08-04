@@ -130,7 +130,7 @@ namespace IATK
         }
 
         /// <summary>
-        /// Returns the original value of a data dimension normalised value
+        /// Returns the original value of a data dimension normalised value. Used to dispaly axis labels
         /// </summary>
         /// <param name="normalisedValue"></param>
         /// <param name="identifier"></param>
@@ -138,7 +138,7 @@ namespace IATK
         public abstract object getOriginalValue(float normalisedValue, string identifier);
 
         /// <summary>
-        /// Returns the original value of a data dimension normalised value
+        /// Returns the original value of a data dimension normalised value. Used to display "Dimension Filter"values in the Unity editor.
         /// </summary>
         /// <param name="normalisedValue"></param>
         /// <param name="identifier"></param>

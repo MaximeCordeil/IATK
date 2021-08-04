@@ -5,7 +5,6 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Linq;
 
 namespace IATK
 {
@@ -39,11 +38,12 @@ namespace IATK
         /// Creates a dimension that can later have data set to it
         /// </summary>
         /// <param name="dimensionName">Sets the dimension name, used to identify the dimension (Must be unique).</param>
+        /// <param name="numberOfCategories">The data type of categories (unique values) in the data</param>
         /// <param name="type">The data type of the dimension</param>
         /// <returns>True if successfully added, false otherwise</returns>
-        public bool AddDimension(string dimensionName, DataType type = DataType.String)
+        public bool AddDimension(string dimensionName, float numberOfCategories, DataType type = DataType.String)
         {
-            return AddDimension(dimensionName, 0, dimensionSizeLimit, type);
+            return AddDimension(dimensionName, 0, numberOfCategories - 1f, type);
         }
 
         /// <summary>
@@ -208,12 +208,8 @@ namespace IATK
                     textualDimensionsListReverse[dimensionName].Add(val, N);
                 }
 
-                int idx = textualDimensionsListReverse[dimensionName][val];
-                dd.Data[idx] = idx;
-
-                // Debug.Log("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-");
-                // Debug.Log("idx: " + idx);
-                // Debug.Log("dimensionName: " + dimensionName);
+                float idx = (float)textualDimensionsListReverse[dimensionName][val];
+                dd.Data[0] = normaliseValue(idx, dd.MetaData.minValue, dd.MetaData.maxValue, 0f, 1f);
 
                 return true;
             }
@@ -286,11 +282,7 @@ namespace IATK
 
             if (meta.type == DataType.String)
             {
-                var keys = textualDimensionsList[identifier].Select(x => x.Key);
-                normValue = normaliseValue(normalisedValue, 0f, 1f, keys.Min(), keys.Max());
-                string value = textualDimensionsList[identifier][(int)normValue];
-
-                return value;
+                return textualDimensionsList[identifier][(int)normValue];
             }
 
             return normValue;
@@ -303,11 +295,7 @@ namespace IATK
 
             if (meta.type == DataType.String)
             {
-                var keys = textualDimensionsList[this[identifier].Identifier].Select(x => x.Key);
-                normValue = normaliseValue(normalisedValue, 0f, 1f, keys.Min(), keys.Max());
-                string value = textualDimensionsList[this[identifier].Identifier][(int)normValue];
-
-                return value;
+                return textualDimensionsList[this[identifier].Identifier][(int)normValue];
             }
 
             return normValue;
