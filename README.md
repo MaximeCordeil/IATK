@@ -181,9 +181,14 @@ In a near feature we will support:
 
 - fix number of labels for discrete values (delegate method)
 - details on demand
-- 2D/3D graph visualisation (node-link diagrams) directly in the *Visualisation* editor
+- ~~~2D/3D graph visualisation (node-link diagrams) directly in the *Visualisation* editor~~~
 - more type of data sources (including real time data)
 - more geometry (e.g. surfaces / volumes)
+
+### IATK RealtimeDataSource
+![Realtime DataSource showcase 1](iatkrunner/iatk_rtds_2.gif)
+![Realtime DataSource showcase 1](iatkrunner/iatk_rtds_1.gif)
+
 
 ## Team
 The toolkit is developed by Maxime Cordeil (project leader, Monash University), Andrew Cunningham (University of South Australia) and Benjamin Lee (Monash University).

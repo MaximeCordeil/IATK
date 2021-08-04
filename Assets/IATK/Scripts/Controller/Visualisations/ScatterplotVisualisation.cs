@@ -66,7 +66,10 @@ namespace IATK
             {
                 for (int i = 0; i < viewList.Count; i++)
                 {
-                    viewList[i].SetColors(mapColoursContinuous(visualisationReference.dataSource[visualisationReference.colourDimension].Data));
+                    if (viewList[i] != null && visualisationReference?.dataSource[visualisationReference?.colourDimension]?.Data != null)
+                    {   
+                        viewList[i].SetColors(mapColoursContinuous(visualisationReference.dataSource[visualisationReference.colourDimension].Data));
+                    }
                 }
             }
             else if (viewList.Count > 0 && visualisationReference.colorPaletteDimension != "Undefined")
@@ -118,7 +121,10 @@ namespace IATK
             {
                 for (int i = 0; i < viewList.Count; i++)
                 {
-                    viewList[i].SetSizeChannel(visualisationReference.dataSource[visualisationReference.sizeDimension].Data);
+                    if (viewList[i] != null && visualisationReference?.dataSource[visualisationReference?.sizeDimension]?.Data != null)
+                    {
+                        viewList[i].SetSizeChannel(visualisationReference.dataSource[visualisationReference.sizeDimension].Data);
+                    }
                 }
             }
 
@@ -141,7 +147,10 @@ namespace IATK
                         }
                         else
                         {
-                            viewList[0].UpdateXPositions(visualisationReference.dataSource[visualisationReference.xDimension.Attribute].Data);
+                            if (viewList[0] != null && visualisationReference?.dataSource[visualisationReference?.xDimension.Attribute]?.Data != null)
+                            {
+                                viewList[0].UpdateXPositions(visualisationReference.dataSource[visualisationReference.xDimension.Attribute].Data);
+                            }
                             viewList[0].TweenPosition();
                         }
                         if (creationConfiguration.Axies.ContainsKey(CreationConfiguration.Axis.X))
@@ -231,7 +240,10 @@ namespace IATK
                             {
                                 if (visualisationReference.sizeDimension != "Undefined")
                                 {
-                                    viewList[i].SetSizeChannel(visualisationReference.dataSource[visualisationReference.sizeDimension].Data);
+                                    if (viewList[i] != null && visualisationReference?.dataSource[visualisationReference?.sizeDimension]?.Data != null)
+                                    {
+                                        viewList[i].SetSizeChannel(visualisationReference.dataSource[visualisationReference.sizeDimension].Data);
+                                    }
                                 }
                                 else
                                 {
