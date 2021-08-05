@@ -15,11 +15,11 @@ namespace IATK
         will loop back around (replacing older data) when it goes over this limit
         */ 
         private int dimensionSizeLimit = 100;
+        private List<int> dimensionPointers = new List<int>();
+
         private bool isQuitting;
-        private int dataCount;
 
         private List<DimensionData> dimensionData = new List<DimensionData>();
-        private List<int> lastIndices = new List<int>();
         
         private Dictionary<string, Dictionary<int, string>> textualDimensionsList = new Dictionary<string, Dictionary<int, string>>();
         private Dictionary<string, Dictionary<string, int>> textualDimensionsListReverse = new Dictionary<string, Dictionary<string, int>>();
@@ -59,8 +59,6 @@ namespace IATK
             // Don't add the dimension if it already exists
             if (textualDimensionsList.ContainsKey(dimensionName)) return false;
 
-            lastIndices.Add(0);
-
             var metaData = new DimensionData.Metadata();
             metaData.minValue = minVal;
             metaData.maxValue = maxVal;
@@ -74,9 +72,8 @@ namespace IATK
             var dd = new DimensionData(dimensionName, index, metaData);
             dd.setData(GetDefaultArray(), textualDimensionsList);
             dimensionData.Add(dd);
+            dimensionPointers.Add(0);
 
-            dataCount = dimensionSizeLimit;
-            
             Debug.Log("AddDimension => " + dd.Identifier + ", " + dd.Index);
 
             return true;
@@ -90,30 +87,7 @@ namespace IATK
         /// <returns>True if successfully set, false otherwise</returns>
         public bool SetData(int index, float val)
         {
-            if (index < dimensionData.Count)
-            {
-                var dd = this[index];
-
-                if(dd.MetaData.type != DataType.Float) return false;
-
-                // TODO: Find a better solution than shifting the data,
-                //       perhapse have a var for the current item being replaced that loops around
-                //data shift
-                for (var i = dimensionSizeLimit - 1; i >= 1; i--)
-                {
-                    dd.Data[i] = dd.Data[i - 1];
-                }
-
-                if (dd.MetaData.minValue <= val && dd.MetaData.maxValue >= val
-                    && dd.Data.Length > 0 && dd.MetaData.type == DataType.Float)
-                {
-                    dd.Data[0] = normaliseValue(val, dd.MetaData.minValue, dd.MetaData.maxValue, 0f, 1f);
-
-                    return true;
-                }
-            }
-
-            return false;
+            return SetData(this[index].Identifier, val);
         }
 
         /// <summary>
@@ -127,22 +101,10 @@ namespace IATK
             try
             {
                 var dd = this[dimensionName];
-                if (dd != null && dd.MetaData.type == DataType.Float)
+                if (dd != null && dd.MetaData.minValue <= val && dd.MetaData.maxValue >= val && dd.Data.Length > 0)
                 {
-                    // TODO: Find a better solution than shifting the data,
-                    //       perhapse have a var for the current item being replaced that loops around
-                    //data shift
-                    for (var i = dimensionSizeLimit - 1; i >= 1; i--)
-                    {
-                        dd.Data[i] = dd.Data[i - 1];
-                    }
-
-                    if (dd.MetaData.minValue <= val && dd.MetaData.maxValue >= val && dd.Data.Length > 0)
-                    {
-                        dd.Data[0] = normaliseValue(val, dd.MetaData.minValue, dd.MetaData.maxValue, 0f, 1f);
-
-                        return true;
-                    }
+                    SetDimensionData(dd, normaliseValue(val, dd.MetaData.minValue, dd.MetaData.maxValue, 0f, 1f));
+                    return true;
                 }
             }
             catch (Exception e)
@@ -151,6 +113,17 @@ namespace IATK
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Sets a data value by index
+        /// </summary>
+        /// <param name="index">Index of dimension</param>
+        /// <param name="val">Value to set the dimension</param>
+        /// <returns>True if successfully set, false otherwise</returns>
+        public bool SetData(int index, string val)
+        {
+            return SetData(this[index].Identifier, val);
         }
 
         /// <summary>
@@ -163,28 +136,15 @@ namespace IATK
         {
             try
             {
-                var dd = this[dimensionName];
-                if (dd == null || dd.MetaData.type != DataType.String) return false;
-
-                // TODO: Find a better solution than shifting the data,
-                //       perhapse have a var for the current item being replaced that loops around
-                //data shift
-                for (var i = dimensionSizeLimit - 1; i >= 1; i--)
-                {
-                    dd.Data[i] = dd.Data[i - 1];
-                }
-
                 if (!textualDimensionsListReverse[dimensionName].ContainsKey(val))
                 {
-                    int N = textualDimensionsList[dimensionName].Count;
-                    textualDimensionsList[dimensionName].Add(N, val);
-                    textualDimensionsListReverse[dimensionName].Add(val, N);
+                    int numberOfDimensions = textualDimensionsList[dimensionName].Count;
+                    textualDimensionsList[dimensionName].Add(numberOfDimensions, val);
+                    textualDimensionsListReverse[dimensionName].Add(val, numberOfDimensions);
                 }
 
                 float idx = (float)textualDimensionsListReverse[dimensionName][val];
-                dd.Data[0] = normaliseValue(idx, dd.MetaData.minValue, dd.MetaData.maxValue, 0f, 1f);
-
-                return true;
+                return SetData(dimensionName, idx);
             }
             catch (Exception e)
             {
@@ -193,6 +153,22 @@ namespace IATK
 
             return false;
         }
+
+        /// <summary>
+        /// Sets a data value to a dimension
+        /// </summary>
+        /// <param name="dd">The data dimension to put the data in</param>
+        /// <param name="val">The data that is to be set</param>
+        private void SetDimensionData(DimensionData dd, float val)
+        {
+            // Each dimension has its own pointer that loops around between 0 and dimensionSizeLimit
+            int ptr = dimensionPointers[dd.Index];
+            dd.Data[ptr] = val;
+            ptr++;
+            if(ptr >= dimensionSizeLimit) ptr = 0;
+            dimensionPointers[dd.Index] = ptr;
+        }
+
 
         /// <summary>
         /// Gets the dimension data at the specified index.
@@ -222,20 +198,31 @@ namespace IATK
             }
         }
 
-        // Can always be loaded since we fill it at runtime
+        /// <summary>
+        /// Will always return true since the data is filled at runtime.
+        /// </summary>
+        /// <value></value>
         public override bool IsLoaded
         {
             get { return true; }
         }
 
+        /// <summary>
+        /// Gets the count of the dimensions to use on the indexer.
+        /// </summary>
+        /// <value>The count of dimensions</value>
         public override int DimensionCount
         {
             get { return dimensionData.Count; }
         }
 
+        /// <summary>
+        /// Gets the data count.
+        /// </summary>
+        /// <value>The data count.</value>
         public override int DataCount
         {
-            get { return dataCount; }
+            get { return dimensionSizeLimit; }
         }
 
         public override int getNumberOfCategories(int identifier)
@@ -248,6 +235,12 @@ namespace IATK
             return textualDimensionsList[this[identifier].Identifier].Count;
         }
 
+        /// <summary>
+        /// Returns the orginal value from the data dimension range. Used to dispaly axis labels.
+        /// </summary>
+        /// <param name="normalisedValue"></param>
+        /// <param name="identifier"></param>
+        /// <returns>An object depending on the datatype of the value (e.g. Float, String...)</returns>
         public override object getOriginalValue(float normalisedValue, string identifier)
         {
             DimensionData.Metadata meta = this[identifier].MetaData;
@@ -261,6 +254,12 @@ namespace IATK
             return normValue;
         }
 
+        /// <summary>
+        /// Returns the orginal value from the data dimension range. Used to display "Dimension Filter" values in the Unity editor.
+        /// </summary>
+        /// <param name="normalisedValue"></param>
+        /// <param name="identifier"></param>
+        /// <returns>An object depending on the datatype of the value (e.g. Float, String...)</returns>
         public override object getOriginalValue(float normalisedValue, int identifier)
         {
             DimensionData.Metadata meta = this[identifier].MetaData;
@@ -274,8 +273,6 @@ namespace IATK
             return normValue;
         }
 
-
-        //from CSVDataSource
         float normaliseValue(float value, float i0, float i1, float j0, float j1)
         {
             float L = (j0 - j1) / (i0 - i1);
@@ -292,10 +289,10 @@ namespace IATK
             throw new System.NotImplementedException();
         }
 
-        public override void load()
-        {
-            // Do not need to load data at launch as the data will be loaded in at runtime
-        }
+        /// <summary>
+        /// Does nothing. Do not need to load data at launch as the data will be loaded in at runtime.
+        /// </summary>
+        public override void load() { }
 
         public override void loadHeader()
         {
