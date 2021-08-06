@@ -2,9 +2,7 @@
 //Philipp Fleck, ICG @ TuGraz, philipp.fleck@icg.tugraz.at
 //20210430, initial working version
 
-using IATK;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -12,19 +10,19 @@ namespace IATK
 {
     public class RealtimeDataSource : DataSource
     {
+        /* 
+        The max amount of data that can be displayed at a single time,
+        will loop back around (replacing older data) when it goes over this limit
+        */ 
         private int dimensionSizeLimit = 100;
-        private int dataCount;
+        private List<int> dimensionPointers = new List<int>();
+
+        private bool isQuitting;
 
         private List<DimensionData> dimensionData = new List<DimensionData>();
-        private List<float[]> dimenstionDataArrays = new List<float[]>();
-        private List<int> lastIndices = new List<int>();
-
-        //do we need that
         
-        private Dictionary<string, Dictionary<int, string>> textualDimensionsList =
-            new Dictionary<string, Dictionary<int, string>>();
-        private Dictionary<string, Dictionary<string, int>> textualDimensionsListReverse = 
-            new Dictionary<string, Dictionary<string, int>>();
+        private Dictionary<string, Dictionary<int, string>> textualDimensionsList = new Dictionary<string, Dictionary<int, string>>();
+        private Dictionary<string, Dictionary<string, int>> textualDimensionsListReverse = new Dictionary<string, Dictionary<string, int>>();
 
         private float[] GetDefaultArray()
         {
@@ -36,169 +34,155 @@ namespace IATK
             return dataArray;
         }
 
-        public void AddStringDimension(string dimensionName)
+        /// <summary>
+        /// Creates a dimension that can later have data set to it
+        /// </summary>
+        /// <param name="dimensionName">Sets the dimension name, used to identify the dimension (Must be unique).</param>
+        /// <param name="numberOfCategories">The data type of categories (unique values) in the data</param>
+        /// <param name="type">The data type of the dimension</param>
+        /// <returns>True if successfully added, false otherwise</returns>
+        public bool AddDimension(string dimensionName, float numberOfCategories, DataType type = DataType.String)
         {
-            if (!textualDimensionsList.ContainsKey(dimensionName))
-            {
-                textualDimensionsList.Add(dimensionName, new Dictionary<int, string>());
-                textualDimensionsListReverse.Add(dimensionName, new Dictionary<string, int>());
-                
-                var metaData = new DimensionData.Metadata();
-                metaData.type = DataType.String; //maybe make that adjustable
-                metaData.minValue = 0;
-                metaData.maxValue = dimensionSizeLimit;
-                int newIndex = dimensionData.Count;
-
-                var dataArray = GetDefaultArray();
-                dimenstionDataArrays.Add(dataArray);
-                lastIndices.Add(0);
-
-                var dd = new DimensionData(dimensionName, newIndex, metaData);
-                dd.setData(dataArray, textualDimensionsList);
-                dimensionData.Add(dd);
-                dataCount = dimensionSizeLimit;
-                Debug.Log("AddDimension => " + dd.Identifier + ", " + dd.Index);
-            }
+            return AddDimension(dimensionName, 0, numberOfCategories - 1f, type);
         }
 
-        public void AddDimension(string dimensionName, float minVal, float maxVal)
+        /// <summary>
+        /// Creates a dimension that can later have data set to it
+        /// </summary>
+        /// <param name="dimensionName">Sets the dimension name, used to identify the dimension (Must be unique).</param>
+        /// <param name="minVal">The minimum value the dimension can hold</param>
+        /// <param name="maxVal">The maximum value the dimension can hold</param>
+        /// <param name="type">The data type of the dimension</param>
+        /// <returns>True if successfully added, false otherwise</returns>
+        public bool AddDimension(string dimensionName, float minVal, float maxVal, DataType type = DataType.Float)
         {
-            var dataArray = GetDefaultArray();
-            dimenstionDataArrays.Add(dataArray);
-            lastIndices.Add(0);
+            // Don't add the dimension if it already exists
+            if (textualDimensionsList.ContainsKey(dimensionName)) return false;
 
-            //what are categories?
             var metaData = new DimensionData.Metadata();
             metaData.minValue = minVal;
             metaData.maxValue = maxVal;
-            metaData.type = DataType.Float; //maybe make that adjustable
-            int newIndex = dimensionData.Count;
+            metaData.type = type;
 
-            //for testing
-            if (!textualDimensionsList.ContainsKey(dimensionName))
-            {
-                textualDimensionsList.Add(dimensionName, new Dictionary<int, string>());
-                textualDimensionsListReverse.Add(dimensionName, new Dictionary<string, int>());
-            }
+            int index = dimensionData.Count;
 
-            var dd = new DimensionData(dimensionName, newIndex, metaData);
-            dd.setData(dataArray, textualDimensionsList);
+            textualDimensionsList.Add(dimensionName, new Dictionary<int, string>());
+            textualDimensionsListReverse.Add(dimensionName, new Dictionary<string, int>());
+
+            var dd = new DimensionData(dimensionName, index, metaData);
+            dd.setData(GetDefaultArray(), textualDimensionsList);
             dimensionData.Add(dd);
-            //dataCount += dimensionSizeLimit;
-            dataCount = dimensionSizeLimit;
+            dimensionPointers.Add(0);
+
             Debug.Log("AddDimension => " + dd.Identifier + ", " + dd.Index);
+
+            return true;
         }
 
-        //This important for extern bindinds which might not support
-        //operator overloading or runtime reflection resolution
-        public void AddDataByIdnx(int index, float val)
+        /// <summary>
+        /// Sets a data value by index
+        /// </summary>
+        /// <param name="index">Index of dimension</param>
+        /// <param name="val">Value to set the dimension</param>
+        /// <returns>True if successfully set, false otherwise</returns>
+        public bool SetData(int index, float val)
         {
-            if (index < dimensionData.Count)
-            {
-                var nextIndex = GetNextIndexForDimensionAndInc(index);
-                if (nextIndex >= 0)
-                {
-                    var dd = dimensionData[index];
-                    dd.Data[nextIndex] = normaliseValue(val, dd.MetaData.minValue, dd.MetaData.maxValue, 0f, 1f);
-                }
-            }
+            return SetData(this[index].Identifier, val);
         }
 
-        private int GetNextIndexForDimensionAndInc(int index)
+        /// <summary>
+        /// Sets a data value by dimension name (identifier)
+        /// </summary>
+        /// <param name="index">Name of dimension</param>
+        /// <param name="val">Value to set the dimension</param>
+        /// <returns>True if successfully set, false otherwise</returns>
+        public bool SetData(string dimensionName, float val)
         {
-            return 0;
-            if (index < lastIndices.Count)
-            {
-                var ret = lastIndices[index];
-                lastIndices[index] = (lastIndices[index] + 1) % dimensionSizeLimit;
-                return ret;
-            }
-            return -1;
-        }
-
-        //This important for extern bindinds which might not support
-        //operator overloading or runtime reflection resolution
-        public bool AddDataByStr(string dimensionName, float val)
-        {
-            var dirty = false;
             try
             {
                 var dd = this[dimensionName];
-                if (dd != null)
+                if (dd != null && dd.MetaData.minValue <= val && dd.MetaData.maxValue >= val && dd.Data.Length > 0)
                 {
-                    var index = dd.Index;
-                    var nextIndex = GetNextIndexForDimensionAndInc(index);
-                    if (nextIndex >= 0)
-                    {
-                        //data shift
-                        for (var i = dimensionSizeLimit - 1; i >= 1; i--)
-                        {
-                            dd.Data[i] = dd.Data[i - 1];
-                        }
-
-                        var minV = dd.MetaData.minValue;
-                        var maxV = dd.MetaData.minValue;
-                        if (dd.MetaData.minValue > val)
-                        {
-                            minV = val;
-                            dirty = true;
-                        }
-
-                        if (dd.MetaData.maxValue < val)
-                        {
-                            maxV = val;
-                            dirty = true;
-                        }
-
-                        if (dirty)
-                        {
-                            var metaData = new DimensionData.Metadata();
-                            metaData.minValue = minV;
-                            metaData.maxValue = maxV;
-                            metaData.type = DataType.Float; //maybe make that adjustable
-                            dd.setMetadata(metaData);
-                        }
-
-                        if (dd.Data.Length > nextIndex && nextIndex >= 0)
-                        {
-                            dd.Data[nextIndex] = normaliseValue(val, dd.MetaData.minValue, dd.MetaData.maxValue, 0f, 1f);
-                        }
-                    }
+                    SetDimensionData(dd, normaliseValue(val, dd.MetaData.minValue, dd.MetaData.maxValue, 0f, 1f));
+                    return true;
                 }
             }
             catch (Exception e)
             {
-                Debug.Log("AddDataByStr ERROR => " + e);
+                Debug.Log("SetData ERROR => " + e);
             }
-            return dirty;
+
+            return false;
         }
 
-        
-        public void AddStrDataByStr(string dimensionName, string val)
+        /// <summary>
+        /// Sets a data value by index
+        /// </summary>
+        /// <param name="index">Index of dimension</param>
+        /// <param name="val">Value to set the dimension</param>
+        /// <returns>True if successfully set, false otherwise</returns>
+        public bool SetData(int index, string val)
         {
-            var dd = this[dimensionName];
-            if (dd != null)
-            {
-                var N = textualDimensionsList[dimensionName].Count;
-
-                if (!textualDimensionsList[dimensionName].ContainsKey(N))
-                {
-                    textualDimensionsList[dimensionName].Add(N, val);
-                }
-                if (!textualDimensionsListReverse.ContainsKey(val))
-                {
-                    textualDimensionsListReverse[dimensionName].Add(val, N);
-                }
-                var idx = (N) % dimensionSizeLimit;
-                dd.Data[idx] = idx;
-            }
+            return SetData(this[index].Identifier, val);
         }
 
+        /// <summary>
+        /// Sets a data value by dimension name (identifier)
+        /// </summary>
+        /// <param name="index">Name of dimension</param>
+        /// <param name="val">Value to set the dimension</param>
+        /// <returns>True if successfully set, false otherwise</returns>
+        public bool SetData(string dimensionName, string val)
+        {
+            try
+            {
+                if (!textualDimensionsListReverse[dimensionName].ContainsKey(val))
+                {
+                    int numberOfDimensions = textualDimensionsList[dimensionName].Count;
+                    textualDimensionsList[dimensionName].Add(numberOfDimensions, val);
+                    textualDimensionsListReverse[dimensionName].Add(val, numberOfDimensions);
+                }
+
+                float idx = (float)textualDimensionsListReverse[dimensionName][val];
+                return SetData(dimensionName, idx);
+            }
+            catch (Exception e)
+            {
+                Debug.Log("SetData ERROR => " + e);
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Sets a data value to a dimension
+        /// </summary>
+        /// <param name="dd">The data dimension to put the data in</param>
+        /// <param name="val">The data that is to be set</param>
+        private void SetDimensionData(DimensionData dd, float val)
+        {
+            // Each dimension has its own pointer that loops around between 0 and dimensionSizeLimit
+            int ptr = dimensionPointers[dd.Index];
+            dd.Data[ptr] = val;
+            ptr++;
+            if(ptr >= dimensionSizeLimit) ptr = 0;
+            dimensionPointers[dd.Index] = ptr;
+        }
+
+
+        /// <summary>
+        /// Gets the dimension data at the specified index.
+        /// </summary>
+        /// <param name="index">Index of dimension</param>
         public override DimensionData this[int index]
         {
             get { return dimensionData[index]; }
         }
 
+        /// <summary>
+        /// Gets the dimension data with the specified identifier.
+        /// </summary>
+        /// <param name="identifier">Identifier.</param>
         public override DimensionData this[string identifier]
         {
             get
@@ -214,32 +198,49 @@ namespace IATK
             }
         }
 
-        //can always be loaded since we fill it at runtime
+        /// <summary>
+        /// Will always return true since the data is filled at runtime.
+        /// </summary>
+        /// <value></value>
         public override bool IsLoaded
         {
             get { return true; }
         }
 
+        /// <summary>
+        /// Gets the count of the dimensions to use on the indexer.
+        /// </summary>
+        /// <value>The count of dimensions</value>
         public override int DimensionCount
         {
             get { return dimensionData.Count; }
         }
 
+        /// <summary>
+        /// Gets the data count.
+        /// </summary>
+        /// <value>The data count.</value>
         public override int DataCount
         {
-            get { return dataCount; }
+            get { return dimensionSizeLimit; }
         }
 
         public override int getNumberOfCategories(int identifier)
         {
-            throw new System.NotImplementedException();
+            return textualDimensionsList[this[identifier].Identifier].Count;
         }
 
         public override int getNumberOfCategories(string identifier)
         {
-            throw new System.NotImplementedException();
+            return textualDimensionsList[this[identifier].Identifier].Count;
         }
 
+        /// <summary>
+        /// Returns the orginal value from the data dimension range. Used to dispaly axis labels.
+        /// </summary>
+        /// <param name="normalisedValue"></param>
+        /// <param name="identifier"></param>
+        /// <returns>An object depending on the datatype of the value (e.g. Float, String...)</returns>
         public override object getOriginalValue(float normalisedValue, string identifier)
         {
             DimensionData.Metadata meta = this[identifier].MetaData;
@@ -247,13 +248,18 @@ namespace IATK
 
             if (meta.type == DataType.String)
             {
-                normValue = normaliseValue(valueClosestTo(this[identifier].Data, normalisedValue), 0f, 1f, meta.minValue, meta.maxValue);
-                return textualDimensionsList[this[identifier].Identifier][(int)normValue];  // textualDimensions[(int)normValue];
+                return textualDimensionsList[identifier][(int)normValue];
             }
 
             return normValue;
         }
 
+        /// <summary>
+        /// Returns the orginal value from the data dimension range. Used to display "Dimension Filter" values in the Unity editor.
+        /// </summary>
+        /// <param name="normalisedValue"></param>
+        /// <param name="identifier"></param>
+        /// <returns>An object depending on the datatype of the value (e.g. Float, String...)</returns>
         public override object getOriginalValue(float normalisedValue, int identifier)
         {
             DimensionData.Metadata meta = this[identifier].MetaData;
@@ -261,30 +267,12 @@ namespace IATK
 
             if (meta.type == DataType.String)
             {
-                normValue = normaliseValue(valueClosestTo(this[identifier].Data, normalisedValue), 0f, 1f, meta.minValue, meta.maxValue);
-                return textualDimensionsList[this[identifier].Identifier][(int)normValue];  // textualDimensions[(int)normValue];
+                return textualDimensionsList[this[identifier].Identifier][(int)normValue];
             }
 
             return normValue;
         }
 
-        //from CSVDAtasource
-        public float valueClosestTo(float[] collection, float target)
-        {
-            float closest_value = collection[0];
-            float subtract_result = Math.Abs(closest_value - target);
-            for (int i = 1; i < collection.Length; i++)
-            {
-                if (Math.Abs(collection[i] - target) < subtract_result)
-                {
-                    subtract_result = Math.Abs(collection[i] - target);
-                    closest_value = collection[i];
-                }
-            }
-            return closest_value;
-        }
-
-        //from CSVDataSource
         float normaliseValue(float value, float i0, float i1, float j0, float j1)
         {
             float L = (j0 - j1) / (i0 - i1);
@@ -301,39 +289,45 @@ namespace IATK
             throw new System.NotImplementedException();
         }
 
-        public override void load()
-        {
-            //will be filled at runtime
-        }
+        /// <summary>
+        /// Does nothing. Do not need to load data at launch as the data will be loaded in at runtime.
+        /// </summary>
+        public override void load() { }
 
         public override void loadHeader()
         {
             throw new System.NotImplementedException();
         }
 
-        private void Awake()
+        /// <summary>
+        /// Awake this instance.
+        /// </summary>
+        void Awake()
         {
             DataSourceManager.register(this);
+
             if (!IsLoaded)
                 load();
 
-            //default init for realtime data
-            AddStringDimension("names");
-            AddStrDataByStr("names", "id");
         }
 
-
-
-        // Start is called before the first frame update
-        void Start()
+        /// <summary>
+        /// Raises the destroy event.
+        /// </summary>
+        void OnDestroy()
         {
-            
+            if (!isQuitting)
+            {
+                DataSourceManager.unregister(this);
+            }
         }
 
-        // Update is called once per frame
-        void Update()
+        /// <summary>
+        /// Raises the application quit event.
+        /// </summary>
+        void OnApplicationQuit()
         {
-
+            isQuitting = true;
         }
     }
 }

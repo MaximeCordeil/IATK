@@ -130,7 +130,7 @@ namespace IATK
         }
 
         /// <summary>
-        /// Returns the original value of a data dimension normalised value
+        /// Returns the original value of a data dimension normalised value. Used to dispaly axis labels.
         /// </summary>
         /// <param name="normalisedValue"></param>
         /// <param name="identifier"></param>
@@ -138,7 +138,7 @@ namespace IATK
         public abstract object getOriginalValue(float normalisedValue, string identifier);
 
         /// <summary>
-        /// Returns the original value of a data dimension normalised value
+        /// Returns the original value of a data dimension normalised value. Used to display "Dimension Filter" values in the Unity editor.
         /// </summary>
         /// <param name="normalisedValue"></param>
         /// <param name="identifier"></param>
@@ -163,17 +163,17 @@ namespace IATK
 
 
         /// <summary>
-        /// Returns the number of categories for a data dimensions
+        /// Returns the number of categories (unique values) for a data dimensions
         /// </summary>
-        /// <param name="identifier"></param>
-        /// <returns></returns>
+        /// <param name="identifier">Identifier (Id) of the dimension</param>
+        /// <returns>The count of unique values in that dimension</returns>
         public abstract int getNumberOfCategories(int identifier);
 
         /// <summary>
-        /// Returns the number of categories for a data dimensions
+        /// Returns the number of categories (unique values) for a data dimensions
         /// </summary>
-        /// <param name="identifier"></param>
-        /// <returns></returns>
+        /// <param name="identifier">Identifier (Name) of the dimension</param>
+        /// <returns>The count of unique values in that dimension</returns>
         public abstract int getNumberOfCategories(string identifier);
 
         /// <summary>
