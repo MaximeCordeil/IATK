@@ -31,7 +31,7 @@ namespace IATK
             get { return textualDimensionsListReverse; }
             set { textualDimensionsListReverse = value; }
         }
-
+        
         public Dictionary<int, List<int>> GraphEdges = new Dictionary<int, List<int>>();
 
         private bool isQuitting;
