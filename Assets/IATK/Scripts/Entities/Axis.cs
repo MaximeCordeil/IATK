@@ -298,7 +298,7 @@ namespace IATK
                 
                 // If this discrete dimension has less unique values than the maximum number of ticks allowed due to spacing,
                 // give an axis tick label for each unique value
-                int numValues = ((CSVDataSource)dataSource).TextualDimensionsListReverse[AttributeName].Count;
+                int numValues = dataSource.getNumberOfCategories(AttributeName);
                 int maxTicks = Mathf.CeilToInt(Length / AxisTickSpacing);
                 if (numValues < maxTicks)
                     return numValues;

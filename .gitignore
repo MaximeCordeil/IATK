@@ -18,6 +18,8 @@ sysinfo.txt
 /Assets/OvrAvatar/
 /Assets/Plugins/
 /Assets/MetaSDK/
+/Assets/Mapbox/
+/Assets/Mapbox.meta
 
 # ============================================= #
 # Visual Studio / MonoDevelop / Rider generated #
@@ -43,7 +45,7 @@ sysinfo.txt
 .Trashes
 ehthumbs.db
 [Tt]humbs.db
-=======
+
 # =============== #
 # Unity generated #
 # =============== #
@@ -53,6 +55,11 @@ ehthumbs.db
 /[Ll]ibrary/
 sysinfo.txt
 *.stackdump
+UserSettings/
+AssetImportWorker*
+shadercompiler-AssetImportWorker*
+shadercompiler-UnityShaderCompiler*
+/Logs/ApiUpdaterCheck.txt
  
 # ============================================= #
 # Visual Studio / MonoDevelop / Rider generated #
@@ -79,4 +86,10 @@ sysinfo.txt
 ehthumbs.db
 [Tt]humbs.db
 [Dd]esktop.ini
-Assets/SerializedFields/
+
+# ================= #
+# Serialized Fields #
+# ================= #
+/Assets/SerializedFields/
+/Assets/StreamingAssets/
+/Assets/StreamingAssets.meta

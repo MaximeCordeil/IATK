@@ -345,7 +345,7 @@ namespace IATK
                                             var rtds = ds as RealtimeDataSource;
                                             vis.dataSource = rtds;
 
-                                            rtds.AddDefaultIdDimension();
+                                            //rtds.AddDefaultIdDimension();
                                             rtds.AddDimension(dDimName, 0, 100); //was dKey
                                             vis.updateView(0);
 
@@ -358,7 +358,6 @@ namespace IATK
                                                     try
                                                     {
                                                         Debug.Log("Replicator::UpdateDatasource OnNewData => " + content);
-
                                                         //TODO add here json parser of your choice
 #if true
                                                         var parsed = new Dictionary<string, string>(); //this is only a placeholder for a json parser
@@ -377,7 +376,8 @@ namespace IATK
                                                             {
                                                                 if (rtds != null)
                                                                 {
-                                                                    rtds.AddDataByStr(dDimName, (float)fVal);
+                                                                    //rtds.AddDataByStr(dDimName, (float)fVal);
+                                                                    rtds.SetData(dDimName, (float)fVal);
                                                                 }
                                                                 else
                                                                 {
@@ -434,7 +434,6 @@ namespace IATK
 
                 if (vis != null)
                 {
-
                     replicas.Add(uid, new VisHolder(vis));
                     //vis.dataSource = rtds; //TODO sync that
 

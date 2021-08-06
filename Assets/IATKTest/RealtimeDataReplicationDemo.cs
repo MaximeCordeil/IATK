@@ -63,13 +63,13 @@ namespace IATKTest
             rtds.AddStrDataByStr("names", "DimD");
             */
 
-            rtds.AddDataByStr("DimA", 75f);
-            rtds.AddDataByStr("DimA", 50f);
-            rtds.AddDataByStr("DimA", 25f);
+            rtds.SetData("DimA", 75f);
+            rtds.SetData("DimA", 50f);
+            rtds.SetData("DimA", 25f);
 
-            rtds.AddDataByStr("DimB", 25f);
-            rtds.AddDataByStr("DimB", 20f);
-            rtds.AddDataByStr("DimB", 25f);
+            rtds.SetData("DimB", 25f);
+            rtds.SetData("DimB", 20f);
+            rtds.SetData("DimB", 25f);
 
             StartCoroutine(SimulPoints());
 
@@ -91,6 +91,7 @@ namespace IATKTest
         public void ConsumeReplicas()
         {
             string t = "rr/vis/replication/#";
+#if false
             Vizario.MQTTManager.Subscribe(t);
             Vizario.MQTTManager.RegisterCallbackTopicCs(
                 (string topic, string payload) =>
@@ -125,6 +126,7 @@ namespace IATKTest
 
                     return topic;
                 }, t);
+#endif
         }
 
         void SpawnReplicatedVis(string uid, string payload)
@@ -181,7 +183,9 @@ namespace IATKTest
         {
             Debug.Log("ReplicationNotification => id:" + id + ", payload:" + payload);
             string topic = "rr/vis/replication/" + id + "/view";
+#if false
             Vizario.MQTTManager.Publish(topic, payload);
+#endif
             return id;
         }
 
@@ -267,10 +271,10 @@ namespace IATKTest
                 {
                     if (rtds)
                     {
-                        rtds.AddDataByStr("DimA", UnityEngine.Random.value * 100f);
-                        rtds.AddDataByStr("DimB", UnityEngine.Random.value * 100f);
-                        rtds.AddDataByStr("DimC", UnityEngine.Random.value * 100f);
-                        rtds.AddDataByStr("DimD", UnityEngine.Random.value * 100f);
+                        rtds.SetData("DimA", UnityEngine.Random.value * 100f);
+                        rtds.SetData("DimB", UnityEngine.Random.value * 100f);
+                        rtds.SetData("DimC", UnityEngine.Random.value * 100f);
+                        rtds.SetData("DimD", UnityEngine.Random.value * 100f);
                         if (isVisReady && vis != null)
                         {
 

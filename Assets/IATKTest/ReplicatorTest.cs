@@ -155,19 +155,19 @@ namespace IATKTest
                 rtds.AddDimension("DimC", 0, 100);
                 rtds.AddDimension("DimD", 0, 100);
 
-                rtds.AddDataByStr("DimA", 75f);
-                rtds.AddDataByStr("DimA", 50f);
-                rtds.AddDataByStr("DimA", 25f);
+                rtds.SetData("DimA", 75f);
+                rtds.SetData("DimA", 50f);
+                rtds.SetData("DimA", 25f);
 
-                rtds.AddDataByStr("DimB", 25f);
-                rtds.AddDataByStr("DimB", 20f);
-                rtds.AddDataByStr("DimB", 25f);
+                rtds.SetData("DimB", 25f);
+                rtds.SetData("DimB", 20f);
+                rtds.SetData("DimB", 25f);
 
                 StartCoroutine(SimulPoints());
             }
             else
             {
-                rtds.AddDefaultIdDimension();
+                //rtds.AddDefaultIdDimension();
                 if (true)
                 {
                     var t = "telemetry/inffeld16/2nd/id2068/littleserver/RJ45/#";
@@ -374,10 +374,10 @@ namespace IATKTest
                 {
                     if (rtds)
                     {
-                        rtds.AddDataByStr("DimA", UnityEngine.Random.value * 100f);
-                        rtds.AddDataByStr("DimB", UnityEngine.Random.value * 100f);
-                        rtds.AddDataByStr("DimC", UnityEngine.Random.value * 100f);
-                        rtds.AddDataByStr("DimD", UnityEngine.Random.value * 100f);
+                        rtds.SetData("DimA", UnityEngine.Random.value * 100f);
+                        rtds.SetData("DimB", UnityEngine.Random.value * 100f);
+                        rtds.SetData("DimC", UnityEngine.Random.value * 100f);
+                        rtds.SetData("DimD", UnityEngine.Random.value * 100f);
                         if (isVisReady && vis != null)
                         {
                             vis.updateView(0);
