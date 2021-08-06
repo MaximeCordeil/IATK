@@ -78,27 +78,34 @@ namespace IATKTest
         public string PublishImple(string id, string payload)
         {
             string topic = "rr/vis/replication/" + id + "/view";
+#if false
             Vizario.MQTTManager.Publish(topic, payload);
+#endif
             return topic;
         }
 
         public string PublishDatasourceImple(string id, string payload)
         {
             string topic = "rr/vis/replication/" + id + "/ds";
+#if false
             Vizario.MQTTManager.Publish(topic, payload);
+#endif
             return topic;
         }
 
         public string GetStreamData(string uri, Func<string, string, string> OnNewData)
         {
+#if false
             Vizario.MQTTManager.Subscribe(uri);
             Vizario.MQTTManager.RegisterCallbackTopicCs(OnNewData, uri);
+#endif
             return "";
         }
 
         public void ListenForReplicationUpdates()
         {
             string t = "rr/vis/replication/#";
+#if false
             Vizario.MQTTManager.Subscribe(t);
             Vizario.MQTTManager.RegisterCallbackTopicCs(
                 (string topic, string payload) =>
@@ -131,6 +138,7 @@ namespace IATKTest
 
                     return topic;
                 }, t);
+#endif
         }
 
         void CreateWithRTDataSource()
@@ -166,6 +174,7 @@ namespace IATKTest
                     var key = "bandwidth_Mbps";
                     rtds.AddDimension(key, 0, 100);
 
+#if false
                     Vizario.MQTTManager.Subscribe(t);
                     Vizario.MQTTManager.RegisterCallbackTopicCs((string topic, string payload) =>
                     {
@@ -206,6 +215,7 @@ namespace IATKTest
                         }
                         return "";
                     }, t);
+#endif
                 }
 
                 if (true)
@@ -214,6 +224,7 @@ namespace IATKTest
                     var key = "inbound_Mbps";
                     rtds.AddDimension(key, 0, 100);
 
+#if false
                     Vizario.MQTTManager.Subscribe(t);
                     Vizario.MQTTManager.RegisterCallbackTopicCs((string topic, string payload) =>
                     {
@@ -254,6 +265,7 @@ namespace IATKTest
                         }
                         return "";
                     }, t);
+#endif
                 }
             }
             //add source to graph
