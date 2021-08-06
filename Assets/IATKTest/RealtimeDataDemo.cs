@@ -50,6 +50,13 @@ namespace IATKTest
             rtds.AddDimension("DimC", 0, 100);
             rtds.AddDimension("DimD", 0, 100);
 
+            /*
+            rtds.AddStrDataByStr("names", "DimA");
+            rtds.AddStrDataByStr("names", "DimB");
+            rtds.AddStrDataByStr("names", "DimC");
+            rtds.AddStrDataByStr("names", "DimD");
+            */
+
             rtds.AddDataByStr("DimA", 75f);
             rtds.AddDataByStr("DimA", 50f);
             rtds.AddDataByStr("DimA", 25f);
@@ -81,24 +88,48 @@ namespace IATKTest
                 }
 
                 vis.dataSource = rtds;
-                vis.xDimension = "DimA";
-                vis.yDimension = "DimB";
-                vis.zDimension = "DimC";
-                vis.sizeDimension = "DimD";
+                //vis.xDimension = "DimA";
+                //vis.yDimension = "DimB";
+                //vis.zDimension = "DimC";
+                //vis.sizeDimension = "DimD";
                 vis.CreateVisualisation(AbstractVisualisation.VisualisationTypes.SCATTERPLOT);
-
+                
 
                 AbstractVisualisation abstractVisualisation = vis.theVisualizationObject;
 
                 // Axis
-                abstractVisualisation.visualisationReference.xDimension.Attribute = "DimA";
+                abstractVisualisation.visualisationReference.xDimension.Attribute = "DimA";;
                 abstractVisualisation.UpdateVisualisation(AbstractVisualisation.PropertyType.X);
                 abstractVisualisation.visualisationReference.yDimension.Attribute = "DimB";
                 abstractVisualisation.UpdateVisualisation(AbstractVisualisation.PropertyType.Y);
                 abstractVisualisation.visualisationReference.zDimension.Attribute = "DimC";
                 abstractVisualisation.UpdateVisualisation(AbstractVisualisation.PropertyType.Z);
                 abstractVisualisation.visualisationReference.sizeDimension = "DimD";
-                abstractVisualisation.UpdateVisualisation(AbstractVisualisation.PropertyType.OriginDimension);
+                abstractVisualisation.UpdateVisualisation(AbstractVisualisation.PropertyType.Size);
+                
+                var gradient = new Gradient();
+
+                // Populate the color keys at the relative time 0 and 1 (0 and 100%)
+                var colorKey = new GradientColorKey[2];
+                colorKey[0].color = Color.red;
+                colorKey[0].time = 0.0f;
+                colorKey[1].color = Color.blue;
+                colorKey[1].time = 1.0f;
+
+                // Populate the alpha  keys at relative time 0 and 1  (0 and 100%)
+                var alphaKey = new GradientAlphaKey[2];
+                alphaKey[0].alpha = 1.0f;
+                alphaKey[0].time = 0.0f;
+                alphaKey[1].alpha = 0.0f;
+                alphaKey[1].time = 1.0f;
+
+                gradient.SetKeys(colorKey, alphaKey);
+                abstractVisualisation.visualisationReference.dimensionColour = gradient;
+                abstractVisualisation.visualisationReference.colourDimension = "DimD";
+                abstractVisualisation.UpdateVisualisation(AbstractVisualisation.PropertyType.Colour);
+
+                //abstractVisualisation.visualisationReference.colorPaletteDimension = "DimD";
+                //abstractVisualisation.UpdateVisualisation(AbstractVisualisation.PropertyType.Colour);
 
                 vis.geometry = AbstractVisualisation.GeometryType.Bars;
 
