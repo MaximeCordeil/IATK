@@ -358,7 +358,13 @@ namespace IATK
                                                     try
                                                     {
                                                         Debug.Log("Replicator::UpdateDatasource OnNewData => " + content);
-                                                        var parsed = Json.JSON.Parse(content); //this might need change
+
+                                                        //TODO add here json parser of your choice
+#if true
+                                                        var parsed = new Dictionary<string, string>(); //this is only a placeholder for a json parser
+#else
+                                                        object parsed = Json.JSON.Parse(content);
+#endif
                                                         var val = parsed[dKey];
 
                                                         Debug.Log("Replicator::UpdateDatasource OnNewData parsed[" + dKey + "]=" + val);
