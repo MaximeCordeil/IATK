@@ -306,7 +306,7 @@ namespace IATK
         }
 
 
-        void OnEnable()
+        protected void OnEnable()
         {
 
             if (uid == null)
@@ -514,13 +514,13 @@ namespace IATK
 
         }
 
-        void OnApplicationQuit()
+        protected void OnApplicationQuit()
         {
             if (theVisualizationObject.creationConfiguration != null)
                 theVisualizationObject.SerializeViewConfiguration(theVisualizationObject.creationConfiguration);
         }
 
-        void OnDestroy()
+        protected void OnDestroy()
         {
             destroyView();
 
