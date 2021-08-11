@@ -31,7 +31,7 @@ The actual tutorial starts at 01:12
 Required downloads:
 
 - this repository
-- [Unity 2020.3.15f1](https://unity3d.com/get-unity/)
+- [Unity 2020.3.15f2](https://unity3d.com/get-unity/)
 - [Virtual reality toolkit VRTK](https://github.com/thestonefox/VRTK)
 
 ***!!! IATK works on Windows machines -  Mac users please [install bootcamp](https://support.apple.com/en-au/HT201468) !!!***
