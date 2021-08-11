@@ -93,3 +93,9 @@ ehthumbs.db
 /Assets/SerializedFields/
 /Assets/StreamingAssets/
 /Assets/StreamingAssets.meta
+
+# =============== #
+# Tilia (VRTK v4) #
+# =============== #
+/Assets/Samples
+/Assets/Samples.meta
