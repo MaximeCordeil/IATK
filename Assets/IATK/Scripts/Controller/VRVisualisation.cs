@@ -98,8 +98,6 @@ namespace IATK
         }
         private void ConfigInteractableGrabbable(InteractableFacade facade)
         {
-            facade.GrabType = GrabInteractableReceiver.ActiveType.Toggle;
-
             // Set "Primary Action" to "Follow"
             int primaryActionIndex = 1; // Follow
             GameObject primaryActionPrefab = (GameObject)PrefabUtility.InstantiatePrefab(facade.Configuration.GrabConfiguration.ActionTypes.NonSubscribableElements[primaryActionIndex], facade.Configuration.GrabConfiguration.ActionTypes.transform);
