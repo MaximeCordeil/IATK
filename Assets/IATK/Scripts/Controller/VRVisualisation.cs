@@ -6,6 +6,7 @@ using Tilia.Interactions.Interactables.Interactables.Grab.Action;
 using UnityEngine;
 using UnityEditor;
 using System;
+using System.Linq;
 
 namespace IATK
 {
@@ -15,11 +16,16 @@ namespace IATK
     [ExecuteInEditMode]
     public class VRVisualisation : Visualisation
     {
+        private bool xAxisInUse = false; 
+        private bool yAxisInUse = false; 
+        private bool zAxisInUse = false; 
+
         private const string assetName = "Interactions.Interactable";
         private const string assetSuffix = ".prefab";
 
         // Runs when the VRVisualisation Component is first added to a GameObject
-        void Reset() {
+        void Reset()
+        {
             ConvertToInteractable(gameObject);
 
             // Alter head parent to:
@@ -30,10 +36,11 @@ namespace IATK
                 // ✔ Set grab actions
             
             // Alter visualisation to:
-                // Add Box Collider
+                // ✔ Add Box Collider
+                    // ✔ Add support for both 2D and 3D visualisations
                 // Add a Linear Drive to each Normaliser dragger
+                    // Add support for both 2D and 3D visualisations
                 // Connect all Linear Drives to the appropriate Normaliser values
-                // Remember to consider 2D and 3D visualisations
         }
 
         /// <summary>
@@ -66,8 +73,8 @@ namespace IATK
 
             newInteractable.transform.SetSiblingIndex(siblingIndex);
 
-            ConfigRigidbody(newInteractable);
-            ConfigGrabbable(facade);
+            ConfigInteractableRigidbody(newInteractable);
+            ConfigInteractableGrabbable(facade);
         }
         private GameObject GetInteractablePrefab()
         {
@@ -83,13 +90,13 @@ namespace IATK
             }
             return interactablePrefab;
         }
-        private void ConfigRigidbody(GameObject interactable)
+        private void ConfigInteractableRigidbody(GameObject interactable)
         {
             Rigidbody rigidbody = interactable.GetComponent<Rigidbody>();
             rigidbody.useGravity = false;
             rigidbody.isKinematic = true;
         }
-        private void ConfigGrabbable(InteractableFacade facade)
+        private void ConfigInteractableGrabbable(InteractableFacade facade)
         {
             facade.GrabType = GrabInteractableReceiver.ActiveType.Toggle;
 
@@ -111,6 +118,85 @@ namespace IATK
             GameObject secondaryActionPrefab = (GameObject)PrefabUtility.InstantiatePrefab(facade.Configuration.GrabConfiguration.ActionTypes.NonSubscribableElements[secondaryActionIndex], facade.Configuration.GrabConfiguration.ActionTypes.transform);
             GrabInteractableAction secondaryAction = secondaryActionPrefab.GetComponent<GrabInteractableAction>();
             facade.Configuration.GrabConfiguration.SecondaryAction = secondaryAction;
+        }
+
+        private void ConfigVisualisationBoxCollider()
+        {
+            int numberOfAxisInUse = CountTrue(xAxisInUse, yAxisInUse, zAxisInUse);
+
+            if(numberOfAxisInUse == 0)
+            {
+                // If no axis are set then remove the box collider
+                DestroyImmediate(gameObject.GetComponent<BoxCollider>());
+                return;
+            }
+
+            Vector3 center = new Vector3(0, 0, 0);
+            Vector3 size = new Vector3(0.1f, 0.1f, 0.1f);
+            
+            if (xAxisInUse)
+            {
+                center.x = 0.5f;
+                size.x = 1f;
+
+                // Needs an additional offset if only one axis is used
+                if (numberOfAxisInUse == 1) center.y = 0.03f;
+            }
+            if (yAxisInUse)
+            {
+                center.y = 0.5f;
+                size.y = 1f;
+
+                // Needs an additional offset if only one axis is used
+                if (numberOfAxisInUse == 1) center.x = 0.03f;
+            }
+            if (zAxisInUse)
+            {
+                center.z = 0.5f;
+                size.z = 1f;
+
+                // Needs an additional offset if only one axis is used
+                if (numberOfAxisInUse == 1) center.x = 0.03f;
+            }
+
+            BoxCollider boxCollider = gameObject.GetComponent<BoxCollider>();
+            if (boxCollider == null) boxCollider = gameObject.AddComponent<BoxCollider>();
+            boxCollider.center = center;
+            boxCollider.size = size;
+        }
+        private static int CountTrue(params bool[] args)
+        {
+            return args.Count(t => t);
+        }
+
+        public override void updateViewProperties(AbstractVisualisation.PropertyType propertyType)
+        {
+            // Debug.Log("updateViewProperties: " + propertyType);
+
+            base.updateViewProperties(propertyType);
+
+            switch (propertyType)
+            {
+                case AbstractVisualisation.PropertyType.VisualisationType:
+                    // TODO: Handle visualisation types
+                    // When visualisation type changes, we need to:
+                        // Alter Box Collider
+                        // Find any new Normaliser draggers and add a Linear Drive to each
+                        // Connect all Linear Drives to the appropriate Normaliser values
+                    break;
+                case AbstractVisualisation.PropertyType.X:
+                    xAxisInUse = !theVisualizationObject.visualisationReference.xDimension.Attribute.Equals("Undefined");
+                    ConfigVisualisationBoxCollider();
+                    break;
+                case AbstractVisualisation.PropertyType.Y:
+                    yAxisInUse = !theVisualizationObject.visualisationReference.yDimension.Attribute.Equals("Undefined");
+                    ConfigVisualisationBoxCollider();
+                    break;
+                case AbstractVisualisation.PropertyType.Z:
+                    zAxisInUse = !theVisualizationObject.visualisationReference.zDimension.Attribute.Equals("Undefined");
+                    ConfigVisualisationBoxCollider();
+                    break;
+            }
         }
     }
 }
