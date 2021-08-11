@@ -23,10 +23,10 @@ namespace IATK
         private const string assetName = "Interactions.Interactable";
         private const string assetSuffix = ".prefab";
 
-        // Runs when the VRVisualisation Component is first added to a GameObject
+        // Runs when VRVisualisation is first added to a GameObject as a component
         void Reset()
         {
-            ConvertToInteractable(gameObject);
+            MakeInteractable();
 
             // Alter head parent to:
                 // ✔ Set heading back to: [IATK] New VR Visualisation
@@ -38,16 +38,34 @@ namespace IATK
             // Alter visualisation to:
                 // ✔ Add Box Collider
                     // ✔ Add support for both 2D and 3D visualisations
-                // Add a Linear Drive to each Normaliser dragger
+                // Spawn 2 "Linear Joint Drive"s per axis
+                    // Name them MinNormaliser and MinNormaliser
+                        // For each, go to Interactions.LinearJointDrive > 
+                            // Internal > JointContainer > Joint >
+                            // Interactions.Interactable > MeshContainer > Cube
+                            // Then SetActive = false
+                        // For each, go to the same location as above (but without going to Cube)
+                            // Then set MeshContainer as the parent of MinNormaliser from this Axis
+                            // Add Box Collider to MinNormaliser
+                                // Center = all 0
+                                // Size = all 3
                     // Add support for both 2D and 3D visualisations
-                // Connect all Linear Drives to the appropriate Normaliser values
+                    // Connect all Linear Drives to the appropriate Normaliser values
         }
 
+#region Interactable Configuration
+        private void MakeInteractable()
+        {
+            GameObject newInteractable = AddInteractableWrapper(gameObject);
+            InteractableFacade facade = newInteractable.GetComponent<InteractableFacade>();
+
+            ConfigInteractableRigidbody(newInteractable);
+            ConfigInteractableGrabAction(facade);
+        }
         /// <summary>
-        /// Wraps the gameObject in a Tilia interactable prefab
+        /// Wraps a gameObject in a Tilia interactable prefab
         /// </summary>
-        /// <returns>Tilia interactable, that contains the VR Visualisation</returns>
-        private void ConvertToInteractable(GameObject gameObject)
+        private GameObject AddInteractableWrapper(GameObject gameObject)
         {
             GameObject interactablePrefab = GetInteractablePrefab();
 
@@ -73,8 +91,7 @@ namespace IATK
 
             newInteractable.transform.SetSiblingIndex(siblingIndex);
 
-            ConfigInteractableRigidbody(newInteractable);
-            ConfigInteractableGrabbable(facade);
+            return newInteractable;
         }
         private GameObject GetInteractablePrefab()
         {
@@ -96,7 +113,7 @@ namespace IATK
             rigidbody.useGravity = false;
             rigidbody.isKinematic = true;
         }
-        private void ConfigInteractableGrabbable(InteractableFacade facade)
+        private void ConfigInteractableGrabAction(InteractableFacade facade)
         {
             // Set "Primary Action" to "Follow"
             int primaryActionIndex = 1; // Follow
@@ -117,7 +134,43 @@ namespace IATK
             GrabInteractableAction secondaryAction = secondaryActionPrefab.GetComponent<GrabInteractableAction>();
             facade.Configuration.GrabConfiguration.SecondaryAction = secondaryAction;
         }
+#endregion
 
+#region Visualisation Configuration
+        public override void updateViewProperties(AbstractVisualisation.PropertyType propertyType)
+        {
+            // Debug.Log("updateViewProperties: " + propertyType);
+
+            base.updateViewProperties(propertyType);
+
+            switch (propertyType)
+            {
+                case AbstractVisualisation.PropertyType.VisualisationType:
+                    // TODO: Handle visualisation types
+                    // When visualisation type changes, we need to:
+                        // Alter Box Collider
+                        // Find any new Normaliser draggers and add a Linear Drive to each
+                        // Connect all Linear Drives to the appropriate Normaliser values
+                    break;
+                case AbstractVisualisation.PropertyType.X:
+                    xAxisInUse = !theVisualizationObject.visualisationReference.xDimension.Attribute.Equals("Undefined");
+                    ConfigVisualisation();
+                    break;
+                case AbstractVisualisation.PropertyType.Y:
+                    yAxisInUse = !theVisualizationObject.visualisationReference.yDimension.Attribute.Equals("Undefined");
+                    ConfigVisualisation();
+                    break;
+                case AbstractVisualisation.PropertyType.Z:
+                    zAxisInUse = !theVisualizationObject.visualisationReference.zDimension.Attribute.Equals("Undefined");
+                    ConfigVisualisation();
+                    break;
+            }
+        }
+        private void ConfigVisualisation()
+        {
+            ConfigVisualisationBoxCollider();
+            // ConfigVisualisationNormalisers();
+        }
         private void ConfigVisualisationBoxCollider()
         {
             int numberOfAxisInUse = CountTrue(xAxisInUse, yAxisInUse, zAxisInUse);
@@ -166,35 +219,50 @@ namespace IATK
         {
             return args.Count(t => t);
         }
-
-        public override void updateViewProperties(AbstractVisualisation.PropertyType propertyType)
+        private void ConfigVisualisationNormalisers()
         {
-            // Debug.Log("updateViewProperties: " + propertyType);
+            int numberOfAxisInUse = CountTrue(xAxisInUse, yAxisInUse, zAxisInUse);
 
-            base.updateViewProperties(propertyType);
-
-            switch (propertyType)
+            if(numberOfAxisInUse == 0)
             {
-                case AbstractVisualisation.PropertyType.VisualisationType:
-                    // TODO: Handle visualisation types
-                    // When visualisation type changes, we need to:
-                        // Alter Box Collider
-                        // Find any new Normaliser draggers and add a Linear Drive to each
-                        // Connect all Linear Drives to the appropriate Normaliser values
-                    break;
-                case AbstractVisualisation.PropertyType.X:
-                    xAxisInUse = !theVisualizationObject.visualisationReference.xDimension.Attribute.Equals("Undefined");
-                    ConfigVisualisationBoxCollider();
-                    break;
-                case AbstractVisualisation.PropertyType.Y:
-                    yAxisInUse = !theVisualizationObject.visualisationReference.yDimension.Attribute.Equals("Undefined");
-                    ConfigVisualisationBoxCollider();
-                    break;
-                case AbstractVisualisation.PropertyType.Z:
-                    zAxisInUse = !theVisualizationObject.visualisationReference.zDimension.Attribute.Equals("Undefined");
-                    ConfigVisualisationBoxCollider();
-                    break;
+                // If no axis are set then remove the box collider
+                DestroyImmediate(gameObject.GetComponent<BoxCollider>());
+                return;
             }
+
+            Vector3 center = new Vector3(0, 0, 0);
+            Vector3 size = new Vector3(0.1f, 0.1f, 0.1f);
+            
+            if (xAxisInUse)
+            {
+                center.x = 0.5f;
+                size.x = 1f;
+
+                // Needs an additional offset if only one axis is used
+                if (numberOfAxisInUse == 1) center.y = 0.03f;
+            }
+            if (yAxisInUse)
+            {
+                center.y = 0.5f;
+                size.y = 1f;
+
+                // Needs an additional offset if only one axis is used
+                if (numberOfAxisInUse == 1) center.x = 0.03f;
+            }
+            if (zAxisInUse)
+            {
+                center.z = 0.5f;
+                size.z = 1f;
+
+                // Needs an additional offset if only one axis is used
+                if (numberOfAxisInUse == 1) center.x = 0.03f;
+            }
+
+            BoxCollider boxCollider = gameObject.GetComponent<BoxCollider>();
+            if (boxCollider == null) boxCollider = gameObject.AddComponent<BoxCollider>();
+            boxCollider.center = center;
+            boxCollider.size = size;
         }
+#endregion
     }
 }
