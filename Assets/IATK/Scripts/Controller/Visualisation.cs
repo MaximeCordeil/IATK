@@ -234,7 +234,7 @@ namespace IATK
             return retVal;
         }
         
-        public void updateViewProperties(AbstractVisualisation.PropertyType propertyType)
+        public virtual void updateViewProperties(AbstractVisualisation.PropertyType propertyType)
         {
             if (theVisualizationObject == null) CreateVisualisation(visualisationType);
             theVisualizationObject.UpdateVisualisation(propertyType);
@@ -306,7 +306,7 @@ namespace IATK
         }
 
 
-        protected void OnEnable()
+        void OnEnable()
         {
 
             if (uid == null)
@@ -514,13 +514,13 @@ namespace IATK
 
         }
 
-        protected void OnApplicationQuit()
+        void OnApplicationQuit()
         {
             if (theVisualizationObject.creationConfiguration != null)
                 theVisualizationObject.SerializeViewConfiguration(theVisualizationObject.creationConfiguration);
         }
 
-        protected void OnDestroy()
+        void OnDestroy()
         {
             destroyView();
 
