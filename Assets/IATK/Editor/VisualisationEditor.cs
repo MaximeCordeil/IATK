@@ -824,6 +824,14 @@ namespace IATK
             Selection.activeGameObject = obj;
         }
 
+        [MenuItem("GameObject/IATK/Realtime Data Source", false, 10)]
+        static void CreateRealtimeDataSourcePrefab()
+        {
+            GameObject obj = new GameObject("[IATK] New Data Source");
+            obj.AddComponent<RealtimeDataSource>();
+            Selection.activeGameObject = obj;
+        }
+
         [MenuItem("GameObject/IATK/Visualisation", false, 10)]
         static void CreateVisualisationPrefab()
         {

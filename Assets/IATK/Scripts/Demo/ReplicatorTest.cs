@@ -2,6 +2,8 @@
 //Philipp Fleck, ICG @ TuGraz, philipp.fleck@icg.tugraz.at
 //20210708, initial working version
 
+//#define USE_MQTT
+
 using IATK;
 using System;
 using System.Collections;
@@ -78,7 +80,7 @@ namespace IATKTest
         public string PublishImple(string id, string payload)
         {
             string topic = "rr/vis/replication/" + id + "/view";
-#if false
+#if USE_MQTT
             Vizario.MQTTManager.Publish(topic, payload);
 #endif
             return topic;
@@ -87,7 +89,7 @@ namespace IATKTest
         public string PublishDatasourceImple(string id, string payload)
         {
             string topic = "rr/vis/replication/" + id + "/ds";
-#if false
+#if USE_MQTT
             Vizario.MQTTManager.Publish(topic, payload);
 #endif
             return topic;
@@ -95,7 +97,7 @@ namespace IATKTest
 
         public string GetStreamData(string uri, Func<string, string, string> OnNewData)
         {
-#if false
+ #if USE_MQTT
             Vizario.MQTTManager.Subscribe(uri);
             Vizario.MQTTManager.RegisterCallbackTopicCs(OnNewData, uri);
 #endif
@@ -105,7 +107,7 @@ namespace IATKTest
         public void ListenForReplicationUpdates()
         {
             string t = "rr/vis/replication/#";
-#if false
+#if USE_MQTT
             Vizario.MQTTManager.Subscribe(t);
             Vizario.MQTTManager.RegisterCallbackTopicCs(
                 (string topic, string payload) =>
@@ -167,6 +169,11 @@ namespace IATKTest
             }
             else
             {
+                rtds.AddDimension("id", 0, 100);
+                for (var i = 0; i < 100; i++)
+                {
+                    rtds.SetData("id", i);
+                }
                 //rtds.AddDefaultIdDimension();
                 if (true)
                 {
@@ -174,7 +181,7 @@ namespace IATKTest
                     var key = "bandwidth_Mbps";
                     rtds.AddDimension(key, 0, 100);
 
-#if false
+                    #if USE_MQTT
                     Vizario.MQTTManager.Subscribe(t);
                     Vizario.MQTTManager.RegisterCallbackTopicCs((string topic, string payload) =>
                     {
@@ -191,7 +198,8 @@ namespace IATKTest
                                     float fVal = (float)double.Parse(val.ToString());
                                     if (rtds != null)
                                     {
-                                        rtds.AddDataByStr(key, fVal);
+                                        Debug.Log("ReplicatorTest key=" + key + ", fVal=" + fVal);
+                                        rtds.SetData(key, fVal);
                                     }
                                     else
                                     {
@@ -224,7 +232,7 @@ namespace IATKTest
                     var key = "inbound_Mbps";
                     rtds.AddDimension(key, 0, 100);
 
-#if false
+#if USE_MQTT
                     Vizario.MQTTManager.Subscribe(t);
                     Vizario.MQTTManager.RegisterCallbackTopicCs((string topic, string payload) =>
                     {
@@ -241,7 +249,7 @@ namespace IATKTest
                                     float fVal = (float)double.Parse(val.ToString());
                                     if (rtds != null)
                                     {
-                                        rtds.AddDataByStr(key, fVal);
+                                        rtds.SetData(key, fVal);
                                     }
                                     else
                                     {

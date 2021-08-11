@@ -346,6 +346,11 @@ namespace IATK
                                             vis.dataSource = rtds;
 
                                             //rtds.AddDefaultIdDimension();
+                                            rtds.AddDimension("id", 0, 100);
+                                            for (var i = 0; i < 100; i++)
+                                            {
+                                                rtds.SetData("id", i);
+                                            }
                                             rtds.AddDimension(dDimName, 0, 100); //was dKey
                                             vis.updateView(0);
 

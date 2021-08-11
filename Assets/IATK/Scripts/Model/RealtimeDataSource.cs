@@ -74,8 +74,7 @@ namespace IATK
             dimensionData.Add(dd);
             dimensionPointers.Add(0);
 
-            Debug.Log("AddDimension => " + dd.Identifier + ", " + dd.Index);
-
+            //Debug.Log("RTDS AddDimension => " + dd.Identifier + ", " + dd.Index);
             return true;
         }
 
@@ -90,6 +89,29 @@ namespace IATK
             return SetData(this[index].Identifier, val);
         }
 
+
+        /// <summary>
+        /// This is important otherwise the overloading can NOT be resolved from outside (eg JS)
+        /// </summary>
+        /// <param name="dimensionName"></param>
+        /// <param name="val"></param>
+        /// <returns></returns>
+        public bool SetDataStrVal(string dimensionName, float val)
+        {
+            //Debug.Log("RTDS SetDataStrVal => " + dimensionName + ", " + val);
+            return SetData(dimensionName, val);
+        }
+
+        /// <summary>
+        /// This is important otherwise the overloading can NOT be resolved from outside (eg JS)
+        /// </summary>
+        /// <param name="dimensionName"></param>
+        /// <param name="val"></param>
+        /// <returns></returns>
+        public bool SetDataStrStr(string dimensionName, string val)
+        {
+            return SetData(dimensionName, val);
+        }
         /// <summary>
         /// Sets a data value by dimension name (identifier)
         /// </summary>
@@ -101,6 +123,36 @@ namespace IATK
             try
             {
                 var dd = this[dimensionName];
+
+                //this is needed since we do not know the data
+                //auto scale start
+                bool dirty = false;
+                var minV = dd.MetaData.minValue;
+                var maxV = dd.MetaData.minValue;
+                if (dd.MetaData.minValue > val)
+                {
+                    minV = (float)Math.Floor(val);
+                    dirty = true;
+                }
+
+                if (dd.MetaData.maxValue < val)
+                {
+                    maxV = (float)Math.Ceiling(val);
+                    dirty = true;
+                }
+
+                if (dirty)
+                {
+                    //Debug.Log("SetData updating min max => " + minV + ", " + maxV);
+                    var metaData = new DimensionData.Metadata();
+                    metaData.minValue = minV;
+                    metaData.maxValue = maxV;
+                    metaData.type = DataType.Float; //maybe make that adjustable
+                    dd.setMetadata(metaData);
+                }
+                //autoscale stop
+
+                //this is going to cut off values and not doind auto normalization for unknown data
                 if (dd != null && dd.MetaData.minValue <= val && dd.MetaData.maxValue >= val && dd.Data.Length > 0)
                 {
                     SetDimensionData(dd, normaliseValue(val, dd.MetaData.minValue, dd.MetaData.maxValue, 0f, 1f));

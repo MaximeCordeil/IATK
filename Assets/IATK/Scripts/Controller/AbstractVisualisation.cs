@@ -227,6 +227,7 @@ namespace IATK
                 case AbstractVisualisation.GeometryType.Lines:
                     if (visualisationReference.graphDimension != "Undefined")
                     {
+                        //this is a hard cast to csv datasource
                         CSVDataSource csvds = (CSVDataSource)(visualisationReference.dataSource);
                         builder.createIndicesGraphTopology(csvds.GraphEdges);
                         mt = new Material(Shader.Find("IATK/LinesShader"));

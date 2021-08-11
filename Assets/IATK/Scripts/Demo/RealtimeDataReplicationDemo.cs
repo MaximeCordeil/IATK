@@ -3,6 +3,7 @@
 //Philipp Fleck, ICG @ TuGraz, philipp.fleck@icg.tugraz.at
 //20210708, initial working version
 
+//#define USE_MQTT
 
 using IATK;
 using System;
@@ -91,7 +92,7 @@ namespace IATKTest
         public void ConsumeReplicas()
         {
             string t = "rr/vis/replication/#";
-#if false
+#if USE_MQTT
             Vizario.MQTTManager.Subscribe(t);
             Vizario.MQTTManager.RegisterCallbackTopicCs(
                 (string topic, string payload) =>
@@ -145,7 +146,7 @@ namespace IATKTest
                     vis.geometry = AbstractVisualisation.GeometryType.Bars;
                     vis.CreateVisualisation(AbstractVisualisation.VisualisationTypes.SCATTERPLOT);
                 }
-                
+
                 vis.theVisualizationObject.creationConfiguration.DeserializeJson(payload);
                 SyncVis(vis);
             }
@@ -183,8 +184,27 @@ namespace IATKTest
         {
             Debug.Log("ReplicationNotification => id:" + id + ", payload:" + payload);
             string topic = "rr/vis/replication/" + id + "/view";
-#if false
+#if USE_MQTT
             Vizario.MQTTManager.Publish(topic, payload);
+#else
+            string uid = id;
+            if (replicas.ContainsKey(uid))
+            {
+                var vis = replicas[uid].vis;
+                if (payload.Length > 0)
+                {
+                    vis.theVisualizationObject.creationConfiguration.DeserializeJson(payload);
+                    SyncVis(vis);
+                }
+                vis.updateView(0);
+            }
+            else
+            {
+                if (payload.Length > 0)
+                {
+                    SpawnReplicatedVis(uid, payload);
+                }
+            }
 #endif
             return id;
         }
@@ -278,11 +298,11 @@ namespace IATKTest
                         if (isVisReady && vis != null)
                         {
 
-                            Debug.Log("-- SimulPoints before vis ...");
+                            //Debug.Log("-- SimulPoints before vis ...");
                             //view.TweenPosition();
                             //vb.updateView();
                             vis.updateView(0);
-                            Debug.Log("-- SimulPoints after vis ...");
+                            //Debug.Log("-- SimulPoints after vis ...");
                         }
                     }
                 }
