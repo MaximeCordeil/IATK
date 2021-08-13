@@ -29,12 +29,8 @@ namespace IATK
         private const string assetSuffix = ".prefab";
 
         /* TODO:
-
-        - Fix issue with overlapping Y and Z axis normalisers
-        - Fix issue with sliders breaking when visualisation is scaled
-
+        - Handle scaling of visualisation for normaliser handels
         - Handle different visualisation types
-
         */
 
         void Reset()
@@ -43,7 +39,7 @@ namespace IATK
             MakeInteractable();
         }
 
-#region Interactable Handeling
+#region Interactable Handling
         private void MakeInteractable()
         {
             GameObject newInteractable = WrapInInteractablePrefab(gameObject, prefabInteractable, "[Interactable]");
@@ -95,7 +91,7 @@ namespace IATK
         }
 #endregion
 
-#region Visualisation Handeling
+#region Visualisation Handling
         public override void updateViewProperties(AbstractVisualisation.PropertyType propertyType)
         {
             // Debug.Log("updateViewProperties: " + propertyType);
@@ -123,12 +119,15 @@ namespace IATK
                     zAxisInUse = !theVisualizationObject.visualisationReference.zDimension.Attribute.Equals("Undefined");
                     UpdateVisualisation();
                     break;
+                case AbstractVisualisation.PropertyType.Scaling:
+                    // TODO: Handle scaling of visualisation for normaliser handels
+                    break;
             }
         }
         private void UpdateVisualisation()
         {
             AddOrUpdateVisualisationBoxCollider();
-            AddOrUpdateInteractableNormalisers();
+            CreateInteractableNormalisers();
         }
         private void AddOrUpdateVisualisationBoxCollider()
         {
@@ -178,64 +177,71 @@ namespace IATK
         {
             return args.Count(t => t);
         }
-        private void AddOrUpdateInteractableNormalisers()
+        private void CreateInteractableNormalisers()
         {
             Axis[] axes = GetComponentsInChildren<Axis>();
             if (axes == null) return;
 
             foreach(Axis axis in axes)
             {
-                ConvertToLinearJointDrive(axis.transform.Find("MinNormaliser")?.gameObject, axis.AxisDirection, false);
-                ConvertToLinearJointDrive(axis.transform.Find("MaxNormaliser")?.gameObject, axis.AxisDirection, true);
+                ConvertToLinearJointDrive(axis.transform.Find("MinAxisHandle")?.gameObject, axis.AxisDirection, false);
+                ConvertToLinearJointDrive(axis.transform.Find("MaxAxisHandle")?.gameObject, axis.AxisDirection, true);
             }
         }
         /// <summary>
-        /// Wraps a given normaliser GameObject in a Tilia LinearJointDrive and configures the LinearJointDrive based on a axis direction
+        /// Wraps a given normaliser GameObject in a Tilia 'LinearJointDrive' and configures the Linear Joint based on a axis direction
         /// </summary>
-        /// <param name="normaliser"></param>
+        /// <param name="handle">The GameObject to wrap</param>
         /// <param name="axisDirection">X=1, Y=2, Z=3</param>
-        private void ConvertToLinearJointDrive(GameObject normaliser, int axisDirection, bool isMax)
+        /// <param name="isMax">True if the normaliser is the maximum filter</param>
+        private void ConvertToLinearJointDrive(GameObject handle, int axisDirection, bool isMax)
         {
-            if (normaliser == null) return;
+            if (handle == null) return;
+            handle.SetActive(true);
 
+            GameObject linerJoint = WrapInInteractablePrefab(handle, prefabInteractionsLinearJointDrive, "[Linear Joint]");
+            LinearDriveFacade linerJointFacade = linerJoint.GetComponent<LinearDriveFacade>();
+
+            ConfigNormaliserSlider(handle, axisDirection);
+            ConfigLinerJoint(linerJoint, axisDirection);
+            ConfigLinerJointFacade(linerJointFacade, axisDirection, isMax);
+
+            // Connects the linerJointFacade with the interactableFacade so the position of the normaliser object is correct 
+            InteractableFacade interactableFacade = handle.transform.parent.parent.GetComponent<InteractableFacade>();
+            UnityEventTools.AddVoidPersistentListener(interactableFacade.LastUngrabbed, linerJointFacade.SetTargetValueByStepValue);
+        }
+        private void ConfigNormaliserSlider(GameObject handle, int axisDirection)
+        {
             // Sets the layer to be layer 3 ("Normaliser") so it won't collide with other normalisers
-            normaliser.layer = 3;
+            handle.layer = 3;
 
             // Adds a box collider to the normaliser object so that it can interact with the user's 'hands'
-            BoxCollider boxCollider = normaliser.GetComponent<BoxCollider>();
-            if (boxCollider == null) boxCollider = normaliser.AddComponent<BoxCollider>();
+            BoxCollider boxCollider = handle.GetComponent<BoxCollider>();
+            if (boxCollider == null) boxCollider = handle.AddComponent<BoxCollider>();
             boxCollider.center = Vector3.zero;
             boxCollider.size = new Vector3(3, 3, 3);
 
-            GameObject linerJoint = WrapInInteractablePrefab(normaliser, prefabInteractionsLinearJointDrive, "[Linear Joint]");
-
-            // Sets the rotation of the normaliser object
-            normaliser.transform.localRotation = axisDirection switch
-            {
-                1 => Quaternion.Euler(0, 0, 90f), // X Axis
-                2 => Quaternion.Euler(0, 0, -90f), // Y Axis
-                3 => Quaternion.Euler(0, 0, -90f), // Z Axis
-                _ => throw new Exception("Invalid Axis Direction")
-            };
-
-            normaliser.transform.localScale = new Vector3(0.025f, 0.025f, 0.025f);
+            handle.transform.localScale = new Vector3(0.025f, 0.025f, 0.025f);
+        }
+        private void ConfigLinerJoint(GameObject linerJoint, int axisDirection)
+        {
             linerJoint.transform.localScale = new Vector3(1f, 1f, 1f);
 
             // Sets the center position of the normaliser object to the middle of the axis
             // Values are not symmetrical due to slight differences in how each axis is positioned 
             linerJoint.transform.position = axisDirection switch
             {
-                1 => new Vector3(0, -0.07f, 0f), // X Axis
-                2 => new Vector3(-0.07f, 0, 0f), // Y Axis
-                3 => new Vector3(-0.07f, -0.02f, 0), // Z Axis
+                1 => new Vector3(0.5f, -0.07f, 0f), // X Axis
+                2 => new Vector3(-0.07f, 0.5f, 0f), // Y Axis
+                3 => new Vector3(-0.07f, -0.02f, 0.5f), // Z Axis
                 _ => throw new Exception("Invalid Axis Direction")
             };
 
             // Resets the rotation of the linerJoint to 0 because the rotation only needs to be on the normaliser object
             linerJoint.transform.localRotation = Quaternion.identity;
-
-            LinearDriveFacade linerJointFacade = linerJoint.GetComponent<LinearDriveFacade>();
-
+        }
+        private LinearDriveFacade ConfigLinerJointFacade(LinearDriveFacade linerJointFacade, int axisDirection, bool isMax)
+        {
             // Connects the linerJoint to the corresponding min/max axis
             UnityAction<float> setScaleAction = (axisDirection, isMax) switch
             {
@@ -255,16 +261,10 @@ namespace IATK
             linerJointFacade.MoveToTargetValue = true;
             linerJointFacade.TargetValue = isMax ? 1f : 0f;
             linerJointFacade.SetStepRangeMaximum(100f);
-            linerJointFacade.DriveLimit = 0.5f;
 
-
-            // Connects the linerJointFacade with the interactableFacade so the position of the normaliser object is correct 
-            InteractableFacade interactableFacade = normaliser.transform.parent.parent.GetComponent<InteractableFacade>();
-            UnityEventTools.AddVoidPersistentListener(interactableFacade.LastUngrabbed, linerJointFacade.SetTargetValueByStepValue);
+            return linerJointFacade;
         }
-
 #endregion
-
         /// <summary>
         /// Wraps a gameObject in a given Tilia interactable prefab with a name suffix
         /// </summary>
