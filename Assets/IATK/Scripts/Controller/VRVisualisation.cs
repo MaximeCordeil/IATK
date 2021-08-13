@@ -1,12 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using Tilia.Interactions.Interactables.Interactables;
-using Tilia.Interactions.Interactables.Interactables.Grab.Receiver;
 using Tilia.Interactions.Interactables.Interactables.Grab.Action;
 using UnityEngine;
 using UnityEditor;
 using System;
 using System.Linq;
+using Tilia.Interactions.Controllables.LinearDriver;
+using Tilia.Interactions.Interactables.Interactors;
+using UnityEngine.Events;
+using Tilia.Interactions.Interactables.Interactables.Grab.Receiver;
+using UnityEditor.Events;
 
 namespace IATK
 {
@@ -20,80 +24,35 @@ namespace IATK
         private bool yAxisInUse = false; 
         private bool zAxisInUse = false; 
 
-        private const string assetName = "Interactions.Interactable";
+        private const string prefabInteractable = "Interactions.Interactable";
+        private const string prefabInteractionsLinearJointDrive = "Interactions.LinearJointDrive";
         private const string assetSuffix = ".prefab";
 
-        // Runs when VRVisualisation is first added to a GameObject as a component
+        /* TODO:
+
+        - Fix issue with overlapping Y and Z axis normalisers
+        - Fix issue with sliders breaking when visualisation is scaled
+
+        - Handle different visualisation types
+
+        */
+
         void Reset()
         {
+            // Runs when VRVisualisation is first added to a GameObject as a component
             MakeInteractable();
-
-            // Alter head parent to:
-                // ✔ Set heading back to: [IATK] New VR Visualisation
-                // ✔ Alter Rigidbody:
-                    // ✔ Disable gravity
-                    // ✔ Enable kinematic
-                // ✔ Set grab actions
-            
-            // Alter visualisation to:
-                // ✔ Add Box Collider
-                    // ✔ Add support for both 2D and 3D visualisations
-                // Spawn 2 "Linear Joint Drive"s per axis
-                    // Name them MinNormaliser and MinNormaliser
-                        // For each, go to Interactions.LinearJointDrive > 
-                            // Internal > JointContainer > Joint >
-                            // Interactions.Interactable > MeshContainer > Cube
-                            // Then SetActive = false
-                        // For each, go to the same location as above (but without going to Cube)
-                            // Then set MeshContainer as the parent of MinNormaliser from this Axis
-                            // Add Box Collider to MinNormaliser
-                                // Center = all 0
-                                // Size = all 3
-                    // Add support for both 2D and 3D visualisations
-                    // Connect all Linear Drives to the appropriate Normaliser values
         }
 
-#region Interactable Configuration
+#region Interactable Handeling
         private void MakeInteractable()
         {
-            GameObject newInteractable = AddInteractableWrapper(gameObject);
+            GameObject newInteractable = WrapInInteractablePrefab(gameObject, prefabInteractable, "[Interactable]");
             InteractableFacade facade = newInteractable.GetComponent<InteractableFacade>();
 
             ConfigInteractableRigidbody(newInteractable);
             ConfigInteractableGrabAction(facade);
         }
-        /// <summary>
-        /// Wraps a gameObject in a Tilia interactable prefab
-        /// </summary>
-        private GameObject AddInteractableWrapper(GameObject gameObject)
-        {
-            GameObject interactablePrefab = GetInteractablePrefab();
-
-            int siblingIndex = gameObject.transform.GetSiblingIndex();
-            GameObject newInteractable = (GameObject)PrefabUtility.InstantiatePrefab(interactablePrefab);
-            newInteractable.name = gameObject.name + " Interactable";
-            InteractableFacade facade = newInteractable.GetComponent<InteractableFacade>();
-
-            newInteractable.transform.SetParent(gameObject.transform.parent);
-            newInteractable.transform.localPosition = gameObject.transform.localPosition;
-            newInteractable.transform.localRotation = gameObject.transform.localRotation;
-            newInteractable.transform.localScale = gameObject.transform.localScale;
-
-            foreach (MeshRenderer defaultMeshes in facade.Configuration.MeshContainer.GetComponentsInChildren<MeshRenderer>())
-            {
-                defaultMeshes.gameObject.SetActive(false);
-            }
-
-            gameObject.transform.SetParent(facade.Configuration.MeshContainer.transform);
-            gameObject.transform.localPosition = Vector3.zero;
-            gameObject.transform.localRotation = Quaternion.identity;
-            gameObject.transform.localScale = Vector3.one;
-
-            newInteractable.transform.SetSiblingIndex(siblingIndex);
-
-            return newInteractable;
-        }
-        private GameObject GetInteractablePrefab()
+        private GameObject GetPrefab(string assetName)
         {
             GameObject interactablePrefab = null;
             foreach (string assetGUID in AssetDatabase.FindAssets(assetName))
@@ -136,7 +95,7 @@ namespace IATK
         }
 #endregion
 
-#region Visualisation Configuration
+#region Visualisation Handeling
         public override void updateViewProperties(AbstractVisualisation.PropertyType propertyType)
         {
             // Debug.Log("updateViewProperties: " + propertyType);
@@ -154,24 +113,24 @@ namespace IATK
                     break;
                 case AbstractVisualisation.PropertyType.X:
                     xAxisInUse = !theVisualizationObject.visualisationReference.xDimension.Attribute.Equals("Undefined");
-                    ConfigVisualisation();
+                    UpdateVisualisation();
                     break;
                 case AbstractVisualisation.PropertyType.Y:
                     yAxisInUse = !theVisualizationObject.visualisationReference.yDimension.Attribute.Equals("Undefined");
-                    ConfigVisualisation();
+                    UpdateVisualisation();
                     break;
                 case AbstractVisualisation.PropertyType.Z:
                     zAxisInUse = !theVisualizationObject.visualisationReference.zDimension.Attribute.Equals("Undefined");
-                    ConfigVisualisation();
+                    UpdateVisualisation();
                     break;
             }
         }
-        private void ConfigVisualisation()
+        private void UpdateVisualisation()
         {
-            ConfigVisualisationBoxCollider();
-            // ConfigVisualisationNormalisers();
+            AddOrUpdateVisualisationBoxCollider();
+            AddOrUpdateInteractableNormalisers();
         }
-        private void ConfigVisualisationBoxCollider()
+        private void AddOrUpdateVisualisationBoxCollider()
         {
             int numberOfAxisInUse = CountTrue(xAxisInUse, yAxisInUse, zAxisInUse);
 
@@ -219,49 +178,177 @@ namespace IATK
         {
             return args.Count(t => t);
         }
-        private void ConfigVisualisationNormalisers()
+        private void AddOrUpdateInteractableNormalisers()
         {
-            int numberOfAxisInUse = CountTrue(xAxisInUse, yAxisInUse, zAxisInUse);
+            Axis[] axes = GetComponentsInChildren<Axis>();
+            if (axes == null) return;
 
-            if(numberOfAxisInUse == 0)
+            foreach(Axis axis in axes)
             {
-                // If no axis are set then remove the box collider
-                DestroyImmediate(gameObject.GetComponent<BoxCollider>());
-                return;
+                ConvertToLinearJointDrive(axis.transform.Find("MinNormaliser")?.gameObject, axis.AxisDirection, false);
+                ConvertToLinearJointDrive(axis.transform.Find("MaxNormaliser")?.gameObject, axis.AxisDirection, true);
             }
+        }
+        /// <summary>
+        /// Wraps a given normaliser GameObject in a Tilia LinearJointDrive and configures the LinearJointDrive based on a axis direction
+        /// </summary>
+        /// <param name="normaliser"></param>
+        /// <param name="axisDirection">X=1, Y=2, Z=3</param>
+        private void ConvertToLinearJointDrive(GameObject normaliser, int axisDirection, bool isMax)
+        {
+            if (normaliser == null) return;
 
-            Vector3 center = new Vector3(0, 0, 0);
-            Vector3 size = new Vector3(0.1f, 0.1f, 0.1f);
-            
-            if (xAxisInUse)
+            // Sets the layer to be layer 3 ("Normaliser") so it won't collide with other normalisers
+            normaliser.layer = 3;
+
+            // Adds a box collider to the normaliser object so that it can interact with the user's 'hands'
+            BoxCollider boxCollider = normaliser.GetComponent<BoxCollider>();
+            if (boxCollider == null) boxCollider = normaliser.AddComponent<BoxCollider>();
+            boxCollider.center = Vector3.zero;
+            boxCollider.size = new Vector3(3, 3, 3);
+
+            GameObject linerJoint = WrapInInteractablePrefab(normaliser, prefabInteractionsLinearJointDrive, "[Linear Joint]");
+
+            // Sets the rotation of the normaliser object
+            normaliser.transform.localRotation = axisDirection switch
             {
-                center.x = 0.5f;
-                size.x = 1f;
+                1 => Quaternion.Euler(0, 0, 90f), // X Axis
+                2 => Quaternion.Euler(0, 0, -90f), // Y Axis
+                3 => Quaternion.Euler(0, 0, -90f), // Z Axis
+                _ => throw new Exception("Invalid Axis Direction")
+            };
 
-                // Needs an additional offset if only one axis is used
-                if (numberOfAxisInUse == 1) center.y = 0.03f;
-            }
-            if (yAxisInUse)
+            normaliser.transform.localScale = new Vector3(0.025f, 0.025f, 0.025f);
+            linerJoint.transform.localScale = new Vector3(1f, 1f, 1f);
+
+            // Sets the center position of the normaliser object to the middle of the axis
+            // Values are not symmetrical due to slight differences in how each axis is positioned 
+            linerJoint.transform.position = axisDirection switch
             {
-                center.y = 0.5f;
-                size.y = 1f;
+                1 => new Vector3(0, -0.07f, 0f), // X Axis
+                2 => new Vector3(-0.07f, 0, 0f), // Y Axis
+                3 => new Vector3(-0.07f, -0.02f, 0), // Z Axis
+                _ => throw new Exception("Invalid Axis Direction")
+            };
 
-                // Needs an additional offset if only one axis is used
-                if (numberOfAxisInUse == 1) center.x = 0.03f;
-            }
-            if (zAxisInUse)
+            // Resets the rotation of the linerJoint to 0 because the rotation only needs to be on the normaliser object
+            linerJoint.transform.localRotation = Quaternion.identity;
+
+            LinearDriveFacade linerJointFacade = linerJoint.GetComponent<LinearDriveFacade>();
+
+            // Connects the linerJoint to the corresponding min/max axis
+            UnityAction<float> setScaleAction = (axisDirection, isMax) switch
             {
-                center.z = 0.5f;
-                size.z = 1f;
+                (1, false) => SetMinScaleX,
+                (1, true) => SetMaxScaleX,
+                (2, false) => SetMinScaleY,
+                (2, true) => SetMaxScaleY,
+                (3, false) => SetMinScaleZ,
+                (3, true) => SetMaxScaleZ,
+                _ => throw new Exception("Invalid Axis Direction")
+            };
+            UnityEventTools.AddPersistentListener(linerJointFacade.ValueChanged, setScaleAction);
 
-                // Needs an additional offset if only one axis is used
-                if (numberOfAxisInUse == 1) center.x = 0.03f;
+            // All drive axes are the same as they are rotated by a parent object to the specific axis
+            linerJointFacade.DriveAxis = Tilia.Interactions.Controllables.Driver.DriveAxis.Axis.YAxis;
+
+            linerJointFacade.MoveToTargetValue = true;
+            linerJointFacade.TargetValue = isMax ? 1f : 0f;
+            linerJointFacade.SetStepRangeMaximum(100f);
+            linerJointFacade.DriveLimit = 0.5f;
+
+
+            // Connects the linerJointFacade with the interactableFacade so the position of the normaliser object is correct 
+            InteractableFacade interactableFacade = normaliser.transform.parent.parent.GetComponent<InteractableFacade>();
+            UnityEventTools.AddVoidPersistentListener(interactableFacade.LastUngrabbed, linerJointFacade.SetTargetValueByStepValue);
+        }
+
+#endregion
+
+        /// <summary>
+        /// Wraps a gameObject in a given Tilia interactable prefab with a name suffix
+        /// </summary>
+        private GameObject WrapInInteractablePrefab(GameObject gameObject, string assetName, string suffix)
+        {
+            GameObject interactablePrefab = GetPrefab(assetName);
+            GameObject newObject = (GameObject)PrefabUtility.InstantiatePrefab(interactablePrefab);
+            newObject.name = gameObject.name + " " + suffix;
+
+            newObject.transform.SetParent(gameObject.transform.parent);
+            newObject.transform.localPosition = gameObject.transform.localPosition;
+            newObject.transform.localRotation = gameObject.transform.localRotation;
+            newObject.transform.localScale = gameObject.transform.localScale;
+
+            Transform meshContainer = RecursiveFindChild(newObject.transform, "MeshContainer");
+            foreach (Transform child in meshContainer)
+                child.gameObject.SetActive(false);
+
+            int siblingIndex = gameObject.transform.GetSiblingIndex(); 
+
+            gameObject.transform.SetParent(meshContainer);
+            gameObject.transform.localPosition = Vector3.zero;
+            gameObject.transform.localRotation = Quaternion.identity;
+            gameObject.transform.localScale = Vector3.one;
+
+            newObject.transform.SetSiblingIndex(siblingIndex);
+
+            return newObject;
+        }
+        private Transform RecursiveFindChild(Transform parent, string childName)
+        {
+            foreach (Transform child in parent)
+            {
+                if(child.name == childName) return child;
+                else
+                {
+                    Transform found = RecursiveFindChild(child, childName);
+                    if (found != null) return found;
+                }
             }
+            return null;
+        }
 
-            BoxCollider boxCollider = gameObject.GetComponent<BoxCollider>();
-            if (boxCollider == null) boxCollider = gameObject.AddComponent<BoxCollider>();
-            boxCollider.center = center;
-            boxCollider.size = size;
+#region Visualisation Property Setting
+        public void SetGeometrySize(float size)
+        {
+            this.size = size + 0.5f;
+            updateViewProperties(AbstractVisualisation.PropertyType.SizeValues);
+        }
+        public void SetMinScaleX(float minScale)
+        {
+            if(theVisualizationObject?.creationConfiguration == null) return;
+            xDimension.minScale = minScale + 0.5f;
+            updateViewProperties(AbstractVisualisation.PropertyType.Scaling);
+        }
+        public void SetMaxScaleX(float maxScale)
+        {
+            if(theVisualizationObject?.creationConfiguration == null) return;
+            xDimension.maxScale = maxScale + 0.5f;
+            updateViewProperties(AbstractVisualisation.PropertyType.Scaling);
+        }
+        public void SetMinScaleY(float minScale)
+        {
+            if(theVisualizationObject?.creationConfiguration == null) return;
+            yDimension.minScale = minScale + 0.5f;
+            updateViewProperties(AbstractVisualisation.PropertyType.Scaling);
+        }
+        public void SetMaxScaleY(float maxScale)
+        {
+            if(theVisualizationObject?.creationConfiguration == null) return;
+            yDimension.maxScale = maxScale + 0.5f;
+            updateViewProperties(AbstractVisualisation.PropertyType.Scaling);
+        }
+        public void SetMinScaleZ(float minScale)
+        {
+            if(theVisualizationObject?.creationConfiguration == null) return;
+            zDimension.minScale = minScale + 0.5f;
+            updateViewProperties(AbstractVisualisation.PropertyType.Scaling);
+        }
+        public void SetMaxScaleZ(float maxScale)
+        {
+            if(theVisualizationObject?.creationConfiguration == null) return;
+            zDimension.maxScale = maxScale + 0.5f;
+            updateViewProperties(AbstractVisualisation.PropertyType.Scaling);
         }
 #endregion
     }
