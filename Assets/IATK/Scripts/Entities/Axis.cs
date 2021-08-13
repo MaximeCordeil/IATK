@@ -35,12 +35,6 @@ namespace IATK
         [SerializeField]
         [Tooltip("The maximum normaliser handle.")]
         private Transform maxNormaliserObject;
-        [SerializeField]
-        [Tooltip("The minimum filter handle.")]
-        private Transform minFilterObject;
-        [SerializeField]
-        [Tooltip("The maximum normaliser handle.")]
-        private Transform maxFilterObject;
         [Header("Axis Visual Properties")]
         [SerializeField]
         [Tooltip("The maximum amount of spacing that each axis tick label should have between each other.")]
