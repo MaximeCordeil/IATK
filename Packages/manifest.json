@@ -17,7 +17,7 @@
     "com.unity.textmeshpro": "3.0.6",
     "com.unity.timeline": "1.7.1",
     "com.unity.ugui": "1.0.0",
-    "com.unity.xr.oculus": "1.9.1",
+    "com.unity.xr.openxr": "1.2.8",
     "io.extendreality.tilia.camerarigs.trackedalias.unity": "1.6.8",
     "io.extendreality.tilia.camerarigs.xrpluginframework.unity": "1.1.8",
     "io.extendreality.tilia.input.unityinputsystem": "1.1.8",
