@@ -1,16 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
-using Tilia.Interactions.Interactables.Interactables;
-using Tilia.Interactions.Interactables.Interactables.Grab.Action;
-using UnityEngine;
-using UnityEditor;
 using System;
 using System.Linq;
-using Tilia.Interactions.Controllables.LinearDriver;
-using Tilia.Interactions.Interactables.Interactors;
+using UnityEngine;
 using UnityEngine.Events;
-using Tilia.Interactions.Interactables.Interactables.Grab.Receiver;
-using UnityEditor.Events;
+using Tilia.Interactions.Controllables.LinearDriver;
+using Tilia.Interactions.Interactables.Interactables;
+using UnityAction = UnityEngine.Events.UnityAction<Tilia.Interactions.Interactables.Interactors.InteractorFacade>;
 
 namespace IATK
 {
@@ -20,76 +14,19 @@ namespace IATK
     [ExecuteInEditMode]
     public class VRVisualisation : Visualisation
     {
+        private GameObject linearJointDrivePrefab;
         private bool xAxisInUse = false; 
         private bool yAxisInUse = false; 
         private bool zAxisInUse = false; 
 
-        private const string prefabInteractable = "Interactions.Interactable";
-        private const string prefabInteractionsLinearJointDrive = "Interactions.LinearJointDrive";
-        private const string assetSuffix = ".prefab";
-
         /* TODO:
+        - ✔ Move UnityEditor code to editor files
         - Handle scaling of visualisation for normaliser handels
         - Handle different visualisation types
         */
-
-        void Reset()
-        {
-            // Runs when VRVisualisation is first added to a GameObject as a component
-            MakeInteractable();
-        }
-
-#region Interactable Handling
-        private void MakeInteractable()
-        {
-            GameObject newInteractable = WrapInInteractablePrefab(gameObject, prefabInteractable, "[Interactable]");
-            InteractableFacade facade = newInteractable.GetComponent<InteractableFacade>();
-
-            ConfigInteractableRigidbody(newInteractable);
-            ConfigInteractableGrabAction(facade);
-        }
-        private GameObject GetPrefab(string assetName)
-        {
-            GameObject interactablePrefab = null;
-            foreach (string assetGUID in AssetDatabase.FindAssets(assetName))
-            {
-                string assetPath = AssetDatabase.GUIDToAssetPath(assetGUID);
-                if (assetPath.Contains(assetName + assetSuffix))
-                {
-                    // TODO: See if I can make this more efficient
-                    interactablePrefab = AssetDatabase.LoadAssetAtPath<GameObject>(assetPath);
-                }
-            }
-            return interactablePrefab;
-        }
-        private void ConfigInteractableRigidbody(GameObject interactable)
-        {
-            Rigidbody rigidbody = interactable.GetComponent<Rigidbody>();
-            rigidbody.useGravity = false;
-            rigidbody.isKinematic = true;
-        }
-        private void ConfigInteractableGrabAction(InteractableFacade facade)
-        {
-            // Set "Primary Action" to "Follow"
-            int primaryActionIndex = 1; // Follow
-            GameObject primaryActionPrefab = (GameObject)PrefabUtility.InstantiatePrefab(facade.Configuration.GrabConfiguration.ActionTypes.NonSubscribableElements[primaryActionIndex], facade.Configuration.GrabConfiguration.ActionTypes.transform);
-            GrabInteractableAction primaryAction = primaryActionPrefab.GetComponent<GrabInteractableAction>();
-            facade.Configuration.GrabConfiguration.PrimaryAction = primaryAction;
-
-            // Set "Grab Offset" to "Precision Point"
-            GrabInteractableFollowAction followAction = (GrabInteractableFollowAction)primaryAction;
-            SerializedObject actionObject = new SerializedObject(followAction);
-            SerializedProperty foundProperty = actionObject.FindProperty("grabOffset");
-            foundProperty.intValue = 2; // Precision Point
-            foundProperty.serializedObject.ApplyModifiedProperties();
-            
-            // Set "Secondary Action" to "Scale"
-            int secondaryActionIndex = 4; // Scale
-            GameObject secondaryActionPrefab = (GameObject)PrefabUtility.InstantiatePrefab(facade.Configuration.GrabConfiguration.ActionTypes.NonSubscribableElements[secondaryActionIndex], facade.Configuration.GrabConfiguration.ActionTypes.transform);
-            GrabInteractableAction secondaryAction = secondaryActionPrefab.GetComponent<GrabInteractableAction>();
-            facade.Configuration.GrabConfiguration.SecondaryAction = secondaryAction;
-        }
-#endregion
+        
+        public void initialize(GameObject go) { linearJointDrivePrefab = go; }
+        void Start() { CreateInteractableNormalisers(); }
 
 #region Visualisation Handling
         public override void updateViewProperties(AbstractVisualisation.PropertyType propertyType)
@@ -124,11 +61,7 @@ namespace IATK
                     break;
             }
         }
-        private void UpdateVisualisation()
-        {
-            AddOrUpdateVisualisationBoxCollider();
-            CreateInteractableNormalisers();
-        }
+        private void UpdateVisualisation() { AddOrUpdateVisualisationBoxCollider(); }
         private void AddOrUpdateVisualisationBoxCollider()
         {
             int numberOfAxisInUse = CountTrue(xAxisInUse, yAxisInUse, zAxisInUse);
@@ -173,10 +106,7 @@ namespace IATK
             boxCollider.center = center;
             boxCollider.size = size;
         }
-        private static int CountTrue(params bool[] args)
-        {
-            return args.Count(t => t);
-        }
+        private static int CountTrue(params bool[] args) { return args.Count(t => t); }
         private void CreateInteractableNormalisers()
         {
             Axis[] axes = GetComponentsInChildren<Axis>();
@@ -184,8 +114,24 @@ namespace IATK
 
             foreach(Axis axis in axes)
             {
-                ConvertToLinearJointDrive(axis.transform.Find("MinAxisHandle")?.gameObject, axis.AxisDirection, false);
-                ConvertToLinearJointDrive(axis.transform.Find("MaxAxisHandle")?.gameObject, axis.AxisDirection, true);
+                ConfigureHandle(axis, "MinAxisHandle", false);
+                ConfigureHandle(axis, "MaxAxisHandle", true);
+            }
+        }
+        private void ConfigureHandle(Axis axis, string handleName, bool isMax)
+        {
+            int axisDirection = axis.AxisDirection;
+            GameObject handle = axis.transform.Find(handleName)?.gameObject;
+
+            if(handle != null)
+            {
+                // Runs once the first time the scene is played after the visualisation was created
+                ConvertToLinearJointDrive(handle, axisDirection, isMax);
+            }
+            else
+            {
+                // Runs every time the scene is played after the first time
+                ConfigureHandle(axis.transform.Find(handleName + " [Linear Joint]"), axisDirection, isMax);
             }
         }
         /// <summary>
@@ -196,10 +142,10 @@ namespace IATK
         /// <param name="isMax">True if the normaliser is the maximum filter</param>
         private void ConvertToLinearJointDrive(GameObject handle, int axisDirection, bool isMax)
         {
-            if (handle == null) return;
             handle.SetActive(true);
 
-            GameObject linerJoint = WrapInInteractablePrefab(handle, prefabInteractionsLinearJointDrive, "[Linear Joint]");
+            GameObject newLinerJointPrefab = Instantiate(linearJointDrivePrefab);
+            GameObject linerJoint = WrapObject(handle, newLinerJointPrefab, "[Linear Joint]");
             LinearDriveFacade linerJointFacade = linerJoint.GetComponent<LinearDriveFacade>();
 
             ConfigNormaliserSlider(handle, axisDirection);
@@ -208,7 +154,21 @@ namespace IATK
 
             // Connects the linerJointFacade with the interactableFacade so the position of the normaliser object is correct 
             InteractableFacade interactableFacade = handle.transform.parent.parent.GetComponent<InteractableFacade>();
-            UnityEventTools.AddVoidPersistentListener(interactableFacade.LastUngrabbed, linerJointFacade.SetTargetValueByStepValue);
+
+            UnityAction action = (_) => linerJointFacade.SetTargetValueByStepValue();
+            interactableFacade.LastUngrabbed.AddListener(action);
+        }
+        private void ConfigureHandle(Transform handle, int axisDirection, bool isMax)
+        {
+            Transform interactable = RecursiveFindChild(handle, "Interactions.Interactable");
+
+            // Connects the linerJointFacade with the interactableFacade so the position of the normaliser object is correct 
+            InteractableFacade interactableFacade = interactable.GetComponent<InteractableFacade>();
+
+            LinearDriveFacade linerJointFacade = handle.GetComponent<LinearDriveFacade>();
+            UnityAction action = (_) => linerJointFacade.SetTargetValueByStepValue();
+            interactableFacade.LastUngrabbed.AddListener(action);
+            ConfigLinerJointFacade(linerJointFacade, axisDirection, isMax);
         }
         private void ConfigNormaliserSlider(GameObject handle, int axisDirection)
         {
@@ -253,7 +213,7 @@ namespace IATK
                 (3, true) => SetMaxScaleZ,
                 _ => throw new Exception("Invalid Axis Direction")
             };
-            UnityEventTools.AddPersistentListener(linerJointFacade.ValueChanged, setScaleAction);
+            linerJointFacade.ValueChanged.AddListener(setScaleAction);
 
             // All drive axes are the same as they are rotated by a parent object to the specific axis
             linerJointFacade.DriveAxis = Tilia.Interactions.Controllables.Driver.DriveAxis.Axis.YAxis;
@@ -265,36 +225,47 @@ namespace IATK
             return linerJointFacade;
         }
 #endregion
+
+#region Helper Functions
         /// <summary>
-        /// Wraps a gameObject in a given Tilia interactable prefab with a name suffix
+        /// Wraps the current game object in another. Used to convert visualisations into interactables.
         /// </summary>
-        private GameObject WrapInInteractablePrefab(GameObject gameObject, string assetName, string suffix)
+        /// <param name="toWrapIn">The GameObject to wrap the current object in</param>
+        /// <param name="suffix">The suffix name of the wrapping object</param>
+        /// <returns>The wrapped GameObject</returns>
+        public GameObject WrapIn(GameObject toWrapIn, string suffix)
         {
-            GameObject interactablePrefab = GetPrefab(assetName);
-            GameObject newObject = (GameObject)PrefabUtility.InstantiatePrefab(interactablePrefab);
-            newObject.name = gameObject.name + " " + suffix;
+            return WrapObject(gameObject, toWrapIn, suffix);
+        }
 
-            newObject.transform.SetParent(gameObject.transform.parent);
-            newObject.transform.localPosition = gameObject.transform.localPosition;
-            newObject.transform.localRotation = gameObject.transform.localRotation;
-            newObject.transform.localScale = gameObject.transform.localScale;
+        /// <summary>
+        /// Wraps a GameObject in another GameObject with a name suffix. Used to convert visualisations into interactables.
+        /// </summary>
+        private static GameObject WrapObject(GameObject toBeWrapped, GameObject toWrapIn, string suffix)
+        {
+            toWrapIn.name = toBeWrapped.name + " " + suffix;
 
-            Transform meshContainer = RecursiveFindChild(newObject.transform, "MeshContainer");
+            toWrapIn.transform.SetParent(toBeWrapped.transform.parent);
+            toWrapIn.transform.localPosition = toBeWrapped.transform.localPosition;
+            toWrapIn.transform.localRotation = toBeWrapped.transform.localRotation;
+            toWrapIn.transform.localScale = toBeWrapped.transform.localScale;
+
+            Transform meshContainer = RecursiveFindChild(toWrapIn.transform, "MeshContainer");
             foreach (Transform child in meshContainer)
                 child.gameObject.SetActive(false);
 
-            int siblingIndex = gameObject.transform.GetSiblingIndex(); 
+            int siblingIndex = toBeWrapped.transform.GetSiblingIndex(); 
 
-            gameObject.transform.SetParent(meshContainer);
-            gameObject.transform.localPosition = Vector3.zero;
-            gameObject.transform.localRotation = Quaternion.identity;
-            gameObject.transform.localScale = Vector3.one;
+            toBeWrapped.transform.SetParent(meshContainer);
+            toBeWrapped.transform.localPosition = Vector3.zero;
+            toBeWrapped.transform.localRotation = Quaternion.identity;
+            toBeWrapped.transform.localScale = Vector3.one;
 
-            newObject.transform.SetSiblingIndex(siblingIndex);
+            toWrapIn.transform.SetSiblingIndex(siblingIndex);
 
-            return newObject;
+            return toWrapIn;
         }
-        private Transform RecursiveFindChild(Transform parent, string childName)
+        private static Transform RecursiveFindChild(Transform parent, string childName)
         {
             foreach (Transform child in parent)
             {
@@ -307,6 +278,7 @@ namespace IATK
             }
             return null;
         }
+#endregion
 
 #region Visualisation Property Setting
         public void SetGeometrySize(float size)

@@ -1,7 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+using Tilia.Interactions.Interactables.Interactables;
+using Tilia.Interactions.Interactables.Interactables.Grab.Action;
 
 namespace IATK
 {
@@ -9,12 +9,71 @@ namespace IATK
     [CanEditMultipleObjects]
     public class VRVisualisationEditor : AbstractVisualisationEditor
     {
+        private const string prefabInteractable = "Interactions.Interactable";
+        private const string prefabInteractionsLinearJointDrive = "Interactions.LinearJointDrive";
+        private const string assetSuffix = ".prefab";
+
         [MenuItem("GameObject/IATK/VR Visualisation", false, 10)]
         static void CreateVRVisualisationPrefab()
         {
             GameObject obj = new GameObject("[IATK] New VR Visualisation");
-            obj.AddComponent<VRVisualisation>();
+            VRVisualisation vrVisComponent = obj.AddComponent<VRVisualisation>();
             Selection.activeGameObject = obj;
+            MakeInteractable(vrVisComponent);
+        }
+
+        private static void MakeInteractable(VRVisualisation vrVisComponent)
+        {
+            GameObject linearJointDrivePrefab = GetPrefab(prefabInteractionsLinearJointDrive);
+            vrVisComponent.initialize(linearJointDrivePrefab);
+
+            GameObject interactablePrefab = GetPrefab(prefabInteractable);
+            GameObject newInteractable = vrVisComponent.WrapIn(Instantiate(interactablePrefab), "[Interactable]");
+
+            ConfigInteractableRigidbody(newInteractable);
+            ConfigInteractableGrabAction(newInteractable);
+        }
+        private static GameObject GetPrefab(string assetName)
+        {
+            GameObject interactablePrefab = null;
+            foreach (string assetGUID in AssetDatabase.FindAssets(assetName))
+            {
+                string assetPath = AssetDatabase.GUIDToAssetPath(assetGUID);
+                if (assetPath.Contains(assetName + assetSuffix))
+                {
+                    interactablePrefab = AssetDatabase.LoadAssetAtPath<GameObject>(assetPath);
+                }
+            }
+            return interactablePrefab;
+        }
+        private static void ConfigInteractableRigidbody(GameObject interactable)
+        {
+            Rigidbody rigidbody = interactable.GetComponent<Rigidbody>();
+            rigidbody.useGravity = false;
+            rigidbody.isKinematic = true;
+        }
+        private static void ConfigInteractableGrabAction(GameObject interactable)
+        {
+            InteractableFacade facade = interactable.GetComponent<InteractableFacade>();
+
+            // Set "Primary Action" to "Follow"
+            int primaryActionIndex = 1; // Follow
+            GameObject primaryActionPrefab = (GameObject)PrefabUtility.InstantiatePrefab(facade.Configuration.GrabConfiguration.ActionTypes.NonSubscribableElements[primaryActionIndex], facade.Configuration.GrabConfiguration.ActionTypes.transform);
+            GrabInteractableAction primaryAction = primaryActionPrefab.GetComponent<GrabInteractableAction>();
+            facade.Configuration.GrabConfiguration.PrimaryAction = primaryAction;
+
+            // Set "Grab Offset" to "Precision Point"
+            GrabInteractableFollowAction followAction = (GrabInteractableFollowAction)primaryAction;
+            SerializedObject actionObject = new SerializedObject(followAction);
+            SerializedProperty foundProperty = actionObject.FindProperty("grabOffset");
+            foundProperty.intValue = 2; // Precision Point
+            foundProperty.serializedObject.ApplyModifiedProperties();
+            
+            // Set "Secondary Action" to "Scale"
+            int secondaryActionIndex = 4; // Scale
+            GameObject secondaryActionPrefab = (GameObject)PrefabUtility.InstantiatePrefab(facade.Configuration.GrabConfiguration.ActionTypes.NonSubscribableElements[secondaryActionIndex], facade.Configuration.GrabConfiguration.ActionTypes.transform);
+            GrabInteractableAction secondaryAction = secondaryActionPrefab.GetComponent<GrabInteractableAction>();
+            facade.Configuration.GrabConfiguration.SecondaryAction = secondaryAction;
         }
     }
 
