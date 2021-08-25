@@ -17,14 +17,15 @@ namespace IATK
         private GameObject linearJointDrivePrefab;
         private bool xAxisInUse = false; 
         private bool yAxisInUse = false; 
-        private bool zAxisInUse = false; 
+        private bool zAxisInUse = false;
+        private const string linearJointSuffix = "[Linear Joint]";
 
         /* TODO:
         - ✔ Move UnityEditor code to editor files
         - Handle scaling of visualisation for normaliser handels
         - Handle different visualisation types
         */
-        
+
         public void initialize(GameObject go) { linearJointDrivePrefab = go; }
         void Start() { CreateInteractableNormalisers(); }
 
@@ -123,6 +124,7 @@ namespace IATK
             int axisDirection = axis.AxisDirection;
             GameObject handle = axis.transform.Find(handleName)?.gameObject;
 
+            // If the handle can be found then this is the first time the scene has been played since creation
             if(handle != null)
             {
                 // Runs once the first time the scene is played after the visualisation was created
@@ -131,7 +133,7 @@ namespace IATK
             else
             {
                 // Runs every time the scene is played after the first time
-                ConfigureHandle(axis.transform.Find(handleName + " [Linear Joint]"), axisDirection, isMax);
+                ConfigLinearJointEvents(axis.transform.Find(handleName + " " + linearJointSuffix), axisDirection, isMax);
             }
         }
         /// <summary>
@@ -145,30 +147,36 @@ namespace IATK
             handle.SetActive(true);
 
             GameObject newLinerJointPrefab = Instantiate(linearJointDrivePrefab);
-            GameObject linerJoint = WrapObject(handle, newLinerJointPrefab, "[Linear Joint]");
+            GameObject linerJoint = WrapObject(handle, newLinerJointPrefab, linearJointSuffix);
             LinearDriveFacade linerJointFacade = linerJoint.GetComponent<LinearDriveFacade>();
 
             ConfigNormaliserSlider(handle, axisDirection);
-            ConfigLinerJoint(linerJoint, axisDirection);
-            ConfigLinerJointFacade(linerJointFacade, axisDirection, isMax);
+            ConfigLinerJoint(linerJoint.transform, axisDirection);
+            ConfigLinerJointFacade(linerJointFacade, isMax);
 
-            // Connects the linerJointFacade with the interactableFacade so the position of the normaliser object is correct 
-            InteractableFacade interactableFacade = handle.transform.parent.parent.GetComponent<InteractableFacade>();
-
-            UnityAction action = (_) => linerJointFacade.SetTargetValueByStepValue();
-            interactableFacade.LastUngrabbed.AddListener(action);
+            LinkGrabEvent(linerJointFacade, handle.transform.parent.parent);
+            LinkScalingEvent(linerJointFacade, axisDirection, isMax);
         }
-        private void ConfigureHandle(Transform handle, int axisDirection, bool isMax)
+        /// <summary>
+        /// Configures an existing linear joint by add event listeners to grab and scaling events
+        /// </summary>
+        /// <param name="linerJoint">The linerJoint to link the events to</param>
+        /// <param name="axisDirection">X=1, Y=2, Z=3</param>
+        /// <param name="isMax">True if the normaliser is the maximum filter</param>
+        private void ConfigLinearJointEvents(Transform linerJoint, int axisDirection, bool isMax)
         {
-            Transform interactable = RecursiveFindChild(handle, "Interactions.Interactable");
+            Transform interactable = RecursiveFindChild(linerJoint, "Interactions.Interactable");
+            LinearDriveFacade linerJointFacade = linerJoint.GetComponent<LinearDriveFacade>();
 
+            LinkGrabEvent(linerJointFacade, interactable);
+            LinkScalingEvent(linerJointFacade, axisDirection, isMax);
+        }
+        private void LinkGrabEvent(LinearDriveFacade linerJointFacade, Transform interactable)
+        {
             // Connects the linerJointFacade with the interactableFacade so the position of the normaliser object is correct 
             InteractableFacade interactableFacade = interactable.GetComponent<InteractableFacade>();
-
-            LinearDriveFacade linerJointFacade = handle.GetComponent<LinearDriveFacade>();
             UnityAction action = (_) => linerJointFacade.SetTargetValueByStepValue();
             interactableFacade.LastUngrabbed.AddListener(action);
-            ConfigLinerJointFacade(linerJointFacade, axisDirection, isMax);
         }
         private void ConfigNormaliserSlider(GameObject handle, int axisDirection)
         {
@@ -183,13 +191,13 @@ namespace IATK
 
             handle.transform.localScale = new Vector3(0.025f, 0.025f, 0.025f);
         }
-        private void ConfigLinerJoint(GameObject linerJoint, int axisDirection)
+        private void ConfigLinerJoint(Transform linerJoint, int axisDirection)
         {
-            linerJoint.transform.localScale = new Vector3(1f, 1f, 1f);
+            linerJoint.localScale = new Vector3(1f, 1f, 1f);
 
             // Sets the center position of the normaliser object to the middle of the axis
             // Values are not symmetrical due to slight differences in how each axis is positioned 
-            linerJoint.transform.position = axisDirection switch
+            linerJoint.position = axisDirection switch
             {
                 1 => new Vector3(0.5f, -0.07f, 0f), // X Axis
                 2 => new Vector3(-0.07f, 0.5f, 0f), // Y Axis
@@ -198,9 +206,18 @@ namespace IATK
             };
 
             // Resets the rotation of the linerJoint to 0 because the rotation only needs to be on the normaliser object
-            linerJoint.transform.localRotation = Quaternion.identity;
+            linerJoint.localRotation = Quaternion.identity;
         }
-        private LinearDriveFacade ConfigLinerJointFacade(LinearDriveFacade linerJointFacade, int axisDirection, bool isMax)
+        private void ConfigLinerJointFacade(LinearDriveFacade linerJointFacade, bool isMax)
+        {
+            // All drive axes are the same as they are rotated by a parent object to the specific axis
+            linerJointFacade.DriveAxis = Tilia.Interactions.Controllables.Driver.DriveAxis.Axis.YAxis;
+
+            linerJointFacade.MoveToTargetValue = true;
+            linerJointFacade.TargetValue = isMax ? 1f : 0f;
+            linerJointFacade.SetStepRangeMaximum(100f);
+        }
+        private void LinkScalingEvent(LinearDriveFacade linerJointFacade, int axisDirection, bool isMax)
         {
             // Connects the linerJoint to the corresponding min/max axis
             UnityAction<float> setScaleAction = (axisDirection, isMax) switch
@@ -214,15 +231,6 @@ namespace IATK
                 _ => throw new Exception("Invalid Axis Direction")
             };
             linerJointFacade.ValueChanged.AddListener(setScaleAction);
-
-            // All drive axes are the same as they are rotated by a parent object to the specific axis
-            linerJointFacade.DriveAxis = Tilia.Interactions.Controllables.Driver.DriveAxis.Axis.YAxis;
-
-            linerJointFacade.MoveToTargetValue = true;
-            linerJointFacade.TargetValue = isMax ? 1f : 0f;
-            linerJointFacade.SetStepRangeMaximum(100f);
-
-            return linerJointFacade;
         }
 #endregion
 
