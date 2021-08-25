@@ -24,6 +24,8 @@ shadercompiler-UnityShaderCompiler*
 /Assets/MetaSDK/
 /Assets/Mapbox/
 /Assets/Mapbox.meta
+/Assets/Resources
+/Assets/Resources.meta
 
 # ============================================= #
 # Visual Studio / MonoDevelop / Rider generated #
