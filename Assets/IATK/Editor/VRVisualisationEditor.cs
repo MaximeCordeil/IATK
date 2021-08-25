@@ -12,7 +12,7 @@ namespace IATK
         private const string prefabInteractable = "Interactions.Interactable";
         private const string prefabInteractionsLinearJointDrive = "Interactions.LinearJointDrive";
         private const string assetSuffix = ".prefab";
-        private const string interactableSuffix = "[Linear Joint]";
+        private const string interactableSuffix = "[Interactable]";
 
         [MenuItem("GameObject/IATK/VR Visualisation", false, 10)]
         static void CreateVRVisualisationPrefab()
@@ -26,7 +26,7 @@ namespace IATK
         private static void MakeInteractable(VRVisualisation vrVisComponent)
         {
             GameObject linearJointDrivePrefab = GetPrefab(prefabInteractionsLinearJointDrive);
-            vrVisComponent.initialize(linearJointDrivePrefab);
+            vrVisComponent.linearJointDrivePrefab = linearJointDrivePrefab;
 
             GameObject interactablePrefab = GetPrefab(prefabInteractable);
             GameObject newInteractable = vrVisComponent.WrapIn(Instantiate(interactablePrefab), interactableSuffix);

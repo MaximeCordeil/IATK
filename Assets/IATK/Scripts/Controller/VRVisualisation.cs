@@ -14,7 +14,7 @@ namespace IATK
     [ExecuteInEditMode]
     public class VRVisualisation : Visualisation
     {
-        private GameObject linearJointDrivePrefab;
+        public GameObject linearJointDrivePrefab;
         private bool xAxisInUse = false; 
         private bool yAxisInUse = false; 
         private bool zAxisInUse = false;
@@ -25,8 +25,6 @@ namespace IATK
         - Handle scaling of visualisation for normaliser handels
         - Handle different visualisation types
         */
-
-        public void initialize(GameObject go) { linearJointDrivePrefab = go; }
         void Start() { CreateInteractableNormalisers(); }
 
 #region Visualisation Handling
