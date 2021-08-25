@@ -20,6 +20,8 @@ sysinfo.txt
 /Assets/MetaSDK/
 /Assets/Mapbox/
 /Assets/Mapbox.meta
+/Assets/Resources
+/Assets/Resources.meta
 
 # ============================================= #
 # Visual Studio / MonoDevelop / Rider generated #

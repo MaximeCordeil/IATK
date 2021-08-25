@@ -887,6 +887,8 @@ namespace IATK
         // returns false if complete, else true
         private bool DoTheTween()
         {
+            if (this.SharedMaterial == null) return false;
+            
             bool isTweening = false;
             
             _tweenPosition += Time.deltaTime;
