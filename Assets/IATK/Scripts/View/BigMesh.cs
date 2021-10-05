@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using System.IO;
+using System;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -161,11 +162,12 @@ namespace IATK
             int cpt = 0;
             foreach (var mesh in meshList)
             {
-                float[] xvals = HelperUtils.SubArray(values, cpt, mesh.vertexCount);
-                Vector3[] vertices = mesh.vertices;
-                Vector3[] normals = mesh.normals;
+                var count = Math.Min(mesh.vertexCount, values.Length);
+                float[] xvals = HelperUtils.SubArray(values, cpt, count);
+                Vector3[] vertices = new Vector3[count];
+                Vector3[] normals = new Vector3[count];
 
-                for (int i = 0; i < vertices.Length; i++)
+                for (int i = 0; i < count; i++)
                 {
                     Vector3 norm = normals[i];
                     Vector3 val = vertices[i];

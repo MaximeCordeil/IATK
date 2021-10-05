@@ -25,8 +25,8 @@ namespace IATK {
         public CreationConfiguration.Axis[] AxiesKeys;                  // The desired axies
         public string[] AxiesValues;                                    // The desired axies
 
-        public string ColourDimension;                                  // Colour mapped to a dimension
-        public string SizeDimension;                                    // Size mapped to a dimension
+        public string ColourDimension = "Undefined";                    // Colour mapped to a dimension
+        public string SizeDimension = "Undefined";                      // Size mapped to a dimension
         public string LinkingDimension;                                 // The linking dimension to draw links between points
         public Gradient colourKeys;                                     // The gradient colormapping
         public Color colour;                                            // The colour mapping
@@ -248,8 +248,8 @@ namespace IATK {
         public CreationConfiguration(AbstractVisualisation.GeometryType geometry, Dictionary<Axis, string> axies, string colourDimension, string sizeDimension)
             : this(geometry, axies)
         {
-            ColourDimension = colourDimension;
-            SizeDimension = SizeDimension;
+            ColourDimension = colourDimension ?? "Undefined";
+            SizeDimension = sizeDimension ?? "Undefined";
         }
     }
 }

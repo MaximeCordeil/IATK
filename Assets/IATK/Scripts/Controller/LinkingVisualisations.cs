@@ -282,6 +282,29 @@ namespace IATK
             Color[] cSource = visualisationSource.theVisualizationObject.viewList[0].GetColors();// bigMesh.getColors();
             Color[] cDest = visualisationTarget.theVisualizationObject.viewList[0].GetColors();// bigMesh.getColors();
 
+            if (vDest.Length < vSource.Length)
+            {
+                // TODO: assumes indices are ordered
+                var destIndices = visualisationTarget.dataSource["index"].Data;
+                var sourceIndices = visualisationSource.dataSource["index"].Data;
+                Vector3[] vSourceReduced = new Vector3[destIndices.Length];
+                Color[] cSourceReduced = new Color[destIndices.Length];
+
+                var destIndex = 0;
+                for (var i = 0; i < sourceIndices.Length && destIndex < destIndices.Length; i++)
+                {
+                    if (sourceIndices[i] == destIndices[destIndex])
+                    {
+                        vSourceReduced[destIndex] = vSource[i];
+                        cSourceReduced[destIndex] = cSource[i];
+                        destIndex++;
+                    }
+                }
+
+                vSource = vSourceReduced;
+                cSource = cSourceReduced;
+            }
+
             List<Vector3> vertexBuffer = new List<Vector3>();
             List<int> indexBuffer = new List<int>();
 

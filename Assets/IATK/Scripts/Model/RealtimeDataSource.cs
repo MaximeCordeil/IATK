@@ -221,6 +221,14 @@ namespace IATK
             dimensionPointers[dd.Index] = ptr;
         }
 
+        // TODO: integrate properly -- only proof of concept
+        public void OverrideData(string dimensionName, float[] values)
+        {
+            var dd = this[dimensionName];
+            dd.setData(values, textualDimensionsList);
+            //dd.Data[index] = normaliseValue(val, dd.MetaData.minValue, dd.MetaData.maxValue, 0f, 1f);
+        }
+
 
         /// <summary>
         /// Gets the dimension data at the specified index.

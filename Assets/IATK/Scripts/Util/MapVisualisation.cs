@@ -1,8 +1,10 @@
 using IATK;
 
+#if ISONMAPBOX
 using Mapbox.Unity.Map;
 using Mapbox.Unity.Utilities;
 using Mapbox.Utils;
+#endif
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,8 +12,10 @@ using UnityEngine;
 
 public class MapVisualisation : MonoBehaviour
 {
+#if ISONMAPBOX
     //[SerializeField]
     AbstractMap _map;
+#endif
     public Visualisation _viz;
     //   public Visualisation HospitalViz;
     public CSVDataSource mySourceData;
@@ -27,7 +31,7 @@ public class MapVisualisation : MonoBehaviour
 
     void Start()
     {
-
+#if ISONMAPBOX
         Mercator mProj = new Mercator();
 
         // obtaining the  maximum and minimum latitiude and longitude from the graph 
@@ -128,12 +132,14 @@ public class MapVisualisation : MonoBehaviour
             UpdateMap();
 
         };
+#endif
 
     }
 
 
     public void UpdateMap()
     {
+#if ISONMAPBOX
         Debug.Log("Map Updated");
         // update the geolocation of the graph according to change in the Map
         Vector3 xExtremeAxisGeo = _map.GeoToWorldPosition(Conversions.StringToLatLon(xExtremeAxis), true);
@@ -151,7 +157,7 @@ public class MapVisualisation : MonoBehaviour
         //_viz.visualisationReference.updateViewProperties(AbstractVisualisation.PropertyType.Scaling);
         //   ScatterplotVisualisation svis = (ScatterplotVisualisation) (_viz);
         _viz.gameObject.GetComponent<ScatterplotVisualisation>().UpdateVisualisationAxes(AbstractVisualisation.PropertyType.Scaling);
-
+#endif
     }
 
 

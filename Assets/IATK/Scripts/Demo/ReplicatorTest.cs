@@ -129,7 +129,7 @@ namespace IATKTest
                     {
                         //process payload
                         Debug.Log("ListenForReplicationUpdates updating repliques ...");
-                        repl.UpdateReplicas(uid, payload);
+                        repl.UpdateReplicas(uid, payload, null);
                     }
 
                     if (plType == "ds" && uid != null && uid.Length > 0)

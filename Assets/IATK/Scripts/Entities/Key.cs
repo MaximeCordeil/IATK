@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -11,8 +12,8 @@ namespace IATK
         public LineRenderer gradientColorLineRenderer;
         public TextMeshPro Legend;
 
-        private string legend="";
-        
+        private string legend = "";
+
         public void UpdateProperties(AbstractVisualisation.PropertyType propertyType, Visualisation v)
         {
             legend = "";
@@ -72,14 +73,27 @@ namespace IATK
         /// <param name="gradient"></param>
         void SetGradientColor(Gradient gradient)
         {
-            Vector3[] vertices = new Vector3[gradient.colorKeys.Length];
-            GradientColorKey[] colorKeys = gradient.colorKeys;
-            for (int i = 0; i < vertices.Length; i++)
-                vertices[i] = new Vector3(colorKeys[i].time, 0f, 0f);
+            try
+            {
+                if (gradient != null)
+                {
+                    if (gradient.colorKeys != null)
+                    {
+                        Vector3[] vertices = new Vector3[gradient.colorKeys.Length];
+                        GradientColorKey[] colorKeys = gradient.colorKeys;
+                        for (int i = 0; i < vertices.Length; i++)
+                            vertices[i] = new Vector3(colorKeys[i].time, 0f, 0f);
 
-            gradientColorLineRenderer.positionCount = vertices.Length;
-            gradientColorLineRenderer.SetPositions(vertices);
-            gradientColorLineRenderer.colorGradient = gradient;
+                        gradientColorLineRenderer.positionCount = vertices.Length;
+                        gradientColorLineRenderer.SetPositions(vertices);
+                        gradientColorLineRenderer.colorGradient = gradient;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.Log("IATK::Key::SetGradientColor ERROR => " + e);
+            }
         }
 
     }

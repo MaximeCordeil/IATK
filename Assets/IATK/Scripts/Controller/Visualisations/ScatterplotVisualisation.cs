@@ -72,7 +72,7 @@ namespace IATK
                     }
                 }
             }
-            else if (viewList.Count > 0 && visualisationReference.colorPaletteDimension != "Undefined")
+            else if (viewList.Count > 0 && visualisationReference.colorPaletteDimension != "Undefined" && visualisationReference.colorPaletteDimension != null)
             {
                 for (int i = 0; i < viewList.Count; i++)
                 {
@@ -208,7 +208,7 @@ namespace IATK
                             for (int i = 0; i < viewList.Count; i++)
                                 viewList[i].SetColors(mapColoursContinuous(visualisationReference.dataSource[visualisationReference.colourDimension].Data));
                         }
-                        else if (visualisationReference.colorPaletteDimension != "Undefined")
+                        else if (visualisationReference.colorPaletteDimension != "Undefined" && visualisationReference.colorPaletteDimension != null)
                         {
                             for (int i = 0; i < viewList.Count; i++)
                             {
@@ -250,7 +250,7 @@ namespace IATK
                                     viewList[i].SetSizeChannel(new float[visualisationReference.dataSource.DataCount]);
                                 }
                             }
-                            creationConfiguration.SizeDimension = visualisationReference.sizeDimension;       
+                            creationConfiguration.SizeDimension = visualisationReference.sizeDimension;
                             viewList[0].TweenSize();
 
                             break;
@@ -340,7 +340,7 @@ namespace IATK
                             }
                         }
                         break;
-                    case PropertyType.VisualisationType:                       
+                    case PropertyType.VisualisationType:
                         break;
                     case PropertyType.BlendDestinationMode:
                         float bmds = (int)(System.Enum.Parse(typeof(UnityEngine.Rendering.BlendMode), visualisationReference.blendingModeDestination));

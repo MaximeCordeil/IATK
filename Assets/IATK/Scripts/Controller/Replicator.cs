@@ -18,7 +18,7 @@ namespace IATK
         public Func<string, string> NewVisSpawnNotification = null;
 
         Dictionary<string, VisHolder> replicas = new Dictionary<string, VisHolder>();
-        Dictionary<string, VisHolder> primes = new Dictionary<string, VisHolder>();
+        public Dictionary<string, VisHolder> primes = new Dictionary<string, VisHolder>();
 
         // a placeholder datasource to allow vis async vis initialization
         // will be replaced once the datasource definition is received
@@ -119,10 +119,14 @@ namespace IATK
                         vis.theVisualizationObject.creationConfiguration.SetReplicationCallback(uid, Replicate);
                         vis.theVisualizationObject.creationConfiguration.Serialize("");
                         Debug.Log("Replicator::AddVisToReplicate done ...");
+
+                        // upgrade to prime
+                        if (replicas.ContainsKey(uid))
+                            replicas.Remove(uid);
                     }
                     catch (Exception err)
                     {
-                        Debug.Log("Replicator::AddVisToReplicate ERROR => " + err);
+                        Debug.LogError("Replicator::AddVisToReplicate ERROR => " + err);
                     }
                 }
             }
@@ -232,14 +236,15 @@ namespace IATK
         /// <param name="id"></param>
         /// <param name="payload"></param>
         /// <returns></returns>
-        public void UpdateReplicas(string uid, string payload)
+        public Visualisation UpdateReplicas(string uid, string payload, DataSource ds)
         {
+            Visualisation vis = null;
             Debug.Log("Replicator::UpdateRepliques uid=" + uid + ", #payload=" + payload.Length);
             if (uid.Length > 0)
             {
                 if (replicas.ContainsKey(uid))
                 {
-                    var vis = replicas[uid].vis;
+                    vis = replicas[uid].vis;
                     if (payload.Length > 0 && vis != null)
                     {
                         vis.theVisualizationObject.creationConfiguration.DeserializeJson(payload);
@@ -252,10 +257,10 @@ namespace IATK
                 }
                 else
                 {
-                    if (payload.Length > 0)
-                    {
-                        SpawnReplicatedVis(uid, payload);
-                    }
+                    //if (payload.Length > 0)
+                    //{
+                    //    vis = SpawnReplicatedVis(uid, payload, ds);
+                    //}
 
                     if (primes.ContainsKey(uid))
                     {
@@ -273,13 +278,15 @@ namespace IATK
                     }
                     else
                     {
-                        //if (payload.Length > 0)
-                        //{
-                        //    SpawnReplicatedVis(uid, payload);
-                        //}
+                        if (payload.Length > 0)
+                        {
+                            vis = SpawnReplicatedVis(uid, payload, ds);
+                        }
                     }
                 }
             }
+
+            return vis;
         }
 
         /// <summary>
@@ -428,53 +435,49 @@ namespace IATK
         /// </summary>
         /// <param name="uid"></param>
         /// <param name="payload"></param>
-        private void SpawnReplicatedVis(string uid, string payload)
+        private Visualisation SpawnReplicatedVis(string uid, string payload, DataSource ds)
         {
-            try
+            Debug.Log("Replicator::SpawnReplicatedVis uid=" + uid);
+            var goName = "replique-" + uid;
+            var go = new GameObject(goName);
+            var vis = go.AddComponent<Visualisation>();
+
+            if (vis != null)
             {
-                Debug.Log("Replicator::SpawnReplicatedVis uid=" + uid);
-                var goName = "replique-" + uid;
-                var go = new GameObject(goName);
-                var vis = go.AddComponent<Visualisation>();
+                replicas.Add(uid, new VisHolder(vis));
+                vis.dataSource = ds; //TODO sync that
 
-                if (vis != null)
+                if (vis.theVisualizationObject == null)
                 {
-                    replicas.Add(uid, new VisHolder(vis));
-                    //vis.dataSource = rtds; //TODO sync that
+                    vis.geometry = AbstractVisualisation.GeometryType.Bars;
+                    vis.CreateVisualisation(AbstractVisualisation.VisualisationTypes.SCATTERPLOT);
+                }
 
-                    if (vis.theVisualizationObject == null)
-                    {
-                        vis.geometry = AbstractVisualisation.GeometryType.Bars;
-                        vis.CreateVisualisation(AbstractVisualisation.VisualisationTypes.SCATTERPLOT);
-                    }
+                vis.theVisualizationObject.creationConfiguration.DeserializeJson(payload);
 
                     vis.theVisualizationObject.creationConfiguration.DeserializeJson(payload);
 
+                if (vis.dataSource == null)
+                {
+                    vis.dataSource = dummyDs;
+                }
 
-                    if (vis.dataSource == null)
-                    {
-                        vis.dataSource = dummyDs;
-                    }
+                SyncVis(vis);
 
-                    SyncVis(vis);
-
-                    if (NewVisSpawnNotification != null)
-                    {
-                        NewVisSpawnNotification?.Invoke(goName);
-                    }
+                if (NewVisSpawnNotification != null)
+                {
+                    NewVisSpawnNotification?.Invoke(goName);
                 }
             }
-            catch (Exception err)
-            {
-                Debug.Log("Replicator::SpawnReplicatedVis ERROR => " + err);
-            }
+
+            return vis;
         }
 
         /// <summary>
         /// Performs a vis update
         /// </summary>
         /// <param name="vis"></param>
-        private void SyncVis(Visualisation vis)
+        public static void SyncVis(Visualisation vis)
         {
             try
             {
@@ -485,20 +488,32 @@ namespace IATK
                 {
                     vis.theVisualizationObject.visualisationReference.xDimension = vis.theVisualizationObject.creationConfiguration.Axies[CreationConfiguration.Axis.X];
                 }
+                else
+                {
+                    vis.theVisualizationObject.visualisationReference.xDimension = "Undefined";
+                }
 
                 if (vis.theVisualizationObject.creationConfiguration.Axies.ContainsKey(CreationConfiguration.Axis.Y))
                 {
                     vis.theVisualizationObject.visualisationReference.yDimension = vis.theVisualizationObject.creationConfiguration.Axies[CreationConfiguration.Axis.Y];
+                }
+                else
+                {
+                    vis.theVisualizationObject.visualisationReference.yDimension = "Undefined";
                 }
 
                 if (vis.theVisualizationObject.creationConfiguration.Axies.ContainsKey(CreationConfiguration.Axis.Z))
                 {
                     vis.theVisualizationObject.visualisationReference.zDimension = vis.theVisualizationObject.creationConfiguration.Axies[CreationConfiguration.Axis.Z];
                 }
+                else
+                {
+                    vis.theVisualizationObject.visualisationReference.zDimension = "Undefined";
+                }
 
-                vis.theVisualizationObject.visualisationReference.sizeDimension = vis.theVisualizationObject.creationConfiguration.SizeDimension;
+                vis.theVisualizationObject.visualisationReference.sizeDimension = vis.theVisualizationObject.creationConfiguration.SizeDimension ?? "Undefined";
                 vis.theVisualizationObject.visualisationReference.dimensionColour = vis.theVisualizationObject.creationConfiguration.colourKeys;
-                vis.theVisualizationObject.visualisationReference.colourDimension = vis.theVisualizationObject.creationConfiguration.ColourDimension;
+                vis.theVisualizationObject.visualisationReference.colourDimension = vis.theVisualizationObject.creationConfiguration.ColourDimension ?? "Undefined";
                 vis.theVisualizationObject.visualisationReference.linkingDimension = vis.theVisualizationObject.creationConfiguration.LinkingDimension;
 
                 vis.theVisualizationObject.visualisationReference.size = vis.theVisualizationObject.creationConfiguration.Size;
@@ -514,15 +529,21 @@ namespace IATK
                 vis.theVisualizationObject.UpdateVisualisation(AbstractVisualisation.PropertyType.Y);
                 vis.theVisualizationObject.UpdateVisualisation(AbstractVisualisation.PropertyType.Z);
 
-                if (vis != null)
-                {
-                    vis.updateView(0);
-                }
             }
             catch (Exception err)
             {
                 Debug.Log("SyncVis ERROR => " + err);
             }
+
+            // restore replication if vis was a prime
+            var oldConf = vis.theVisualizationObject.creationConfiguration;
+            vis.theVisualizationObject.creationConfiguration.SetReplicationCallback(oldConf.uid, oldConf.ReplicationNotification);
+
+            if (vis != null)
+            {
+                vis.updateView(0);
+            }
+
         }
     }
 }
