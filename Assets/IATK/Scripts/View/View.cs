@@ -15,7 +15,11 @@ namespace IATK
     {
         // EVENTS  
         public delegate void OnViewChangeDelegate(AbstractVisualisation.PropertyType propertyType);
+        
+#pragma warning disable 0067
+        // Used by inherited classes
         public event OnViewChangeDelegate onViewChangeEvent;
+#pragma warning restore 0067
 
         //bigmesh object
         BigMesh bigMesh;

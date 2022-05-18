@@ -822,7 +822,11 @@ namespace IATK
         // global list of all tweens callbacks
         static List<UpdateTweenDelegate> updateTweens = new List<UpdateTweenDelegate>();
 
+#pragma warning disable 0414
+        // Used when outside Unity editor
+        //  causes warnings in Unity as it does not think it is used
         private bool hasTweens = false;
+#pragma warning disable 0414
         
         private void Update()
         {
