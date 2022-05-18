@@ -155,8 +155,8 @@ PlayerSettings:
   androidSupportedAspectRatio: 1
   androidMaxAspectRatio: 2.1
   applicationIdentifier:
-    Android: com.DefaultCompany.IATK
-    Standalone: com.DefaultCompany.IATK
+    Android: com.DefaultCompany.IVRTK
+    Standalone: com.DefaultCompany.IVRTK
     Tizen: com.Company.ProductName
     iPhone: com.Company.ProductName
     tvOS: com.Company.ProductName
@@ -166,7 +166,7 @@ PlayerSettings:
     tvOS: 0
   overrideDefaultApplicationIdentifier: 0
   AndroidBundleVersionCode: 1
-  AndroidMinSdkVersion: 24
+  AndroidMinSdkVersion: 29
   AndroidTargetSdkVersion: 0
   AndroidPreferredInstallLocation: 0
   aotOptions: 
@@ -246,7 +246,7 @@ PlayerSettings:
   useCustomLauncherManifest: 0
   useCustomMainGradleTemplate: 0
   useCustomLauncherGradleManifest: 0
-  useCustomBaseGradleTemplate: 0
+  useCustomBaseGradleTemplate: 1
   useCustomGradlePropertiesTemplate: 0
   useCustomProguardFile: 0
   AndroidTargetArchitectures: 5
@@ -841,6 +841,7 @@ PlayerSettings:
     Game Performance: 0
     Game_Performance: 0
     Hub: 0
+    Legacy Analytics: 0
     Purchasing: 0
     UDP: 0
     UNet: 0
@@ -859,11 +860,11 @@ PlayerSettings:
     m_VersionName: 
   apiCompatibilityLevel: 6
   activeInputHandler: 1
-  cloudProjectId: 01d78ca3-3e00-4d19-92f5-48d71a0af82f
+  cloudProjectId: 0397f87b-0743-45e2-a213-767f652aa0ed
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
   projectName: IVRTK
-  organizationId: maxime-cordeil
+  organizationId: youminewecraft26
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 1
   playerDataPath: 

@@ -6,6 +6,8 @@
 /[Bb]uild
 /[Bb]uild[s]
 /[Ll]ibrary/
+/Oculus_BackUpThisFolder_ButDontShipItWithYourGame/
+
 sysinfo.txt
 *.stackdump
 UserSettings/
