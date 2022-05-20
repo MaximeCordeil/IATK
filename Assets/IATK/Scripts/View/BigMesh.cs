@@ -770,7 +770,7 @@ namespace IATK
 
                 saveMesh(this.gameObject, ref countMeshRef, m);
             }
-            PrefabUtility.CreatePrefab("Assets/Prefabs/BigMesh.prefab", this.gameObject);
+            PrefabUtility.SaveAsPrefabAsset(this.gameObject, "Assets/Prefabs/BigMesh.prefab");
             
             #endif
         }
