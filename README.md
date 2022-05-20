@@ -14,13 +14,12 @@ IATK was published at IEEE VR 2019 - Please use following reference:
   booktitle={2019 IEEE Conference on Virtual Reality and 3D User Interfaces (VR)},<br/>
   pages={200--209},<br/>
   year={2019},<br/>
-  organization={IEEE}<br/>
-}
+  organization={IEEE} }
 
 
 # Requirements
 - this repository
-- [Unity 2020.3.14f1](https://unity3d.com/get-unity/)
+- [Unity 2021.3.2f1](https://unity3d.com/get-unity/)
 - [MapBox Unity Plugin](https://www.mapbox.com/)
 - [Virtual reality toolkit VRTK](https://github.com/thestonefox/VRTK)
 
@@ -182,7 +181,8 @@ In a near feature we will support:
 The toolkit is developed by:
 - Maxime Cordeil (project leader, Monash University)
 - Andrew Cunningham (University of South Australia)
-- Benjamin Lee (Monash University).
+- Benjamin Lee (Monash University)
+- Daniel Harris (University of South Wales)
 
 Past developpers:
-- Kingsley Stephens (Monash University).
+- Kingsley Stephens (Monash University)
