@@ -2,8 +2,6 @@
 using UnityEngine;
 using System.Linq;
 using System;
-using DG.Tweening;
-
 
 namespace IATK
 {
