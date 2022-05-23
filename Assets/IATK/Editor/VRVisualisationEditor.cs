@@ -71,7 +71,8 @@ namespace IATK
             foundProperty.serializedObject.ApplyModifiedProperties();
             
             // Set "Secondary Action" to "Scale"
-            int secondaryActionIndex = 4; // Scale
+            // int secondaryActionIndex = 4; // Scale disabled until scaling bug is fixed in Tilia: shorturl.at/ayFP3
+            int secondaryActionIndex = 0; // None
             GameObject secondaryActionPrefab = (GameObject)PrefabUtility.InstantiatePrefab(facade.Configuration.GrabConfiguration.ActionTypes.NonSubscribableElements[secondaryActionIndex], facade.Configuration.GrabConfiguration.ActionTypes.transform);
             GrabInteractableAction secondaryAction = secondaryActionPrefab.GetComponent<GrabInteractableAction>();
             facade.Configuration.GrabConfiguration.SecondaryAction = secondaryAction;
