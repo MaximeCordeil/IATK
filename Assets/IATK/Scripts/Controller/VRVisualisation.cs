@@ -19,13 +19,35 @@ namespace IATK
         private bool yAxisInUse = false; 
         private bool zAxisInUse = false;
         private const string linearJointSuffix = "[Linear Joint]";
+        private const bool enableVisualisationScaling = false; // Disabled until scaling bug is fixed in Tilia: shorturl.at/ayFP3
 
         /* TODO:
         - ✔ Move UnityEditor code to editor files
-        - Handle scaling of visualisation for normaliser handels
+        - ✔ Update to Unity 2021.3.2f1
+        - Handle scaling of visualisation for normaliser handles
         - Handle different visualisation types
+        - Fix normaliser handles in standalone mode
         */
         void Start() { CreateInteractableNormalisers(); }
+
+        void Update()
+        {
+            if (enableVisualisationScaling && transform.hasChanged)
+            {
+                transform.hasChanged = false;
+                Axis[] axes = GetComponentsInChildren<Axis>();
+                axes?.ForEach(axis =>
+                {
+                    Transform minLinerJoint = axis.transform.Find("MinAxisHandle" + " " + linearJointSuffix);
+                    LinearDriveFacade minLinerJointFacade = minLinerJoint.GetComponent<LinearDriveFacade>();
+                    minLinerJointFacade.Drive.SetUp();
+
+                    Transform maxLinerJoint = axis.transform.Find("MaxAxisHandle" + " " + linearJointSuffix);
+                    LinearDriveFacade maxLinerJointFacade = maxLinerJoint.GetComponent<LinearDriveFacade>();
+                    maxLinerJointFacade.Drive.SetUp();
+                });
+            }
+        }
 
 #region Visualisation Handling
         public override void updateViewProperties(AbstractVisualisation.PropertyType propertyType)
@@ -74,7 +96,7 @@ namespace IATK
 
             Vector3 center = new Vector3(0, 0, 0);
             Vector3 size = new Vector3(0.1f, 0.1f, 0.1f);
-            
+
             if (xAxisInUse)
             {
                 center.x = 0.5f;
@@ -105,7 +127,6 @@ namespace IATK
             boxCollider.center = center;
             boxCollider.size = size;
         }
-        private static int CountTrue(params bool[] args) { return args.Count(t => t); }
         private void CreateInteractableNormalisers()
         {
             Axis[] axes = GetComponentsInChildren<Axis>();
@@ -134,6 +155,7 @@ namespace IATK
                 ConfigLinearJointEvents(axis.transform.Find(handleName + " " + linearJointSuffix), axisDirection, isMax);
             }
         }
+
         /// <summary>
         /// Wraps a given normaliser GameObject in a Tilia 'LinearJointDrive' and configures the Linear Joint based on a axis direction
         /// </summary>
@@ -155,6 +177,7 @@ namespace IATK
             LinkGrabEvent(linerJointFacade, handle.transform.parent.parent);
             LinkScalingEvent(linerJointFacade, axisDirection, isMax);
         }
+        
         /// <summary>
         /// Configures an existing linear joint by add event listeners to grab and scaling events
         /// </summary>
@@ -220,15 +243,24 @@ namespace IATK
             // Connects the linerJoint to the corresponding min/max axis
             UnityAction<float> setScaleAction = (axisDirection, isMax) switch
             {
-                (1, false) => SetMinScaleX,
-                (1, true) => SetMaxScaleX,
-                (2, false) => SetMinScaleY,
-                (2, true) => SetMaxScaleY,
-                (3, false) => SetMinScaleZ,
-                (3, true) => SetMaxScaleZ,
+                (1, false) => SetScaleBuilder(x => xDimension.minScale = x),
+                (1, true)  => SetScaleBuilder(x => xDimension.maxScale = x),
+                (2, false) => SetScaleBuilder(x => yDimension.minScale = x),
+                (2, true)  => SetScaleBuilder(x => yDimension.maxScale = x),
+                (3, false) => SetScaleBuilder(x => zDimension.minScale = x),
+                (3, true)  => SetScaleBuilder(x => zDimension.maxScale = x),
                 _ => throw new Exception("Invalid Axis Direction")
             };
-            linerJointFacade.ValueChanged.AddListener(setScaleAction);
+            linerJointFacade.NormalizedValueChanged.AddListener(setScaleAction);
+        }
+        public UnityEngine.Events.UnityAction<float> SetScaleBuilder(Action<float> setScale)
+        {
+            UnityEngine.Events.UnityAction<float> action = (float scale) => {
+                updateViewProperties(AbstractVisualisation.PropertyType.Scaling);
+                setScale(scale);
+                updateViewProperties(AbstractVisualisation.PropertyType.Scaling);
+            };
+            return action;
         }
 #endregion
 
@@ -251,7 +283,7 @@ namespace IATK
         {
             toWrapIn.name = toBeWrapped.name + " " + suffix;
 
-            toWrapIn.transform.SetParent(toBeWrapped.transform.parent);
+            toWrapIn.transform.SetParent(toBeWrapped.transform.parent, false);
             toWrapIn.transform.localPosition = toBeWrapped.transform.localPosition;
             toWrapIn.transform.localRotation = toBeWrapped.transform.localRotation;
             toWrapIn.transform.localScale = toBeWrapped.transform.localScale;
@@ -262,7 +294,7 @@ namespace IATK
 
             int siblingIndex = toBeWrapped.transform.GetSiblingIndex(); 
 
-            toBeWrapped.transform.SetParent(meshContainer);
+            toBeWrapped.transform.SetParent(meshContainer, false);
             toBeWrapped.transform.localPosition = Vector3.zero;
             toBeWrapped.transform.localRotation = Quaternion.identity;
             toBeWrapped.transform.localScale = Vector3.one;
@@ -284,50 +316,13 @@ namespace IATK
             }
             return null;
         }
-#endregion
-
-#region Visualisation Property Setting
-        public void SetGeometrySize(float size)
-        {
-            this.size = size + 0.5f;
-            updateViewProperties(AbstractVisualisation.PropertyType.SizeValues);
-        }
-        public void SetMinScaleX(float minScale)
-        {
-            if(theVisualizationObject?.creationConfiguration == null) return;
-            xDimension.minScale = minScale + 0.5f;
-            updateViewProperties(AbstractVisualisation.PropertyType.Scaling);
-        }
-        public void SetMaxScaleX(float maxScale)
-        {
-            if(theVisualizationObject?.creationConfiguration == null) return;
-            xDimension.maxScale = maxScale + 0.5f;
-            updateViewProperties(AbstractVisualisation.PropertyType.Scaling);
-        }
-        public void SetMinScaleY(float minScale)
-        {
-            if(theVisualizationObject?.creationConfiguration == null) return;
-            yDimension.minScale = minScale + 0.5f;
-            updateViewProperties(AbstractVisualisation.PropertyType.Scaling);
-        }
-        public void SetMaxScaleY(float maxScale)
-        {
-            if(theVisualizationObject?.creationConfiguration == null) return;
-            yDimension.maxScale = maxScale + 0.5f;
-            updateViewProperties(AbstractVisualisation.PropertyType.Scaling);
-        }
-        public void SetMinScaleZ(float minScale)
-        {
-            if(theVisualizationObject?.creationConfiguration == null) return;
-            zDimension.minScale = minScale + 0.5f;
-            updateViewProperties(AbstractVisualisation.PropertyType.Scaling);
-        }
-        public void SetMaxScaleZ(float maxScale)
-        {
-            if(theVisualizationObject?.creationConfiguration == null) return;
-            zDimension.maxScale = maxScale + 0.5f;
-            updateViewProperties(AbstractVisualisation.PropertyType.Scaling);
-        }
+        
+        /// <summary>
+        /// Counts how many 'true' values are in the arguments list
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns>Number of true values given</returns>
+        private static int CountTrue(params bool[] args) { return args.Count(t => t); }
 #endregion
     }
 }
