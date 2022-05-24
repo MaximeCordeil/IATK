@@ -6,7 +6,7 @@ IATK is an ongoing and open project! We setup a roadmap with features that we wo
 <br/>
 
 # Publication
-IATK was published at IEEE VR 2019 - Please use following reference:
+IATK was published at IEEE VR 2019 - Please reference using the [reference file](CITATION.bib) or the reference below:
 
 @inproceedings{cordeil2019iatk,<br/>
   title={IATK: An Immersive Analytics Toolkit},<br/>
