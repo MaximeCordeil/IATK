@@ -63,7 +63,7 @@ preferred-citation:
       email: tim.dwyer@monash.edu
   doi: 10.1109/VR.2019.8797978
   year: 2019
-  type: inproceedings
-  booktitle: "2019 IEEE Conference on Virtual Reality and 3D User Interfaces (VR)"
-  pages: "200--209"
-  organization: "IEEE"
+  type: conference-paper
+  conference:
+    name: "2019 IEEE Conference on Virtual Reality and 3D User Interfaces (VR)"
+    pages: "200--209"
