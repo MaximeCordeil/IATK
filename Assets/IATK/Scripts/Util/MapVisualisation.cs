@@ -21,7 +21,6 @@ public class MapVisualisation : MonoBehaviour
     private string xExtremeAxis;
     private string zExtremeAxis;
     private string center;
-    private float smoothTime = 0.003F;
     private Vector3 velocity = Vector3.zero;
 
 
