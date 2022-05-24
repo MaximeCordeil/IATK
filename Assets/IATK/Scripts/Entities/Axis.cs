@@ -63,8 +63,6 @@ namespace IATK
         [HideInInspector]
         public int AxisDirection = 0;
         
-        private bool isPositiveLength = false;
-
         #endregion
 
         #region Private variables

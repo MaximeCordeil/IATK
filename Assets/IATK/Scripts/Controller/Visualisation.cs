@@ -331,7 +331,6 @@ namespace IATK
             foreach (var view in views)
             {
                 view.BigMesh = view.GetComponentInChildren<BigMesh>();
-                view.onViewChangeEvent += updateView;   // Receive notifications when the view configuration changes
                 theVisualizationObject.viewList.Add(view);
             }
             

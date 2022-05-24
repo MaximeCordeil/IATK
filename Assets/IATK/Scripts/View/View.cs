@@ -15,7 +15,6 @@ namespace IATK
     {
         // EVENTS  
         public delegate void OnViewChangeDelegate(AbstractVisualisation.PropertyType propertyType);
-        public event OnViewChangeDelegate onViewChangeEvent;
 
         //bigmesh object
         BigMesh bigMesh;

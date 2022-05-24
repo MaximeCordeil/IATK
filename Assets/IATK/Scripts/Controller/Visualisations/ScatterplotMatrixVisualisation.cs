@@ -178,7 +178,6 @@ namespace IATK {
             {
                 v.transform.localPosition = new Vector3(i * xPadding, j * yPadding, 0);
                 v.transform.SetParent(transform, false);
-                v.onViewChangeEvent += UpdateVisualisation;   // Receive notifications when the view configuration changes
                 viewList.Add(v);
             }
 
@@ -201,7 +200,6 @@ namespace IATK {
             {
                 v.transform.localPosition = new Vector3(i * xPadding, j * yPadding, k * zPadding);
                 v.transform.SetParent(transform, false);
-                v.onViewChangeEvent += UpdateVisualisation;   // Receive notifications when the view configuration changes
                 viewList.Add(v);
             }
 

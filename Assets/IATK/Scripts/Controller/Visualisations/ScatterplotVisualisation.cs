@@ -55,7 +55,6 @@ namespace IATK
             {
                 view.transform.localPosition = Vector3.zero;
                 view.transform.SetParent(transform, false);
-                view.onViewChangeEvent += UpdateVisualisation;   // Receive notifications when the view configuration changes
 
                 viewList.Add(view);
             }
