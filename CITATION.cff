@@ -1,0 +1,69 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it using the metadata from this file."
+title: 'IATK: An Immersive Analytics Toolkit'
+authors:
+  - given-names: Maxime
+    family-names: Cordeil
+    email: maxime.cordeil@gmail.com
+    affiliation: Monash University
+  - given-names: Andrew
+    family-names: Cunningham
+    affiliation: University of South Australia
+    email: Andrew.Cunningham@unisa.edu.au
+  - given-names: Benjamin
+    family-names: Bach
+    affiliation: Edinburgh University
+    email: bbach@inf.ed.ac.uk
+  - given-names: Christophe
+    family-names: Hurter
+    affiliation: ENAC
+    email: christophe.hurter@enac.fr
+  - given-names: Bruce
+    family-names: H. Thomas
+    affiliation: University of South Australia
+    email: bruce.thomas@unisa.edu.au
+  - given-names: Kim
+    family-names: Marriott
+    affiliation: Monash University
+    email: kim.marriott@monash.edu
+  - given-names: Tim
+    family-names: Dwyer
+    affiliation: Monash University
+    email: tim.dwyer@monash.edu
+preferred-citation:
+  title: 'IATK: An Immersive Analytics Toolkit'
+  authors:
+    - given-names: Maxime
+      family-names: Cordeil
+      email: maxime.cordeil@gmail.com
+      affiliation: Monash University
+    - given-names: Andrew
+      family-names: Cunningham
+      affiliation: University of South Australia
+      email: Andrew.Cunningham@unisa.edu.au
+    - given-names: Benjamin
+      family-names: Bach
+      affiliation: Edinburgh University
+      email: bbach@inf.ed.ac.uk
+    - given-names: Christophe
+      family-names: Hurter
+      affiliation: ENAC
+      email: christophe.hurter@enac.fr
+    - given-names: Bruce H.
+      family-names: Thomas
+      affiliation: University of South Australia
+      email: bruce.thomas@unisa.edu.au
+    - given-names: Kim
+      family-names: Marriott
+      affiliation: Monash University
+      email: kim.marriott@monash.edu
+    - given-names: Tim
+      family-names: Dwyer
+      affiliation: Monash University
+      email: tim.dwyer@monash.edu
+  doi: 10.1109/VR.2019.8797978
+  year: 2019
+  conference:
+    name: "2019 IEEE Conference on Virtual Reality and 3D User Interfaces (VR)"
+    date-start: 2019-03-23
+    date-end: 2019-03-27
