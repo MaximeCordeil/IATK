@@ -1,14 +1,18 @@
-
 # =============== #
 # Unity generated #
 # =============== #
 /[Tt]emp/
 /[Oo]bj/
+/[Bb]uild
 /[Bb]uild[s]
 /[Ll]ibrary/
-
 sysinfo.txt
 *.stackdump
+UserSettings/
+AssetImportWorker*
+shadercompiler-AssetImportWorker*
+shadercompiler-UnityShaderCompiler*
+/Logs/ApiUpdaterCheck.txt
  
 # =============== #
 # Additional SDKs #
@@ -21,46 +25,6 @@ sysinfo.txt
 /Assets/Mapbox/
 /Assets/Mapbox.meta
 
-# ============================================= #
-# Visual Studio / MonoDevelop / Rider generated #
-# ============================================= #
-[Ee]xported[Oo]bj/
-.vs/
-/*.userprefs
-/*.csproj
-/*.pidb
-/*.suo
-/*.sln*
-/*.user
-/*.unityproj
-/*.booproj
-/.idea*/
- 
-# ============ #
-# OS generated #
-# ============ #
-.DS_Store*
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-[Tt]humbs.db
-
-# =============== #
-# Unity generated #
-# =============== #
-/[Tt]emp/
-/[Oo]bj/
-/[Bb]uild
-/[Ll]ibrary/
-sysinfo.txt
-*.stackdump
-UserSettings/
-AssetImportWorker*
-shadercompiler-AssetImportWorker*
-shadercompiler-UnityShaderCompiler*
-/Logs/ApiUpdaterCheck.txt
- 
 # ============================================= #
 # Visual Studio / MonoDevelop / Rider generated #
 # ============================================= #
