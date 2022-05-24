@@ -3,7 +3,7 @@
 
 IATK is an ongoing and open project! We setup a roadmap with features that we would like to see in IATK in a near future.  
 <br/>
-<br/>
+
 # Publication
 IATK was published at IEEE VR 2019 - Please reference using the [reference file](CITATION.bib) or the reference below:
 
