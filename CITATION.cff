@@ -31,6 +31,7 @@ authors:
     affiliation: Monash University
     email: tim.dwyer@monash.edu
 preferred-citation:
+  type: conference-paper
   title: "IATK: An Immersive Analytics Toolkit"
   authors:
     - given-names: Maxime
@@ -61,9 +62,9 @@ preferred-citation:
       family-names: Dwyer
       affiliation: Monash University
       email: tim.dwyer@monash.edu
-  doi: 10.1109/VR.2019.8797978
+  doi: "10.1109/VR.2019.8797978"
   year: 2019
-  type: conference-paper
+  start: 200
+  end: 209
   conference:
     name: "2019 IEEE Conference on Virtual Reality and 3D User Interfaces (VR)"
-    pages: "200--209"
