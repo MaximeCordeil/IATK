@@ -1,4 +1,4 @@
-# IATK 1.0 (Mala): Immersive Analytics Toolkit 
+# IATK 1.1 (Mala): Immersive Analytics Toolkit 
 <img align="left" width="390" alt="2dscatterplot" src=https://user-images.githubusercontent.com/11532065/46409367-9bd0c500-c758-11e8-9485-c92d532d97b8.jpg> **IATK: Immersive Analytics Toolkit** is a Unity project to help you build **high quality**, **interactive** and **scalable** **data visualisations** in **Immersive Environments (Virtual/Augmented Reality)**. Use the *Visualisation* script to create data visualisations interactively in the editor, press play and view and interact with your data in VR/AR. Write simple code to use the *IATK* core graphics components to make your own interactive visualisations programitcally.
 
 IATK is an ongoing and open project! We setup a roadmap with features that we would like to see in IATK in a near future.
@@ -17,7 +17,7 @@ IATK was published at IEEE VR 2019 - Please reference using the [reference file]
 
 # Requirements
 - This repository
-- [Unity 2021.3.2f1](https://unity3d.com/get-unity/)
+- [Unity 2021.3.3f1](https://unity3d.com/get-unity/)
 - [Virtual Reality Toolkit VRTK](https://github.com/thestonefox/VRTK)
 - [MapBox Unity Plugin v2.1.1](https://www.mapbox.com/install/unity/)
   - A MapBox account and access token are not required unless working directly with map visualisations
