@@ -182,18 +182,18 @@
       "url": "https://registry.npmjs.org"
     },
     "io.extendreality.tilia.interactions.controllables.unity": {
-      "version": "2.3.1",
+      "version": "2.4.0",
       "depth": 0,
       "source": "registry",
       "dependencies": {
         "io.extendreality.zinnia.unity": "2.2.0",
-        "io.extendreality.tilia.interactions.interactables.unity": "2.4.1"
+        "io.extendreality.tilia.interactions.interactables.unity": "2.5.0"
       },
       "url": "https://registry.npmjs.org"
     },
     "io.extendreality.tilia.interactions.interactables.unity": {
-      "version": "2.4.1",
-      "depth": 1,
+      "version": "2.5.0",
+      "depth": 0,
       "source": "registry",
       "dependencies": {
         "io.extendreality.zinnia.unity": "2.2.0"
