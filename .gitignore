@@ -26,6 +26,8 @@ shadercompiler-UnityShaderCompiler*
 /Assets/MetaSDK/
 /Assets/Resources
 /Assets/Resources.meta
+/Assets/Photon/
+/Assets/Photon.meta
 
 # ============================================= #
 # Visual Studio / MonoDevelop / Rider generated #
