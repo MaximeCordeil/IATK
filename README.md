@@ -17,7 +17,7 @@ IATK was published at IEEE VR 2019 - Please reference using the [reference file]
 
 # Requirements
 - This repository
-- [Unity 2021.3.3f1](https://unity3d.com/get-unity/)
+- [Unity 2021.3.4f1](https://unity3d.com/get-unity/)
 - [Virtual Reality Toolkit VRTK](https://github.com/thestonefox/VRTK)
 - [MapBox Unity Plugin v2.1.1](https://www.mapbox.com/install/unity/)
   - A MapBox account and access token are not required unless working directly with map visualisations
