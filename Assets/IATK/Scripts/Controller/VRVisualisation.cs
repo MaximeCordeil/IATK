@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 using Tilia.Interactions.Controllables.LinearDriver;
@@ -14,21 +13,25 @@ namespace IATK
     [ExecuteInEditMode]
     public class VRVisualisation : Visualisation
     {
+        private const bool enableVisualisationScaling = false; // Disabled until scaling bug is fixed in Tilia: shorturl.at/ayFP3
         public GameObject linearJointDrivePrefab;
-        private bool xAxisInUse = false; 
-        private bool yAxisInUse = false; 
+        private bool xAxisInUse = false;
+        private bool yAxisInUse = false;
         private bool zAxisInUse = false;
         private const string linearJointSuffix = "[Linear Joint]";
-        private const bool enableVisualisationScaling = false; // Disabled until scaling bug is fixed in Tilia: shorturl.at/ayFP3
 
-        /* TODO:
-        - ✔ Move UnityEditor code to editor files
-        - ✔ Update to Unity 2021.3.2f1
-        - Handle scaling of visualisation for normaliser handles
-        - Handle different visualisation types
-        - Fix normaliser handles in standalone mode
-        */
-        void Start() { CreateInteractableNormalisers(); }
+        void Start()
+        {
+            // Create Interactable Normalisers
+            Axis[] axes = GetComponentsInChildren<Axis>();
+            if (axes == null) return;
+
+            foreach (Axis axis in axes)
+            {
+                ConfigureHandle(axis, "MinAxisHandle", false);
+                ConfigureHandle(axis, "MaxAxisHandle", true);
+            }
+        }
 
         void Update()
         {
@@ -49,21 +52,21 @@ namespace IATK
             }
         }
 
-#region Visualisation Handling
+        #region Visualisation Handling
         public override void updateViewProperties(AbstractVisualisation.PropertyType propertyType)
         {
-            // Debug.Log("updateViewProperties: " + propertyType);
-
             base.updateViewProperties(propertyType);
 
             switch (propertyType)
             {
                 case AbstractVisualisation.PropertyType.VisualisationType:
-                    // TODO: Handle visualisation types
+                    // Other visualisation types are not supported yet
+                    // To add new visualisation types
+                    // Add handles where needed visualisation types
                     // When visualisation type changes, we need to:
-                        // Alter Box Collider
-                        // Find any new Normaliser draggers and add a Linear Drive to each
-                        // Connect all Linear Drives to the appropriate Normaliser values
+                    // Alter Box Collider
+                    // Find any new Normaliser draggers and add a Linear Drive to each
+                    // Connect all Linear Drives to the appropriate Normaliser values
                     break;
                 case AbstractVisualisation.PropertyType.X:
                     xAxisInUse = !theVisualizationObject.visualisationReference.xDimension.Attribute.Equals("Undefined");
@@ -77,17 +80,16 @@ namespace IATK
                     zAxisInUse = !theVisualizationObject.visualisationReference.zDimension.Attribute.Equals("Undefined");
                     UpdateVisualisation();
                     break;
-                case AbstractVisualisation.PropertyType.Scaling:
-                    // TODO: Handle scaling of visualisation for normaliser handels
-                    break;
             }
         }
-        private void UpdateVisualisation() { AddOrUpdateVisualisationBoxCollider(); }
-        private void AddOrUpdateVisualisationBoxCollider()
+        private void UpdateVisualisation()
         {
-            int numberOfAxisInUse = CountTrue(xAxisInUse, yAxisInUse, zAxisInUse);
+            int numberOfAxisInUse = 0;
+            if (xAxisInUse) numberOfAxisInUse++;
+            if (yAxisInUse) numberOfAxisInUse++;
+            if (zAxisInUse) numberOfAxisInUse++;
 
-            if(numberOfAxisInUse == 0)
+            if (numberOfAxisInUse == 0)
             {
                 // If no axis are set then remove the box collider
                 DestroyImmediate(gameObject.GetComponent<BoxCollider>());
@@ -127,37 +129,25 @@ namespace IATK
             boxCollider.center = center;
             boxCollider.size = size;
         }
-        private void CreateInteractableNormalisers()
-        {
-            Axis[] axes = GetComponentsInChildren<Axis>();
-            if (axes == null) return;
-
-            foreach(Axis axis in axes)
-            {
-                ConfigureHandle(axis, "MinAxisHandle", false);
-                ConfigureHandle(axis, "MaxAxisHandle", true);
-            }
-        }
         private void ConfigureHandle(Axis axis, string handleName, bool isMax)
         {
             int axisDirection = axis.AxisDirection;
             GameObject handle = axis.transform.Find(handleName)?.gameObject;
 
-            // If the handle can be found then this is the first time the scene has been played since creation
-            if(handle != null)
-            {
-                // Runs once the first time the scene is played after the visualisation was created
-                ConvertToLinearJointDrive(handle, axisDirection, isMax);
-            }
-            else
-            {
-                // Runs every time the scene is played after the first time
-                ConfigLinearJointEvents(axis.transform.Find(handleName + " " + linearJointSuffix), axisDirection, isMax);
-            }
+            // Runs once the first time the scene is played after the visualisation is created
+            if (handle != null) ConvertToLinearJointDrive(handle, axisDirection, isMax);
+
+            // Config LinearJointEvents
+            Transform linerJoint = axis.transform.Find(handleName + " " + linearJointSuffix);
+            Transform interactable = RecursiveFindChild(linerJoint, "Interactions.Interactable");
+            LinearDriveFacade linerJointFacade = linerJoint.GetComponent<LinearDriveFacade>();
+
+            LinkGrabEvent(linerJointFacade, interactable);
+            LinkScalingEvent(linerJointFacade, axisDirection, isMax);
         }
 
         /// <summary>
-        /// Wraps a given normaliser GameObject in a Tilia 'LinearJointDrive' and configures the Linear Joint based on a axis direction
+        /// Wraps a given normaliser handle in a Tilia 'LinearJointDrive' and configures the Linear Joint based on a axis direction
         /// </summary>
         /// <param name="handle">The GameObject to wrap</param>
         /// <param name="axisDirection">X=1, Y=2, Z=3</param>
@@ -173,24 +163,6 @@ namespace IATK
             ConfigNormaliserSlider(handle, axisDirection);
             ConfigLinerJoint(linerJoint.transform, axisDirection);
             ConfigLinerJointFacade(linerJointFacade, isMax);
-
-            LinkGrabEvent(linerJointFacade, handle.transform.parent.parent);
-            LinkScalingEvent(linerJointFacade, axisDirection, isMax);
-        }
-        
-        /// <summary>
-        /// Configures an existing linear joint by add event listeners to grab and scaling events
-        /// </summary>
-        /// <param name="linerJoint">The linerJoint to link the events to</param>
-        /// <param name="axisDirection">X=1, Y=2, Z=3</param>
-        /// <param name="isMax">True if the normaliser is the maximum filter</param>
-        private void ConfigLinearJointEvents(Transform linerJoint, int axisDirection, bool isMax)
-        {
-            Transform interactable = RecursiveFindChild(linerJoint, "Interactions.Interactable");
-            LinearDriveFacade linerJointFacade = linerJoint.GetComponent<LinearDriveFacade>();
-
-            LinkGrabEvent(linerJointFacade, interactable);
-            LinkScalingEvent(linerJointFacade, axisDirection, isMax);
         }
         private void LinkGrabEvent(LinearDriveFacade linerJointFacade, Transform interactable)
         {
@@ -244,37 +216,35 @@ namespace IATK
             UnityAction<float> setScaleAction = (axisDirection, isMax) switch
             {
                 (1, false) => SetScaleBuilder(x => xDimension.minScale = x),
-                (1, true)  => SetScaleBuilder(x => xDimension.maxScale = x),
+                (1, true) => SetScaleBuilder(x => xDimension.maxScale = x),
                 (2, false) => SetScaleBuilder(x => yDimension.minScale = x),
-                (2, true)  => SetScaleBuilder(x => yDimension.maxScale = x),
+                (2, true) => SetScaleBuilder(x => yDimension.maxScale = x),
                 (3, false) => SetScaleBuilder(x => zDimension.minScale = x),
-                (3, true)  => SetScaleBuilder(x => zDimension.maxScale = x),
+                (3, true) => SetScaleBuilder(x => zDimension.maxScale = x),
                 _ => throw new Exception("Invalid Axis Direction")
             };
             linerJointFacade.NormalizedValueChanged.AddListener(setScaleAction);
         }
-        public UnityEngine.Events.UnityAction<float> SetScaleBuilder(Action<float> setScale)
+        private UnityEngine.Events.UnityAction<float> SetScaleBuilder(Action<float> setScale)
         {
-            UnityEngine.Events.UnityAction<float> action = (float scale) => {
+            UnityEngine.Events.UnityAction<float> action = (float scale) =>
+            {
                 updateViewProperties(AbstractVisualisation.PropertyType.Scaling);
                 setScale(scale);
                 updateViewProperties(AbstractVisualisation.PropertyType.Scaling);
             };
             return action;
         }
-#endregion
+        #endregion
 
-#region Helper Functions
+        #region Helper Functions
         /// <summary>
         /// Wraps the current game object in another. Used to convert visualisations into interactables.
         /// </summary>
         /// <param name="toWrapIn">The GameObject to wrap the current object in</param>
         /// <param name="suffix">The suffix name of the wrapping object</param>
         /// <returns>The wrapped GameObject</returns>
-        public GameObject WrapIn(GameObject toWrapIn, string suffix)
-        {
-            return WrapObject(gameObject, toWrapIn, suffix);
-        }
+        public GameObject WrapIn(GameObject toWrapIn, string suffix) => WrapObject(gameObject, toWrapIn, suffix);
 
         /// <summary>
         /// Wraps a GameObject in another GameObject with a name suffix. Used to convert visualisations into interactables.
@@ -292,7 +262,7 @@ namespace IATK
             foreach (Transform child in meshContainer)
                 child.gameObject.SetActive(false);
 
-            int siblingIndex = toBeWrapped.transform.GetSiblingIndex(); 
+            int siblingIndex = toBeWrapped.transform.GetSiblingIndex();
 
             toBeWrapped.transform.SetParent(meshContainer, false);
             toBeWrapped.transform.localPosition = Vector3.zero;
@@ -307,7 +277,7 @@ namespace IATK
         {
             foreach (Transform child in parent)
             {
-                if(child.name == childName) return child;
+                if (child.name == childName) return child;
                 else
                 {
                     Transform found = RecursiveFindChild(child, childName);
@@ -316,13 +286,6 @@ namespace IATK
             }
             return null;
         }
-        
-        /// <summary>
-        /// Counts how many 'true' values are in the arguments list
-        /// </summary>
-        /// <param name="args"></param>
-        /// <returns>Number of true values given</returns>
-        private static int CountTrue(params bool[] args) { return args.Count(t => t); }
-#endregion
+        #endregion
     }
 }
