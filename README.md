@@ -18,7 +18,6 @@ IATK was published at IEEE VR 2019 - Please reference using the [reference file]
 # Requirements
 - This repository
 - [Unity 2021.3.3f1](https://unity3d.com/get-unity/)
-- [Virtual Reality Toolkit VRTK](https://github.com/thestonefox/VRTK)
 - [MapBox Unity Plugin v2.1.1](https://www.mapbox.com/install/unity/)
   - A MapBox account and access token are not required unless working directly with map visualisations
   - Only the main package is required <br/><img width="265" alt="image" src="https://user-images.githubusercontent.com/1362512/169925401-44bfc78f-205d-4830-9be3-da257ec88368.png">
@@ -74,6 +73,8 @@ Create a **Visualisation** object (right click in the hierarchy, IATK/Visualisat
 #### 3D Scatterplot Matrix
 <img height="200" alt="3dsplom" src=https://user-images.githubusercontent.com/11532065/46408791-a9854b00-c756-11e8-8c05-21ce94e2f463.png> <img height="200" alt="3dsplomcloseup" src=https://user-images.githubusercontent.com/11532065/46442262-5b029b80-c7ac-11e8-8abc-beeda5040efa.JPG> <img height="200" alt="3dsplomcloseup" src=https://user-images.githubusercontent.com/11532065/46408792-aa1de180-c756-11e8-9fb8-5f92e5b0fa9e.png>
 
+## VRTK VR/AR Visualisation
+#### VR Visualisation
 
 
 # Visualisation designer in the Unity Editor
