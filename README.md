@@ -50,6 +50,13 @@ Create a **Visualisation** object (right click in the hierarchy, IATK/Visualisat
 
 
 # Visualisations
+
+## VR Visualisation
+#### VRTK VR/AR Visualisation with interactable handles for scaling
+To create a pre-configured **VR Visualisation** object: right click in the hierarchy, IATK/VR Visualisation. Drag and drop a **Data Source** object in the *Data Source* field of the VR Visualisation object. VR Visulisations use [VRTK v4 Tilia packages](https://www.vrtk.io/tilia.html) and support any [OpenXR compatible headset](https://www.khronos.org/conformance/adopters/conformant-products/openxr), including Oculus Quest, Oculus Quest 2, Microsoft HoloLens, and Valve Index. Please note that VR Visualisations currently only work with scatterplot visulisations.
+
+<img width="280" alt="image" src="https://user-images.githubusercontent.com/1362512/173139106-914f7ce0-14cc-4f92-8c47-cab728505e42.png">
+
 ## Simple visualisations: 
 #### 2D/3D scatterplots
 <img height="200" alt="2dscatterplot" src=https://user-images.githubusercontent.com/11532065/46408763-8eb2d680-c756-11e8-813f-e3114a63215d.png> <img height="200" alt="3dscatterplot" src=https://user-images.githubusercontent.com/11532065/46408760-89ee2280-c756-11e8-9fa2-add36ce6bdda.png>
@@ -72,10 +79,6 @@ Create a **Visualisation** object (right click in the hierarchy, IATK/Visualisat
   
 #### 3D Scatterplot Matrix
 <img height="200" alt="3dsplom" src=https://user-images.githubusercontent.com/11532065/46408791-a9854b00-c756-11e8-8c05-21ce94e2f463.png> <img height="200" alt="3dsplomcloseup" src=https://user-images.githubusercontent.com/11532065/46442262-5b029b80-c7ac-11e8-8abc-beeda5040efa.JPG> <img height="200" alt="3dsplomcloseup" src=https://user-images.githubusercontent.com/11532065/46408792-aa1de180-c756-11e8-9fb8-5f92e5b0fa9e.png>
-
-## VRTK VR/AR Visualisation
-#### VR Visualisation with interactable handles for scaling
-<img width="280" alt="image" src="https://user-images.githubusercontent.com/1362512/173139106-914f7ce0-14cc-4f92-8c47-cab728505e42.png">
 
 # Visualisation designer in the Unity Editor
 <img align="left" width="280" alt="3dsparklines" src=  https://user-images.githubusercontent.com/11532065/46445150-acb12300-c7b8-11e8-98b1-22cd2f1eba65.png>  The visualisation component allows the design of the visualisation inside the Unity Editor. Visual variables can be attached to data dimension attributes.
