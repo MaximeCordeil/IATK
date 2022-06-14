@@ -53,7 +53,7 @@ Create a **Visualisation** object (right click in the hierarchy, IATK/Visualisat
 
 ## VR Visualisation
 #### VRTK VR/AR Visualisation with interactable handles for scaling
-To create a pre-configured **VR Visualisation** object: right click in the hierarchy, IATK/VR Visualisation. Drag and drop a **Data Source** object in the *Data Source* field of the VR Visualisation object. VR Visulisations use [VRTK v4 Tilia packages](https://www.vrtk.io/tilia.html) and support any [OpenXR compatible headset](https://www.khronos.org/conformance/adopters/conformant-products/openxr), including Oculus Quest, Oculus Quest 2, Microsoft HoloLens, and Valve Index. Please note that VR Visualisations currently only work with scatterplot visulisations.
+To create a pre-configured **VR Visualisation** object: right click in the hierarchy, IATK/VR Visualisation. Drag and drop a **Data Source** object in the *Data Source* field of the VR Visualisation object. VR Visulisations use [VRTK v4 Tilia packages](https://www.vrtk.io/tilia.html) and support any [OpenXR compatible headset](https://www.khronos.org/conformance/adopters/conformant-products/openxr), including Oculus Quest, Oculus Quest 2, Microsoft HoloLens, and Valve Index. Please note that VR Visualisations are currently only configured to work with scatterplot visulisations, other visulisation types will need to be manually configured.
 
 <img width="280" alt="image" src="https://user-images.githubusercontent.com/1362512/173139106-914f7ce0-14cc-4f92-8c47-cab728505e42.png">
 
