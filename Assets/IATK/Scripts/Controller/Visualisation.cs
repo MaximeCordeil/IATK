@@ -234,7 +234,7 @@ namespace IATK
             return retVal;
         }
         
-        public void updateViewProperties(AbstractVisualisation.PropertyType propertyType)
+        public virtual void updateViewProperties(AbstractVisualisation.PropertyType propertyType)
         {
             if (theVisualizationObject == null) CreateVisualisation(visualisationType);
             theVisualizationObject.UpdateVisualisation(propertyType);

@@ -6,6 +6,8 @@
 /[Bb]uild
 /[Bb]uild[s]
 /[Ll]ibrary/
+/Oculus_BackUpThisFolder_ButDontShipItWithYourGame/
+
 sysinfo.txt
 *.stackdump
 UserSettings/
@@ -22,6 +24,8 @@ shadercompiler-UnityShaderCompiler*
 /Assets/OvrAvatar/
 /Assets/Plugins/
 /Assets/MetaSDK/
+/Assets/Resources
+/Assets/Resources.meta
 /Assets/Mapbox/
 /Assets/Mapbox.meta
 
@@ -57,3 +61,9 @@ ehthumbs.db
 /Assets/SerializedFields/
 /Assets/StreamingAssets/
 /Assets/StreamingAssets.meta
+
+# =============== #
+# Tilia (VRTK v4) #
+# =============== #
+/Assets/Samples
+/Assets/Samples.meta

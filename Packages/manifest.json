@@ -1,4 +1,13 @@
 {
+  "scopedRegistries": [
+    {
+      "name": "npmjs",
+      "url": "https://registry.npmjs.org/",
+      "scopes": [
+        "io.extendreality"
+      ]
+    }
+  ],
   "dependencies": {
     "com.unity.collab-proxy": "1.15.18",
     "com.unity.ide.rider": "3.0.14",
@@ -8,7 +17,12 @@
     "com.unity.textmeshpro": "3.0.6",
     "com.unity.timeline": "1.7.1",
     "com.unity.ugui": "1.0.0",
-    "com.unity.xr.legacyinputhelpers": "2.1.9",
+    "com.unity.xr.openxr": "1.4.2",
+    "io.extendreality.tilia.camerarigs.trackedalias.unity": "2.0.3",
+    "io.extendreality.tilia.camerarigs.xrpluginframework.unity": "2.0.3",
+    "io.extendreality.tilia.input.unityinputsystem": "2.0.3",
+    "io.extendreality.tilia.interactions.controllables.unity": "2.4.0",
+    "io.extendreality.tilia.interactions.interactables.unity": "2.5.0",
     "com.unity.modules.ai": "1.0.0",
     "com.unity.modules.androidjni": "1.0.0",
     "com.unity.modules.animation": "1.0.0",

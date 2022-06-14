@@ -5,9 +5,13 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 0
-    path: Assets/Scenes/ViveTestScene.unity
-    guid: 74a8a58810461f4408168f3a35ec1bcc
   - enabled: 1
-    path: Assets/Tutorial/test scene.unity
-    guid: c88b5f38956ef304caf67e6fdbba0eed
+    path: Assets/IATK/Scenes/VRTK v4 Scene.unity
+    guid: 681e143a8cc7683489311884a25a515e
+  m_configObjects:
+    Unity.XR.Oculus.Settings: {fileID: 11400000, guid: 62620829e0af8c542b99219c8f4a9f00,
+      type: 2}
+    com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 1e07af08c2aef7944bcc03ffe25e456b,
+      type: 2}
+    com.unity.xr.openxr.settings4: {fileID: 11400000, guid: 5cce7150312ad7645938dbbe27cf913b,
+      type: 2}
