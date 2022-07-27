@@ -186,7 +186,7 @@ In a near feature we will support:
 
 # Team
 The toolkit is developed by:
-- Maxime Cordeil (project leader, Monash University)
+- Maxime Cordeil (project leader, University of Queensland)
 - Andrew Cunningham (University of South Australia)
 - Benjamin Lee (Monash University)
 - Daniel Harris (University of South Wales)
