@@ -38,6 +38,7 @@ Setup a VR scene with the HTC Vive in Unity: https://www.youtube.com/watch?v=tyF
 
 Our repository contains sample datasets. Come with your CSV data to the tutorial if you want to give it a go!
 
+A written tutorial explaining how to setup Unity and get an example scene working with a VR interactable visualisaiton can be found here: [VR_TUTORIAL.md](https://github.com/MaximeCordeil/IATK/blob/master/Documentation/VR_TUTORIAL.md)
 
 # IATK editor components
 ## Data Source: import data into the scene
