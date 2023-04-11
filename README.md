@@ -134,7 +134,7 @@ return dataSource;
 
 ## ViewBuilder
 IATK uses a fluent design pattern that lets you chain commands to design a visualisation in a single instruction.
-Example in the [**Scripting**]((#Scripting)) section
+Example in the [**Scripting**](#scripting) section
 
 ## View
 Once you have built a View object with the Viewbuilder, you can change the view attributes (colours, positions, sizes, filters ...) . See documentation [to come]. 
