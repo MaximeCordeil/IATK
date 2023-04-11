@@ -29,6 +29,7 @@ A video tutorial of IATK [can be found here](https://vimeo.com/320646218)
 The actual tutorial starts at 01:12
 <!--[the slides of our tutorial are available here](https://drive.google.com/open?id=1-uBezockeTltw1x-5gcNsQrAPJ9v08up) -->
 
+A written tutorial explaining how to a scatterplot visualisaiton can be found here: [How to create a visualisation (Non-VR)](https://github.com/MaximeCordeil/IATK/blob/master/Documentation/Visualisation_Tutorial.md)
 
 ***IATK works on Windows machines -  Mac users please [install bootcamp](https://support.apple.com/en-au/HT201468)***
 
@@ -38,7 +39,7 @@ Setup a VR scene with the HTC Vive in Unity: https://www.youtube.com/watch?v=tyF
 
 Our repository contains sample datasets. Come with your CSV data to the tutorial if you want to give it a go!
 
-A written tutorial explaining how to setup Unity and get an example scene working with a VR interactable visualisaiton can be found here: [VR_TUTORIAL.md](https://github.com/MaximeCordeil/IATK/blob/master/Documentation/VR_TUTORIAL.md)
+A written tutorial explaining how to setup Unity and get an example scene working with a VR interactable visualisaiton can be found here: [How to create a VR visualisation](https://github.com/MaximeCordeil/IATK/blob/master/Documentation/VR_TUTORIAL.md)
 
 # IATK editor components
 ## Data Source: import data into the scene
