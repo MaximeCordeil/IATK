@@ -170,7 +170,7 @@ namespace IATK
 
         private string ConfigurationFileName()
         {
-            string PathName = Application.streamingAssetsPath + Path.DirectorySeparatorChar + serializedObjectPath;
+            string PathName = Application.persistentDataPath + Path.DirectorySeparatorChar + serializedObjectPath;
             return PathName + Path.DirectorySeparatorChar + visualisationReference.uid + ".json";
         }
 

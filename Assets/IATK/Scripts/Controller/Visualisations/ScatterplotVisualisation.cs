@@ -124,8 +124,7 @@ namespace IATK
 
         public override void UpdateVisualisation(PropertyType propertyType){
 
-            if (viewList.Count == 0)
-                CreateVisualisation();
+            if (viewList.Count == 0 || creationConfiguration == null) CreateVisualisation();
 
             if (viewList.Count != 0)
                 switch (propertyType)

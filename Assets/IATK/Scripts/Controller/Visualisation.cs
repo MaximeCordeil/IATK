@@ -485,7 +485,7 @@ namespace IATK
 
         private string ConfigurationFileName()
         {
-            string PathName = Application.streamingAssetsPath + Path.DirectorySeparatorChar + theVisualizationObject.serializedObjectPath;
+            string PathName = Application.persistentDataPath + Path.DirectorySeparatorChar + theVisualizationObject.serializedObjectPath;
             return PathName + Path.DirectorySeparatorChar + uid + ".json";
         }
 
